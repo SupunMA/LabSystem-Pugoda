@@ -1,0 +1,79 @@
+add time to get the report (available tests page)
+add sub categories and ranges (available tests page)
+abnormal and normal auto identify (report)
+
+AvailableTestRange
+
+<div class="col-lg-8">
+    <div class="box box-primary">
+        <div class="box-header with-border">
+            <h3 class="box-title">Available Test's Details</h3>
+        </div>
+        <!-- /.box-header -->
+        <!-- form start -->
+        <div class="box-body">
+
+            <div class="row">
+                <div class="col-lg-6 col-12">
+                    <div class="form-group">
+                        <label>Sub-Title</label>
+                        <input type="text" name="AvailableTestName" class="form-control"  placeholder="Enter Name">
+                    </div>
+                </div>
+            	{{-- Gender --}}
+
+                <div class="col-lg-3 col-12">
+                    <div class="form-group">
+                        <label>Normal Range</label>
+                        
+                        <input type="text" id="normal_range" name="AvailableTestRange" pattern="\d+-\d+" class="form-control" placeholder="Enter range (e.g. 40-120)">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- /.box -->
+</div>
+
+
+
+
+Femtolitres.
+Grams (g).
+Grams per decilitre (g/dL).
+Grams per litre (g/L).
+International units per litre (IU/L).
+International units per millilitre (IU/mL).
+Micrograms (mcg).
+Micrograms per decilitre (mcg/dL).
+Micrograms per litre (mcg/L).
+Microkatals per litre (mckat/L).
+Microlitres (mcL).
+Micromoles per litre (mcmol/L).
+Milliequivalents (mEq).
+Milliequivalents per litre (mEq/L).
+Milligrams (mg).
+Milligrams per decilitre (mg/dL).
+Milligrams per litre (mg/L).
+Milli-international units per litre (mIU/L).
+Millilitres (mL).
+Millimetres (mm).
+Millimetres of mercury (mm Hg).
+Millimoles (mmol).
+Millimoles per litre (mmol/L).
+Milliosmoles per kilogram of water (mOsm/kg water).
+Milliunits per gram (mU/g).
+Milliunits per litre (mU/L).
+Nanograms per decilitre (ng/dL).
+Nanograms per litre (ng/L).
+Nanograms per millilitre (ng/mL).
+Nanograms per millilitre per hour (ng/mL/hr).
+Nanomoles (nmol).
+Nanomoles per litre (nmol/L).
+Picograms (pg).
+Picograms per millilitre (pg/mL).
+Picomoles per litre (pmol/L).
+Titres.
+Units per litre (U/L).
+Units per millilitre (U/mL).
