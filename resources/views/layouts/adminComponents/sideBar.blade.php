@@ -161,7 +161,7 @@
                     <a href="#" class="nav-link {{ Route::currentRouteNamed('admin.addAvailableTest') || Route::currentRouteNamed('admin.allAvailableTest') ? 'active' : '' }} ">
                         <i class="fas fa-users"></i>
                         <p>
-                            Reports
+                            Available Tests
                             <i class="right fas fa-angle-left"></i>
                         </p>
                     </a>
@@ -169,13 +169,13 @@
                         <li class="nav-item">
                             <a href="{{ route('admin.addAvailableTest') }}" class="nav-link {{ Route::currentRouteNamed('admin.addAvailableTest') ? 'active' : '' }} ">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Add Report</p>
+                                <p>Add New Test</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('admin.allAvailableTest') }}" class="nav-link {{ Route::currentRouteNamed('admin.allAvailableTest') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>All Reports</p>
+                                <p>All Available Tests</p>
                             </a>
                         </li>
                     </ul>
