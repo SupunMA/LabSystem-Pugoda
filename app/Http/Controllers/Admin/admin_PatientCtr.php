@@ -16,8 +16,8 @@ use Illuminate\Validation\Rule;
 
 class admin_PatientCtr extends Controller
 {
-    
-   
+
+
  //Authenticate all Admin routes
     public function __construct()
     {
@@ -30,23 +30,70 @@ class admin_PatientCtr extends Controller
 
     public function addPatient()
     {
-       
-        
+
+
         return view('Users.Admin.Patients.addPatient');
     }
 
-    public function allPatient()
+
+    public function allPatient(Request $request)
     {
-        //$clients=User::where('role',0)->get();
+        if ($request->ajax()) {
+            $start = $request->input('start');
+            $length = $request->input('length');
+            $searchValue = $request->input('search.value');
 
-        $usersWithPatients = Patient::with('user')->get();
-        
+            $query = Patient::with('user')->orderBy('userID', 'desc'); // Sort by id in descending order;
 
-        //->join('table1','table1.id','=','table3.id');
-        //dd($usersWithPatients);
-        return view('Users.Admin.Patients.allPatients',compact('usersWithPatients'));
+            if (!empty($searchValue)) {
+                $query->where(function ($q) use ($searchValue) {
+                    $q->where('dob', 'like', "%{$searchValue}%") // ✅ Search by DOB
+                      ->orWhere('mobile', 'like', "%{$searchValue}%")
+                      ->orWhere('address', 'like', "%{$searchValue}%")
+                      ->orWhereHas('user', function ($subQuery) use ($searchValue) {
+                          $subQuery->where('name', 'like', "%{$searchValue}%")
+                                   ->orWhere('email', 'like', "%{$searchValue}%");
+                      });
+                });
+            }
+
+            $totalRecords = Patient::count();
+            $filteredRecords = $query->count();
+            $patients = $query->offset($start)->limit($length)->get();
+
+            $data = $patients->map(function ($patient) {
+                return [
+                    'id' => optional($patient->user)->id ?? 'N/A',
+                    'name' => optional($patient->user)->name ?? 'N/A',
+                    'dob' => $patient->dob,
+                    'gender' => $patient->gender === 'M' ? 'Male' : ($patient->gender === 'F' ? 'Female' : 'Other'),
+                    'mobile' => $patient->mobile,
+                    'email' => optional($patient->user)->email ?? 'N/A',
+                    'address' => $patient->address,
+                    'actions' => '
+                                                <a class="btn btn-warning" type="button" data-toggle="modal" data-target="#branchEditModal-{{$TestData->tid}}" >
+                                <i class="fa fa-pencil" aria-hidden="true"></i>
+                            </a>
+                            <a class="btn btn-danger" type="button" data-toggle="modal" data-target="#branchDeleteModal-{{$TestData->tid}}"  >
+                                <i class="fa fa-trash" aria-hidden="true"></i>
+                            </a>'
+                ];
+            });
+
+            return response()->json([
+                'draw' => intval($request->input('draw')),
+                'recordsTotal' => $totalRecords,
+                'recordsFiltered' => $filteredRecords,
+                'data' => $data
+            ]);
+        }
+
+        return view('Users.Admin.Patients.allPatients');
     }
-    
+
+
+
+
     public function deletePatient($userID)
     {
         //Delete patient data from user,patient,test tables
@@ -54,11 +101,11 @@ class admin_PatientCtr extends Controller
         $testPatient = Test::where('pid', $patient->pid)->delete();
         $userPatient = User::find($userID);
 
-        
+
         $userPatient->delete();
         $patient->delete();
-       
-        
+
+
         return redirect()->back()->with('message','Deleted Successfully');
     }
 
@@ -81,13 +128,13 @@ class admin_PatientCtr extends Controller
                     'address' => $request->address,
                     'gender'=> $request->gender,
                     'dob'=> $formattedDate
-                    
+
                 ]);
 
         User::where('id', $request->id)
         ->update([
                     'name' => $request->name,
-                    
+
                 ]);
 
         return redirect()->back()->with('message','Updated Successfully!');
@@ -95,5 +142,5 @@ class admin_PatientCtr extends Controller
     }
 
 
-    
+
 }

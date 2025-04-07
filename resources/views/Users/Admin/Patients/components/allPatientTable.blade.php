@@ -4,13 +4,12 @@
   </div>
   <!-- /.box-header -->
   <div class="box-body">
-        
+
         @include('Users.Admin.messages.addMsg')
 
 
-        
-        <table  id="example1" class="table table-bordered table-striped">
-            
+
+        <table id="patientsTable" class="table table-bordered table-striped">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -24,47 +23,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($usersWithPatients as $UserPatient)
-
-                    <tr>
-                        <td>{{$UserPatient->pid}}</td>
-                        <td>{{$UserPatient->user->name}}</td>
-                        <td>{{$UserPatient->dob}}</td>
-                        <td>
-                            @if ($UserPatient->gender == 'M')
-                                Male
-                            @elseif ($UserPatient->gender == 'F')
-                                Female
-                            @elseif ($UserPatient->gender == 'O')
-                                Other
-                            @endif
-                        </td>
-                    
-                        <td>{{$UserPatient->mobile}}</td>
-                        <td>{{$UserPatient->user->email}}</td>
-                        <td>{{$UserPatient->address}}</td>
-                        
-                        
-                        
-                        
-                        <td>
-                            <a class="btn btn-warning" type="button" data-toggle="modal" data-target="#ClientEditModal-{{$UserPatient->pid}}" >
-                                <i class="fa fa-pencil" aria-hidden="true"></i>
-                            </a>
-                            <a class="btn btn-danger" type="button" data-toggle="modal" data-target="#clientDeleteModal-{{$UserPatient->pid}}"  >
-                                <i class="fa fa-trash-o" aria-hidden="true"></i>
-                            </a>
-                        </td>
-                    </tr>
-
-                    {{-- delete modal --}}
-                    @include('Users.Admin.Patients.components.deletePatient')
-                    {{-- update modal --}}
-                    @include('Users.Admin.Patients.components.updatePatient')
-                    
-                    
-                    
-                @endforeach
+                <!-- Data will be populated here via AJAX -->
             </tbody>
             <tfoot>
                 <tr>
@@ -79,6 +38,7 @@
                 </tr>
             </tfoot>
         </table>
+
   </div>
   <!-- /.box-body -->
 </div>
@@ -87,12 +47,7 @@
 @push('specificJs')
 {{-- toastr msg --}}
 
-<script>
 
-    $(function () {
-      $('#example1').DataTable()
-    })
-  </script>
 
 
 <script>
@@ -101,5 +56,38 @@
       autoclose: true
     })
   </script>
+
+
+<script>
+    $(document).ready(function() {
+        $('#patientsTable').DataTable({
+            processing: true,
+            serverSide: true,
+            "responsive": true,
+            "lengthChange": true,
+            "autoWidth": true,
+            ajax: '{{ route("admin.allPatient") }}',
+            columns: [
+                { data: 'id' },
+                { data: 'name' },
+                { data: 'dob' },
+                { data: 'gender' },
+                { data: 'mobile' },
+                { data: 'email' },
+                { data: 'address' },
+                { data: 'actions', orderable: false, searchable: false }
+            ]
+        });
+    });
+</script>
+
+{{-- <script>
+
+    $(function () {
+      $('#patientsTable').DataTable()
+    })
+</script> --}}
+
+
 
 @endpush
