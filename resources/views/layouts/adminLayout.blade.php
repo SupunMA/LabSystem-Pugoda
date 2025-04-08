@@ -39,10 +39,10 @@ desired effect
 <!-- Main Header -->
     @include('layouts.adminComponents.navBar')
 <!-- /Main Header -->
-  
+
   <!-- Left side column. contains the logo and sidebar -->
   @include('layouts.adminComponents.sideBar')
- 
+
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
@@ -51,22 +51,22 @@ desired effect
       <h1>
 
         @yield('header')
-        <small>@yield('header')</small>
+        {{-- <small>@yield('header')</small> --}}
 
       </h1>
       <ol class="breadcrumb">
-        <li><a href="{{ route('admin.home') }}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-        <li class="active">@yield('header')</li>
+        {{-- <li><a href="{{ route('admin.home') }}"><i class="fa fa-dashboard"></i> Dashboard</a></li> --}}
+        {{-- <li class="active">@yield('header')</li> --}}
       </ol>
     </section>
 
     <!-- Main content -->
     <section class="content container-fluid">
 
-        
+
         @yield('content')
 
-        
+
     </section>
     <!-- /.content -->
   </div>
@@ -74,7 +74,7 @@ desired effect
 
   <!-- Main Footer -->
   @include('layouts.adminComponents.footer')
-  
+
 
 
 </div>
