@@ -83,3 +83,38 @@ href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&d
     <link rel="stylesheet" href={{ URL::asset('adminPages/v3/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css'); }}>
     <!-- Toastr -->
     <link rel="stylesheet" href={{ URL::asset('adminPages/v3/plugins/toastr/toastr.min.css'); }}>
+
+
+
+    {{-- Custom DataTable Searchbox and buttons alignment --}}
+    <style>
+/* Align the search filter (search box) to the left */
+.dataTables_wrapper .dataTables_filter {
+    float: left;
+    margin-left: 10px;
+}
+
+/* Align the buttons and length dropdown to the right */
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dt-buttons {
+    float: right;
+    margin-left: 10px;
+    margin-bottom: 10px; /* Adjust the bottom margin if needed */
+}
+
+/* Add spacing between the elements */
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter,
+.dataTables_wrapper .dt-buttons {
+    margin-bottom: 10px; /* Adjust spacing between the elements if needed */
+}
+
+/* Clear the float after the elements */
+.dataTables_wrapper:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+
+    </style>

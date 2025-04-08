@@ -42,19 +42,28 @@ class admin_PatientCtr extends Controller
             $start = $request->input('start');
             $length = $request->input('length');
             $searchValue = $request->input('search.value');
+            $orderColumn = $request->input('order.0.column');  // Column index
+            $orderDirection = $request->input('order.0.dir');  // Direction (asc/desc)
 
-            $query = Patient::with('user')->orderBy('userID', 'desc'); // Sort by id in descending order;
+            $columns = ['userID', 'users.name', 'dob', 'gender', 'mobile', 'users.email', 'address']; // Add columns for sorting
 
+            // Start the query and join the user table
+            $query = Patient::with('user')->join('users', 'patients.userID', '=', 'users.id');
+
+            // Apply search filter
             if (!empty($searchValue)) {
                 $query->where(function ($q) use ($searchValue) {
-                    $q->where('dob', 'like', "%{$searchValue}%") // ✅ Search by DOB
+                    $q->where('dob', 'like', "%{$searchValue}%")
                       ->orWhere('mobile', 'like', "%{$searchValue}%")
                       ->orWhere('address', 'like', "%{$searchValue}%")
-                      ->orWhereHas('user', function ($subQuery) use ($searchValue) {
-                          $subQuery->where('name', 'like', "%{$searchValue}%")
-                                   ->orWhere('email', 'like', "%{$searchValue}%");
-                      });
+                      ->orWhere('users.name', 'like', "%{$searchValue}%")
+                      ->orWhere('users.email', 'like', "%{$searchValue}%");
                 });
+            }
+
+            // Apply sorting
+            if (isset($orderColumn) && isset($columns[$orderColumn])) {
+                $query->orderBy($columns[$orderColumn], $orderDirection);
             }
 
             $totalRecords = Patient::count();
@@ -71,12 +80,12 @@ class admin_PatientCtr extends Controller
                     'email' => optional($patient->user)->email ?? 'N/A',
                     'address' => $patient->address,
                     'actions' => '
-                                                <a class="btn btn-warning" type="button" data-toggle="modal" data-target="#branchEditModal-{{$TestData->tid}}" >
-                                <i class="fa fa-pencil" aria-hidden="true"></i>
-                            </a>
-                            <a class="btn btn-danger" type="button" data-toggle="modal" data-target="#branchDeleteModal-{{$TestData->tid}}"  >
-                                <i class="fa fa-trash" aria-hidden="true"></i>
-                            </a>'
+                        <a class="btn btn-warning" type="button" data-toggle="modal" data-target="#branchEditModal-{{$TestData->tid}}">
+                            <i class="fa fa-pencil" aria-hidden="true"></i>
+                        </a>
+                        <a class="btn btn-danger" type="button" data-toggle="modal" data-target="#branchDeleteModal-{{$TestData->tid}}">
+                            <i class="fa fa-trash" aria-hidden="true"></i>
+                        </a>'
                 ];
             });
 
@@ -90,6 +99,8 @@ class admin_PatientCtr extends Controller
 
         return view('Users.Admin.Patients.allPatients');
     }
+
+
 
 
 
