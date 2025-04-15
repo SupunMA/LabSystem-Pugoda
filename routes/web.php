@@ -57,8 +57,11 @@ Route::group(['prefix'=>'Admin','middleware'=>['checkAdmin','auth','lockBack']],
     Route::get('AddPatient', [admin_PatientCtr::class, 'addPatient'])->name('admin.addPatient');
     Route::POST('addingPatient', [RegisterController::class, 'addingPatient'])->name('admin.addingPatient');
     Route::get('AllPatient', [admin_PatientCtr::class, 'allPatient'])->name('admin.allPatient');
-    Route::get('patient/delete/{userID}', [admin_PatientCtr::class, 'deletePatient'])->name('admin.deletePatient');
+    // Route::get('patient/delete/{userID}', [admin_PatientCtr::class, 'deletePatient'])->name('admin.deletePatient');
+    Route::post('patient/delete', [admin_PatientCtr::class, 'deletePatient'])->name('admin.deletePatient');
     Route::post('patient/update', [admin_PatientCtr::class, 'updatePatient'])->name('admin.updatePatient');
+    // Route::get('/patient/{id}', [admin_PatientCtr::class, 'update'])->name('admin.updatePatient');
+
 
     //Doctors
     Route::get('AddDoctor', [admin_DoctorCtr::class, 'addDoctor'])->name('admin.addDoctor');

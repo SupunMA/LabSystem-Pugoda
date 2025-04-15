@@ -1,145 +1,99 @@
-<!-- Edit branch -->
-<div class="modal fade" id="ClientEditModal-{{$UserPatient->pid}}" tabindex="-1" role="dialog"
-    aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+<!-- Edit Modal -->
+<div class="modal fade" id="editPatientModal" tabindex="-1" role="dialog" aria-labelledby="editPatientModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <form id="editPatientForm" action="{{ route('admin.updatePatient') }}"  method="POST">
+        @csrf
         <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title" id="exampleModalCenterTitle">Update Patient<b> {{$UserPatient->user->name}}</b> </h3>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+          <div class="modal-header">
+            <h5 class="modal-title" id="editPatientModalLabel">Edit Patient's Details</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span>&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="edit-id" name="userID">
+            <input type="hidden" id="edit-pid" name="pid">
+            <div class="form-group">
+              <label>Name</label>
+              <input type="text" id="edit-name" name="name" class="form-control">
             </div>
-
-            <form action="{{route('admin.updatePatient')}}" method="post">
-                @csrf
-            <div class="box box-primary">
-       
-                    <!-- /.box-header -->
-                    <!-- form start -->
-                <div class="box-body">
-
-                    <div class="row">
-                        <div class="col-lg-8 col-12">
-                            <div class="form-group">
-                                <label >Name</label>
-                                <input type="name" name="name" value="{{$UserPatient->user->name}}" class="form-control" placeholder="Enter Name">
-                            </div>
-                        </div>
-                    {{-- Gender --}}
-                    
-                        <div class="col-lg-4 col-12">
-                            <div class="form-group">
-                                <label>Gender</label>
-                                
-                                <select class="form-control" style="width: 100%;" name="gender">
-                                    @if ($UserPatient->gender=="M")
-                                    {
-                                        <option value="M" selected="selected">Male</option>
-                                        <option value="F">Female</option>
-                                        <option value="O">Other</option>
-                                    }
-                                    @elseif ($UserPatient->gender=="F")
-                                    {
-                                        <option value="M">Male</option>
-                                        <option value="F" selected="selected">Female</option>
-                                        <option value="O">Other</option>
-                                    }
-                                    @elseif ($UserPatient->gender=="O")
-                                    {
-                                        <option value="M">Male</option>
-                                        <option value="F">Female</option>
-                                        <option value="O" selected="selected">Other</option>
-                                    }
-                                   
-                                    @endif 
-                                    
-                                    
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                        
-
-                    <div class="row">
-                        <!-- Date -->
-                        <div class="col-lg-6 col-12">
-                            <!-- Date dd/mm/yyyy -->
-                            <!-- Date -->
-                            <div class="form-group">
-                                <label>Date of Birth </label>
-
-                                <div class="input-group date">
-                                <div class="input-group-addon">
-                                    <i class="fa fa-calendar"></i>
-                                </div>
-                                <input type="text" value="{{\Carbon\Carbon::parse($UserPatient->dob)->format('m/d/Y')}}" class="form-control pull-right" id="{{$UserPatient->pid}}datepicker" name="dob">
-                                </div>
-                                <!-- /.input group -->
-                            </div>
-                        <!-- /.form group -->
-                        </div>
-
-            
-
-                        {{-- Mobile --}}
-                    
-                        <div class="col-lg-6 col-12">
-                            
-
-                            <!-- phone mask -->
-                            <div class="form-group">
-                                <label>Mobile</label>
-
-                                <div class="input-group">
-                                <div class="input-group-addon">
-                                    <i class="fa fa-phone"></i>
-                                </div>
-                                <input type="text" value="{{$UserPatient->mobile}}" class="form-control" name="mobile" data-inputmask='"mask": "(999) 999-9999"' data-mask>
-                                </div>
-                                <!-- /.input group -->
-                            </div>
-                            <!-- /.form group -->
-
-                        </div>
-                    </div>
-
-                    {{-- address --}}
-                    <div class="row">
-                        <div class="col-lg-6 col-12">
-                            <div class="form-group">
-                                <label>Address</label>
-                                <textarea class="form-control" rows="3" name="address" placeholder="Enter ...">{{$UserPatient->address}}</textarea>
-                         
-                            </div>
-                        </div>
-                    </div>
-
-                    
-                
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-success btn-lg pull-right">Save</button>   
-
-
-                    </div>     
-
-                </div>
-        
-    <input type="hidden" name="pid" value="{{$UserPatient->pid}}">
-    <input type="hidden" name="id" value="{{$UserPatient->user->id}}">
-    <!-- /.box -->
+            <div class="form-group">
+              <label>Date of Birth</label>
+              <input type="date" id="edit-dob" name="dob" class="form-control">
             </div>
-            </form>
-
+            <div class="form-group">
+              <label>Gender</label>
+              <select id="edit-gender" name="gender" class="form-control">
+                <option value="M">Male</option>
+                <option value="F">Female</option>
+                <option value="O">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Mobile</label>
+              <input type="text" id="edit-mobile" name="mobile" class="form-control">
+            </div>
+            {{-- <div class="form-group">
+              <label>Email</label>
+              <input type="email" id="edit-email" name="email" class="form-control">
+            </div> --}}
+            <div class="form-group">
+              <label>Address</label>
+              <textarea id="edit-address" name="address" class="form-control"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Save changes</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          </div>
         </div>
+      </form>
     </div>
-</div>
+  </div>
 
 
-@push('specificJs')
-    <script>
-    //Date picker
-    $('#{{$UserPatient->pid}}datepicker').datepicker({
-        autoclose: true
-    })
-    </script>
-@endpush
+  @push('specificJs')
+  <script>
+        //Update Patient
+    // AJAX Submit for Update
+    $('#editPatientForm').submit(function (e) {
+    e.preventDefault();
+
+    const $btn = $('#editPatientForm button[type="submit"]');
+    const originalBtnText = $btn.html();
+    $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Saving...');
+
+    // Clear old errors
+    $('#editPatientForm .is-invalid').removeClass('is-invalid');
+    $('#editPatientForm .invalid-feedback').remove();
+
+    $.ajax({
+      url: "{{ route('admin.updatePatient') }}",
+      type: 'POST',
+      data: $(this).serialize(),
+      success: function (response) {
+        $('#editPatientModal').modal('hide');
+        $('#patientsTable').DataTable().ajax.reload(null, false);
+        toastr.success(response.message || 'Updated successfully');
+      },
+      error: function (xhr) {
+        if (xhr.status === 422 && xhr.responseJSON.errors) {
+          const errors = xhr.responseJSON.errors;
+          // Loop through each field error
+          $.each(errors, function (key, messages) {
+            const input = $('#editPatientForm [name="' + key + '"]');
+            input.addClass('is-invalid');
+            input.after('<div class="invalid-feedback">' + messages[0] + '</div>');
+          });
+        } else {
+          toastr.error('Something went wrong!');
+        }
+      },
+      complete: function () {
+        $btn.prop('disabled', false).html(originalBtnText);
+      }
+    });
+  });
+  </script>
+
+  @endpush

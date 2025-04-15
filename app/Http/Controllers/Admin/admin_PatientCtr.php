@@ -80,12 +80,23 @@ class admin_PatientCtr extends Controller
                     'email' => optional($patient->user)->email ?? 'N/A',
                     'address' => $patient->address,
                     'actions' => '
-                        <a class="btn btn-warning" type="button" data-toggle="modal" data-target="#branchEditModal-{{$TestData->tid}}">
-                            <i class="fa fa-pencil" aria-hidden="true"></i>
-                        </a>
-                        <a class="btn btn-danger" type="button" data-toggle="modal" data-target="#branchDeleteModal-{{$TestData->tid}}">
-                            <i class="fa fa-trash" aria-hidden="true"></i>
-                        </a>'
+                                <button
+                                    class="btn btn-warning editBtn"
+                                    data-id="' . $patient->userID . '"
+                                    data-pid="' . $patient->pid . '"
+                                    data-name="' . e(optional($patient->user)->name) . '"
+                                    data-dob="' . e($patient->dob) . '"
+                                    data-gender="' . e($patient->gender) . '"
+                                    data-mobile="' . e($patient->mobile) . '"
+                                    data-email="' . e(optional($patient->user)->email) . '"
+                                    data-address="' . e($patient->address) . '">
+                                    <i class="fa fa-pencil"></i>
+                                </button>
+                                <button
+                                    class="btn btn-danger deleteBtn"
+                                    data-id="' . $patient->userID . '">
+                                    <i class="fa fa-trash"></i>
+                                </button>'
                 ];
             });
 
@@ -103,53 +114,61 @@ class admin_PatientCtr extends Controller
 
 
 
-
-
-    public function deletePatient($userID)
+    public function deletePatient(Request $request)
     {
-        //Delete patient data from user,patient,test tables
-        $patient = Patient::where('userID', $userID)->first();
-        $testPatient = Test::where('pid', $patient->pid)->delete();
-        $userPatient = User::find($userID);
+        try {
+            $patient = Patient::where('userID', $request->pid)->first();
 
+            if (!$patient) {
+                return response()->json(['error' => 'Patient not found'], 404);
+            }
 
-        $userPatient->delete();
-        $patient->delete();
+            // Delete tests related to patient
+            Test::where('pid', $patient->pid)->delete();
 
+            // Delete user
+            $user = User::find($request->pid);
+            if ($user) {
+                $user->delete();
+            }
 
-        return redirect()->back()->with('message','Deleted Successfully');
+            // Delete patient
+            $patient->delete();
+
+            return response()->json(['success' => true, 'message' => 'Deleted successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Something went wrong!'], 500);
+        }
     }
 
     public function updatePatient(Request $request)
     {
-
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'gender' => ['required', 'string', 'in:M,F,O'],
             'dob' => ['required', 'string', 'date','before:-1 years'],
-            'mobile' =>['string',Rule::unique('patients', 'mobile')->ignore($request->pid, 'pid')],
-            'address' =>['string']
+            'mobile' => ['string', Rule::unique('patients', 'mobile')->ignore($request->pid, 'pid')],
+            'address' => ['string']
         ]);
-        //change the date format
-        $formattedDate = Carbon::createFromFormat('m/d/Y', $request->dob)->format('Y-m-d');
 
-        Patient::where('pid', $request->pid)
-        ->update([
+        try {
+            Patient::where('pid', $request->pid)
+                ->update([
                     'mobile' => $request->mobile,
                     'address' => $request->address,
-                    'gender'=> $request->gender,
-                    'dob'=> $formattedDate
-
+                    'gender' => $request->gender,
+                    'dob' => $request->dob
                 ]);
 
-        User::where('id', $request->id)
-        ->update([
-                    'name' => $request->name,
-
+            User::where('id', $request->userID)
+                ->update([
+                    'name' => $request->name
                 ]);
 
-        return redirect()->back()->with('message','Updated Successfully!');
-
+            return response()->json(['success' => true, 'message' => 'Patient updated successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'error' => 'Update failed!'], 500);
+        }
     }
 
 
