@@ -2,9 +2,7 @@
 
 <div class="col-lg-6">
     <div class="box box-primary">
-        <div class="box-header with-border">
-            <h3 class="box-title">New Patient's Details</h3>
-        </div>
+
         <!-- /.box-header -->
         <!-- form start -->
         <div class="box-body">
@@ -39,15 +37,12 @@
                 <div class="col-lg-6 col-12">
                     <!-- Date dd/mm/yyyy -->
                     <!-- Date -->
+
+
+
                     <div class="form-group">
                         <label>Date of Birth (M/D/Y)</label>
-
-                        <div class="input-group date" id="reservationdate" data-target-input="nearest">
-                            <input type="text" class="form-control datetimepicker-input" data-target="#reservationdate" name="dob">
-                            <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
-                                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                            </div>
-                        </div>
+                        <input type="date" id="edit-dob" name="dob" class="form-control">
                     </div>
 
 
@@ -111,11 +106,85 @@
 
 @push('specificJs')
 
-  <script>
-    //Date picker
-    $('#datepicker').datepicker({
-      autoclose: true
-    })
-  </script>
+
+
+<script>
+    $(document).ready(function () {
+        $('#name').on('input', function () {
+            let name = $(this).val();
+            if (name.length < 3) {
+                $(this).addClass('is-invalid');
+            } else {
+                $(this).removeClass('is-invalid');
+            }
+        });
+
+        $('#email').on('input', function () {
+            let email = $(this).val();
+            let regex = /^\S+@\S+\.\S+$/;
+            if (!regex.test(email)) {
+                $(this).addClass('is-invalid');
+            } else {
+                $(this).removeClass('is-invalid');
+            }
+        });
+
+        $('#password').on('input', function () {
+            if ($(this).val().length < 8) {
+                $(this).addClass('is-invalid');
+            } else {
+                $(this).removeClass('is-invalid');
+            }
+        });
+
+        $('#password-confirm').on('input', function () {
+            if ($(this).val() !== $('#password').val()) {
+                $(this).addClass('is-invalid');
+            } else {
+                $(this).removeClass('is-invalid');
+            }
+        });
+    });
+</script>
+
+<script>
+    $('#patient-form').on('submit', function (e) {
+        e.preventDefault(); // Prevent default form submission
+
+        let formData = new FormData(this);
+
+        $.ajax({
+            type: "POST",
+            url: "{{ route('admin.addingPatient') }}",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+            toastr.success('Patient added successfully!', 'Success');
+            $('#patient-form')[0].reset();
+            $('.is-invalid').removeClass('is-invalid');
+        },
+            error: function (xhr) {
+            if (xhr.status === 422) {
+                let errors = xhr.responseJSON.errors;
+                $.each(errors, function (key, value) {
+                    $(`[name="${key}"]`).addClass('is-invalid');
+                    toastr.error(value[0], 'Validation Error');
+                });
+            } else {
+                toastr.error('Something went wrong. Please try again.', 'Error');
+            }
+        }
+        });
+    });
+
+    toastr.options = {
+  "closeButton": true,
+  "progressBar": true,
+  "positionClass": "toast-top-right",
+  "timeOut": "8000"
+};
+
+</script>
 
 @endpush

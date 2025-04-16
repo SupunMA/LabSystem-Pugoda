@@ -1,16 +1,13 @@
  <!-- This form included into addClient Blade -->
- 
+
  {{-- Start of Second Card --}}
 
 <div class="col-lg-6">
     <div class="box box-primary">
-        <div class="box-header with-border">
-            <h3 class="box-title">Logging Password</h3>
-        </div>
-    
+
         <!-- /.card-header -->
         <!-- form start -->
-        
+
         <div class="box-body">
 
             <div class="row">
@@ -22,10 +19,10 @@
                 </div>
 
 
-            
-                
+
+
             </div>
-            
+
             <div class="row">
                 <div class="col-lg-6 col-12">
                     <div class="form-group">
@@ -40,7 +37,7 @@
                         <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
                     </div>
                 </div>
-                
+
             </div>
 
             <small class="form-text text-muted">Minimum Password Length is 8 characters!</small>
@@ -52,7 +49,7 @@
                     </button>
                 </div>
             </div>
-        
+
         </div>
     </div>
 </div>

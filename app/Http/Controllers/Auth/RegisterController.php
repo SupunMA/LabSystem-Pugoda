@@ -73,7 +73,7 @@ class RegisterController extends Controller
      * @param  array  $data
      * @return \App\Models\User
      */
-    
+
 
 
 
@@ -82,7 +82,7 @@ class RegisterController extends Controller
 
     function addingClient(Request $request)
     {
-        
+
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['string', 'email', 'max:255', 'unique:users'],
@@ -92,7 +92,7 @@ class RegisterController extends Controller
         $user = new User();
         $user->name = $request->name;
         $user->email = $request->email;
-        
+
         $user->password = \Hash::make($request->password);
         $user->role = $request->role;
 
@@ -123,14 +123,14 @@ class RegisterController extends Controller
 
         $user->name = $request->name;
         $user->email = $request->email;
-        
+
         $user->password = \Hash::make($request->password);
         $user->role = $request->role;
 
         $patient = new Patient();
         $patient->mobile = $request->mobile;
        //change the date format
-        $formattedDate = Carbon::createFromFormat('m/d/Y', $request->dob)->format('Y-m-d');
+        $formattedDate = Carbon::parse($request->dob)->format('Y-m-d');
         $patient->dob =  $formattedDate;
         $patient->gender = $request->gender;
         $patient->address = $request->address;
@@ -147,11 +147,11 @@ class RegisterController extends Controller
                 return "No users found.";
             }
 
-        
-        
+
+
 
         if( $user->save() &&  $patient->save()){
-            return redirect()->back()->with('message','Patient was Added Successfully');
+            return response()->json(['success' => true, 'message' => 'Patient added successfully']);
         }else{
             //return redirect()->back()->with('message','Failed');
         }
@@ -163,7 +163,7 @@ class RegisterController extends Controller
 
     function addingDoctor(Request $request)
     {
-        
+
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'gender' => ['required', 'string', 'in:M,F,O'],
@@ -178,7 +178,7 @@ class RegisterController extends Controller
 
         $user->name = $request->name;
         $user->email = $request->email;
-        
+
         $user->password = \Hash::make($request->password);
         $user->role = $request->role;
 
@@ -198,7 +198,7 @@ class RegisterController extends Controller
                 return "No users found.";
             }
 
-        
+
 
         if( $user->save() &&  $doctor->save()){
             return redirect()->back()->with('message','Doctor was Added Successfully');

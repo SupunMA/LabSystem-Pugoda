@@ -147,7 +147,7 @@ class admin_PatientCtr extends Controller
             'name' => ['required', 'string', 'max:255'],
             'gender' => ['required', 'string', 'in:M,F,O'],
             'dob' => ['required', 'string', 'date','before:-1 years'],
-            'mobile' => ['string', Rule::unique('patients', 'mobile')->ignore($request->pid, 'pid')],
+            'mobile' => ['string', Rule::unique('patients', 'mobile')->ignore($request->pid, 'pid'),'required'],
             'address' => ['string']
         ]);
 

@@ -13,7 +13,7 @@
             {{ session('message') }}
         </div>
     @endif
-    <form action="{{route('admin.addingPatient')}}" method="post">
+    <form id="patient-form" method="POST">
         @csrf
         <div class="row">
 
@@ -22,7 +22,7 @@
 
             {{-- Client Password form --}}
             @include('Users.Admin.Patients.components.PatientPWD')
-            
+
 
         </div>
     </form>
