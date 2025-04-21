@@ -55,6 +55,7 @@ class admin_PatientCtr extends Controller
                 $query->where(function ($q) use ($searchValue) {
                     $q->where('dob', 'like', "%{$searchValue}%")
                       ->orWhere('mobile', 'like', "%{$searchValue}%")
+                      ->orWhere('pid', 'like', "%{$searchValue}%")
                       ->orWhere('address', 'like', "%{$searchValue}%")
                       ->orWhere('users.name', 'like', "%{$searchValue}%")
                       ->orWhere('users.nic', 'like', "%{$searchValue}%")
