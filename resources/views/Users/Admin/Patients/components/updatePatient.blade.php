@@ -18,6 +18,10 @@
               <input type="text" id="edit-name" name="name" class="form-control">
             </div>
             <div class="form-group">
+                <label>NIC</label>
+                <input type="text" id="edit-nic" name="nic" class="form-control">
+              </div>
+            <div class="form-group">
               <label>Date of Birth (M/D/Y)</label>
               <input type="date" id="edit-dob" name="dob" class="form-control">
             </div>

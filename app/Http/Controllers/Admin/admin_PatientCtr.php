@@ -45,7 +45,7 @@ class admin_PatientCtr extends Controller
             $orderColumn = $request->input('order.0.column');  // Column index
             $orderDirection = $request->input('order.0.dir');  // Direction (asc/desc)
 
-            $columns = ['userID', 'users.name', 'dob', 'gender', 'mobile', 'users.email', 'address']; // Add columns for sorting
+            $columns = ['pid', 'users.name', 'users.nic','dob', 'gender', 'mobile', 'users.email', 'address']; // Add columns for sorting
 
             // Start the query and join the user table
             $query = Patient::with('user')->join('users', 'patients.userID', '=', 'users.id');
@@ -57,6 +57,7 @@ class admin_PatientCtr extends Controller
                       ->orWhere('mobile', 'like', "%{$searchValue}%")
                       ->orWhere('address', 'like', "%{$searchValue}%")
                       ->orWhere('users.name', 'like', "%{$searchValue}%")
+                      ->orWhere('users.nic', 'like', "%{$searchValue}%")
                       ->orWhere('users.email', 'like', "%{$searchValue}%");
                 });
             }
@@ -72,8 +73,9 @@ class admin_PatientCtr extends Controller
 
             $data = $patients->map(function ($patient) {
                 return [
-                    'id' => optional($patient->user)->id ?? 'N/A',
+                    'id' => $patient->pid,
                     'name' => optional($patient->user)->name ?? 'N/A',
+                    'nic' => optional($patient->user)->nic ?? 'N/A',
                     'dob' => $patient->dob,
                     'gender' => $patient->gender === 'M' ? 'Male' : ($patient->gender === 'F' ? 'Female' : 'Other'),
                     'mobile' => $patient->mobile,
@@ -85,6 +87,7 @@ class admin_PatientCtr extends Controller
                                     data-id="' . $patient->userID . '"
                                     data-pid="' . $patient->pid . '"
                                     data-name="' . e(optional($patient->user)->name) . '"
+                                    data-nic="' . e(optional($patient->user)->nic) . '"
                                     data-dob="' . e($patient->dob) . '"
                                     data-gender="' . e($patient->gender) . '"
                                     data-mobile="' . e($patient->mobile) . '"
@@ -145,6 +148,7 @@ class admin_PatientCtr extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'nic' => ['required', 'regex:/^(\d{9}[Vv]|\d{12})$/',Rule::unique('users', 'nic')->ignore($request->userID, 'id')],
             'gender' => ['required', 'string', 'in:M,F,O'],
             'dob' => ['required', 'string', 'date','before:-1 years'],
             'mobile' => ['string', Rule::unique('patients', 'mobile')->ignore($request->pid, 'pid'),'required'],
@@ -162,7 +166,8 @@ class admin_PatientCtr extends Controller
 
             User::where('id', $request->userID)
                 ->update([
-                    'name' => $request->name
+                    'name' => $request->name,
+                    'nic' => $request->nic
                 ]);
 
             return response()->json(['success' => true, 'message' => 'Patient updated successfully']);

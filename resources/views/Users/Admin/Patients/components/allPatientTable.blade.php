@@ -15,6 +15,7 @@
                 <tr>
                     <th>ID</th>
                     <th>Name</th>
+                    <th>NIC</th>
                     <th>Date of Birth</th>
                     <th>Gender</th>
                     <th>Mobile</th>
@@ -30,6 +31,7 @@
                 <tr>
                     <th>ID</th>
                     <th>Name</th>
+                    <th>NIC</th>
                     <th>Date of Birth</th>
                     <th>Gender</th>
                     <th>Mobile</th>
@@ -62,6 +64,7 @@
     $('#edit-id').val(btn.data('id'));
     $('#edit-pid').val(btn.data('pid'));
     $('#edit-name').val(btn.data('name'));
+    $('#edit-nic').val(btn.data('nic'));
     $('#edit-dob').val(btn.data('dob'));
     $('#edit-gender').val(btn.data('gender'));
     $('#edit-mobile').val(btn.data('mobile'));
@@ -104,6 +107,7 @@
             columns: [
                 { data: 'id' },
                 { data: 'name' },
+                { data: 'nic' },
                 { data: 'dob' },
                 { data: 'gender' },
                 { data: 'mobile' },
