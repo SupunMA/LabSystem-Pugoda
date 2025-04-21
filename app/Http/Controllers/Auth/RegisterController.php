@@ -112,7 +112,8 @@ class RegisterController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'gender' => ['required', 'string', 'in:M,F,O'],
             'dob' => ['required', 'string', 'date','before:-1 years'],
-            'email' => ['string', 'email', 'max:255', 'unique:users'],
+          'email' => ['nullable', 'email', 'max:255', 'unique:users'],
+            'nic' => ['required', 'regex:/^(\d{9}[Vv]|\d{12})$/', 'unique:users','max:15',],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'mobile' =>['string','unique:patients'],
             'address' =>['string']
@@ -123,6 +124,7 @@ class RegisterController extends Controller
 
         $user->name = $request->name;
         $user->email = $request->email;
+        $user->nic = $request->nic;
 
         $user->password = \Hash::make($request->password);
         $user->role = $request->role;

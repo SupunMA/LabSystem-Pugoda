@@ -13,8 +13,14 @@
             <div class="row">
                 <div class="col-lg-6 col-12">
                     <div class="form-group">
+                        <label >NIC Number</label>
+                        <input type="text" class="form-control" name="nic" placeholder="National Identity Card Number">
+                    </div>
+                </div>
+                <div class="col-lg-6 col-12">
+                    <div class="form-group">
                         <label >Email Address</label>
-                        <input type="email" class="form-control" name="email" placeholder="Email Address">
+                        <input type="email" class="form-control" name="email" placeholder="Email (Optional)">
                     </div>
                 </div>
 
