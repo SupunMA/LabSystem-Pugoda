@@ -28,10 +28,11 @@ class User extends Authenticatable
          return $this->hasOne(Doctor::class, 'userID');
      }
 
-     
+
 
     protected $fillable = [
         'name',
+        'nic',
         'email',
         'role',
         'password',

@@ -58,11 +58,12 @@ class LoginController extends Controller
         $input = $request->all();
 
         $this->validate($request,[
-            'email' => 'required',
-            'password' => 'required',
+            // 'email' => 'required',
+            'nic' => ['required', 'regex:/^(\d{9}[Vv]|\d{12})$/'],
+            'password' => 'required|string',
         ]);
 
-        if(auth()->attempt(array('email' => $input['email'],
+        if(auth()->attempt(array('nic' => $input['nic'],
         'password' => $input['password'])))
         {
 
@@ -77,7 +78,7 @@ class LoginController extends Controller
             }
 
         }else{
-            return redirect()->route('login')->with('message','Email or Password is Wrong!. Try again');
+            return redirect()->route('login')->with('message','NIC or Password is Wrong!. Try again');
 
         }
     }
