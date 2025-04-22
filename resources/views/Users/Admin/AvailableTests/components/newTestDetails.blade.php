@@ -1,78 +1,54 @@
-
-
+{{--
 <div class="col-lg-10 ">
     @include('Users.Admin.messages.addMsg')
     <div class="box box-primary">
         <div class="box-header with-border">
             <h3 class="box-title">Available Test's Details</h3>
         </div>
-        <!-- /.box-header -->
-        <!-- form start -->
         <div class="box-body">
-
-<form action="{{ route('admin.addingAvailableTest') }}" method="post">
+            <form action="{{ route('admin.addingAvailableTest') }}" method="post">
                 @csrf
-            <div class="row">
-                <div class="col-lg-6 col-12">
-                    <div class="form-group">
-                        <label>Test Name</label>
-                        <input type="text" name="AvailableTestName" class="form-control"  placeholder="Enter Name">
-                    </div>
-                </div>
-            {{-- Gender --}}
-
-                <div class="col-lg-3 col-12">
-                    <div class="form-group">
-                        <label>Days</label>
-
-                        <input type="number" name="resultDays" class="form-control" placeholder="How Long Does It Take?">
-                    </div>
-                </div>
-
-
-                <div class="col-lg-3 col-12">
-                    <div class="form-group">
-                        <label>Cost</label>
-
-                        <input type="number" name="AvailableTestCost" class="form-control" placeholder="Cost for the test">
-                    </div>
-                </div>
-
-
-
-                <div class="col-lg-11">
-                    <div class="box box-success">
-                        <div class="box-header with-border">
-                            <h3 class="box-title">Sub Categories</h3>
+                <div class="row">
+                    <div class="col-lg-6 col-12">
+                        <div class="form-group">
+                            <label>Test Name</label>
+                            <input type="text" name="AvailableTestName" class="form-control" placeholder="Enter Name">
                         </div>
-                        <!-- /.box-header -->
-                        <!-- form start -->
-                        <div class="box-body" id="input-container">
-
-
-
-
-                        </div>
-                        <button type="button" id="add-input" class="btn btn-success  float-right">Add Sub-Category</button>
                     </div>
-                    <!-- /.box -->
+                    <div class="col-lg-3 col-12">
+                        <div class="form-group">
+                            <label>Days</label>
+                            <input type="number" name="resultDays" class="form-control" placeholder="How Long Does It Take?">
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-12">
+                        <div class="form-group">
+                            <label>Cost</label>
+                            <input type="number" name="AvailableTestCost" class="form-control" placeholder="Cost for the test">
+                        </div>
+                    </div>
+                    <div class="col-lg-11">
+                        <div class="box box-success">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">Sub Categories</h3>
+                            </div>
+                            <div class="box-body" id="input-container">
+                            </div>
+                            <button type="button" id="add-input" class="btn btn-success float-right">Add Sub-Category</button>
+                        </div>
+                    </div>
                 </div>
-
-            </div>
-
-            <div class="box-footer">
-                <div class="form-group pull-right">
-                    <small class="form-text text-muted text-right">Please check details again.</small><br>
-                    <button type="submit" class="btn btn-danger  float-right"><b>&nbsp; Save All&nbsp;</b>
-                    </button>
+                <div class="box-footer">
+                    <div class="form-group pull-right">
+                        <small class="form-text text-muted text-right">Please check details again.</small><br>
+                        <button type="submit" class="btn btn-danger float-right"><b>&nbsp; Save All&nbsp;</b></button>
+                    </div>
                 </div>
-            </div>
-
- </form>
+            </form>
         </div>
     </div>
-    <!-- /.box -->
 </div>
+--}}
 
 
 
@@ -81,26 +57,52 @@
 
 
 
-<div class="container-fluid">
-    <div id="tests-container">
-      <div class="card test-block">
-        <div class="card-body">
-          <div class="form-group">
-            <label>Test Name</label>
-            <input type="text" name="tests[0][name]" class="form-control test-name" />
+
+
+<div class="container col-lg-12 col-sm-12">
+    <div id="tests-container ">
+      <div class="test-block">
+        <div class="mb-3 col-lg-8">
+          <label class="form-label">Test Name</label>
+          <input type="text" name="tests[0][name]" class="form-control test-name" />
+        </div>
+        <div class="row mb-3">
+          <div class="col col-lg-4">
+            <label class="form-label">Cost</label>
+            <input type="number" name="tests[0][cost]" class="form-control" />
           </div>
-          <div class="categories-container"></div>
-          <div class="btn-group mt-3">
-            <button type="button" class="btn btn-primary add-category"><i class="fas fa-plus"></i> Add Category</button>
-            <button type="button" class="btn btn-outline-secondary add-space">Add Space</button>
-            <button type="button" class="btn btn-outline-secondary add-title">Add Title</button>
-            <button type="button" class="btn btn-outline-secondary add-paragraph">Add Paragraph</button>
+          <div class="col col-lg-4">
+            <label class="form-label">Price</label>
+            <input type="number" name="tests[0][price]" class="form-control" />
           </div>
+        </div>
+        <div class="categories-container"></div>
+        <div class="button-group mt-2">
+            <button type="button" class="btn btn-primary add-category mb-1">
+                <i class="fas fa-folder-plus me-1"></i> Add Category
+              </button>
+
+              <button type="button" class="btn btn-secondary add-space mb-1">
+                <i class="fas fa-arrows-alt-v me-1"></i> Add Space
+              </button>
+
+              <button type="button" class="btn btn-secondary add-title mb-1">
+                <i class="fas fa-heading me-1"></i> Add Title
+              </button>
+
+              <button type="button" class="btn btn-secondary add-paragraph mb-1">
+                <i class="fas fa-align-left me-1"></i> Add Paragraph
+              </button>
         </div>
       </div>
     </div>
 
-    <button type="button" id="add-test" class="btn btn-dark mt-3"><i class="fas fa-plus-circle"></i> Add New Test</button>
+    <div class="d-flex justify-content-end mb-4">
+        <button type="submit" id="save-tests" class="btn btn-success">
+            <i class="fas fa-save me-1"></i> Save Test Data
+        </button>
+    </div>
+
   </div>
 
 
@@ -111,17 +113,13 @@
 
 <style>
     .test-block, .category-block {
-      margin-bottom: 1.5rem;
-    }
-    .category-block {
-      background: #f4f6f9;
+      border: 2px solid #dee2e6;
       padding: 20px;
-      border-radius: 8px;
-      border: 1px solid #dee2e6;
+      margin-bottom: 20px;
+      border-radius: 10px;
     }
-    table input {
-      width: 100%;
-    }
+    .category-block { background-color: #f8f9fa; }
+    table input { width: 100%; }
   </style>
 @endpush
 
@@ -140,9 +138,9 @@
 
     function getUnitDropdown(name) {
       return `
-        <div class="form-group">
-          <label>Unit</label>
-          <select name="${name}" class="form-control">
+        <div class="mb-3">
+          <label class="form-label">Unit</label>
+          <select name="${name}" class="form-select form-control">
             <option value="">--Select Unit--</option>
             <option value="mg/dL">mg/dL</option>
             <option value="mmol/L">mmol/L</option>
@@ -154,70 +152,65 @@
     function addCategoryHTML(testIdx, catIdx) {
       return `
       <div class="category-block mt-4">
-        <div class="form-group">
-          <label>Category Name</label>
+        <div class="mb-3">
+          <label class="form-label">Category Name</label>
           <input type="text" name="tests[${testIdx}][categories][${catIdx}][name]" class="form-control" />
         </div>
 
-        <div class="form-group">
-          <label>Value Type</label>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="tests[${testIdx}][categories][${catIdx}][value_type]" value="range" checked>
-            <label class="form-check-label">Range</label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="tests[${testIdx}][categories][${catIdx}][value_type]" value="text">
-            <label class="form-check-label">Text</label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="tests[${testIdx}][categories][${catIdx}][value_type]" value="yesno">
-            <label class="form-check-label">Yes / No</label>
+        <div class="mb-3">
+          <label class="form-label">Result Type</label>
+          <div>
+            <div class="form-check">
+              <label class="form-check-label">
+                  <input class="form-check-input" type="radio" name="tests[${testIdx}][categories][${catIdx}][value_type]" value="range" checked>
+                  Range
+              </label>
+            </div>
+            <div class="form-check">
+              <label class="form-check-label">
+                  <input class="form-check-input" type="radio" name="tests[${testIdx}][categories][${catIdx}][value_type]" value="text">
+                  Text
+              </label>
+            </div>
+            <div class="form-check">
+              <label class="form-check-label">
+                  <input class="form-check-input" type="radio" name="tests[${testIdx}][categories][${catIdx}][value_type]" value="negpos">
+                  Negative / Positive
+              </label>
+            </div>
           </div>
           <div class="value-type-extra mt-3">${getUnitDropdown(`tests[${testIdx}][categories][${catIdx}][unit]`)}</div>
         </div>
 
-        <div class="form-group">
-          <label>Reference Range</label>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="tests[${testIdx}][categories][${catIdx}][reference_type]" value="none" checked>
-            <label class="form-check-label">None</label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="tests[${testIdx}][categories][${catIdx}][reference_type]" value="minmax">
-            <label class="form-check-label">Min - Max</label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="tests[${testIdx}][categories][${catIdx}][reference_type]" value="table">
-            <label class="form-check-label">Ranges Table</label>
+        <div class="mb-3">
+          <label class="form-label">Reference Range</label>
+          <div>
+            <div class="form-check">
+              <label class="form-check-label">
+                  <input class="form-check-input" type="radio" name="tests[${testIdx}][categories][${catIdx}][reference_type]" value="none" checked>
+                  None
+              </label>
+            </div>
+            <div class="form-check">
+              <label class="form-check-label">
+                  <input class="form-check-input" type="radio" name="tests[${testIdx}][categories][${catIdx}][reference_type]" value="minmax">
+                  Min - Max
+              </label>
+            </div>
+            <div class="form-check">
+              <label class="form-check-label">
+                  <input class="form-check-input" type="radio" name="tests[${testIdx}][categories][${catIdx}][reference_type]" value="table">
+                  Ranges Table
+              </label>
+            </div>
           </div>
           <div class="reference-extra mt-3"></div>
         </div>
 
-        <button type="button" class="btn btn-danger remove-category"><i class="fas fa-trash"></i> Remove Category</button>
+        <button type="button" class="btn btn-danger remove-category">Remove Category</button>
       </div>`;
     }
 
-    document.getElementById('add-test').addEventListener('click', function () {
-      testIndex++;
-      const testHTML = `
-        <div class="card test-block">
-          <div class="card-body">
-            <div class="form-group">
-              <label>Test Name</label>
-              <input type="text" name="tests[${testIndex}][name]" class="form-control test-name" />
-            </div>
-            <div class="categories-container"></div>
-            <div class="btn-group mt-3">
-              <button type="button" class="btn btn-primary add-category"><i class="fas fa-plus"></i> Add Category</button>
-              <button type="button" class="btn btn-outline-secondary add-space">Add Space</button>
-              <button type="button" class="btn btn-outline-secondary add-title">Add Title</button>
-              <button type="button" class="btn btn-outline-secondary add-paragraph">Add Paragraph</button>
-            </div>
-            <button type="button" class="btn btn-danger remove-test mt-3"><i class="fas fa-trash-alt"></i> Remove Test</button>
-          </div>
-        </div>`;
-      document.getElementById('tests-container').insertAdjacentHTML('beforeend', testHTML);
-    });
 
     document.addEventListener('click', function (e) {
       if (e.target.classList.contains('add-category')) {
@@ -236,28 +229,42 @@
         e.target.closest('.test-block').remove();
       }
 
+      if (e.target.classList.contains('remove-block')) {
+          e.target.closest('.space-block, .title-block, .paragraph-block').remove();
+      }
+
       const testBlock = e.target.closest('.test-block');
       if (!testBlock) return;
       const categoriesContainer = testBlock.querySelector('.categories-container');
 
       if (e.target.classList.contains('add-space')) {
-        categoriesContainer.insertAdjacentHTML('beforeend', `<hr class="my-4">`);
+          categoriesContainer.insertAdjacentHTML('beforeend', `
+          <div class="space-block my-4">
+              <hr />
+              <button type="button" class="btn btn-sm btn-danger mt-1 remove-block">Remove Space</button>
+          </div>
+          `);
+
       }
 
       if (e.target.classList.contains('add-title')) {
-        categoriesContainer.insertAdjacentHTML('beforeend', `
-          <div class="form-group">
-            <label>Custom Title</label>
-            <input type="text" name="custom_title[]" class="form-control" />
-          </div>`);
+          categoriesContainer.insertAdjacentHTML('beforeend', `
+          <div class="title-block mb-3">
+              <label class="form-label">Custom Title</label>
+              <input type="text" name="custom_title[]" class="form-control" />
+              <button type="button" class="btn btn-sm btn-danger mt-1 remove-block">Remove Title</button>
+          </div>
+          `);
       }
 
       if (e.target.classList.contains('add-paragraph')) {
-        categoriesContainer.insertAdjacentHTML('beforeend', `
-          <div class="form-group">
-            <label>Custom Paragraph</label>
-            <textarea name="custom_paragraph[]" class="form-control" rows="3"></textarea>
-          </div>`);
+          categoriesContainer.insertAdjacentHTML('beforeend', `
+          <div class="paragraph-block mb-3">
+              <label class="form-label">Custom Paragraph</label>
+              <textarea name="custom_paragraph[]" class="form-control" rows="3"></textarea>
+              <button type="button" class="btn btn-sm btn-danger mt-1 remove-block">Remove Paragraph</button>
+          </div>
+          `);
       }
 
       if (e.target.classList.contains('generate-table')) {
@@ -287,6 +294,7 @@
           }
           tableHTML += '</tr>';
         }
+        tableHTML += '</table>';
         tableArea.innerHTML = tableHTML;
       }
     });
@@ -307,27 +315,27 @@
         const extraDiv = block.querySelector('.reference-extra');
         if (e.target.value === 'minmax') {
           extraDiv.innerHTML = `
-            <div class="form-group">
-              <label>Min Value</label>
+            <div class="mb-3">
+              <label class="form-label">Min Value</label>
               <input type="text" name="min_value" class="form-control" />
             </div>
-            <div class="form-group">
-              <label>Max Value</label>
+            <div class="mb-3">
+              <label class="form-label">Max Value</label>
               <input type="text" name="max_value" class="form-control" />
             </div>
             ${getUnitDropdown("range_unit")}`;
         } else if (e.target.value === 'table') {
           extraDiv.innerHTML = `
-            <div class="row">
-              <div class="col-md-3">
-                <label>Rows</label>
+            <div class="row g-2 align-items-end">
+              <div class="col-auto">
+                <label class="form-label">Rows</label>
                 <input type="number" class="form-control table-rows" value="2" min="1" />
               </div>
-              <div class="col-md-3">
-                <label>Columns</label>
+              <div class="col-auto">
+                <label class="form-label">Columns</label>
                 <input type="number" class="form-control table-cols" value="2" min="1" />
               </div>
-              <div class="col-md-4 d-flex align-items-end">
+              <div class="col-auto">
                 <button type="button" class="btn btn-outline-secondary generate-table">Generate Table</button>
               </div>
             </div>
@@ -337,6 +345,10 @@
         }
       }
     });
+
+      document.getElementById('save-test').addEventListener('click', function () {
+          alert('Test data saved! (You can add your form submission logic here)');
+      });
   </script>
 
 

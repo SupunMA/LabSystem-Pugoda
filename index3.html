@@ -44,7 +44,8 @@
     </div>
   </div>
 
-  <button type="button" id="add-test" class="btn btn-dark">Add New Test</button>
+  <button type="button" id="save-test" class="btn btn-success">Save Test Data</button>
+
 </div>
 
 <script>
@@ -125,35 +126,6 @@
     </div>`;
   }
 
-  document.getElementById('add-test').addEventListener('click', function () {
-    testIndex++;
-    const testHTML = `
-      <div class="test-block">
-        <div class="mb-3">
-          <label class="form-label">Test Name</label>
-          <input type="text" name="tests[${testIndex}][name]" class="form-control test-name" />
-        </div>
-        <div class="row mb-3">
-          <div class="col">
-            <label class="form-label">Cost</label>
-            <input type="number" name="tests[${testIndex}][cost]" class="form-control" />
-          </div>
-          <div class="col">
-            <label class="form-label">Price</label>
-            <input type="number" name="tests[${testIndex}][price]" class="form-control" />
-          </div>
-        </div>
-        <div class="categories-container"></div>
-        <div class="button-group mt-2">
-          <button type="button" class="btn btn-primary add-category">Add Category</button>
-          <button type="button" class="btn btn-secondary add-space">Add Space</button>
-          <button type="button" class="btn btn-secondary add-title">Add Title</button>
-          <button type="button" class="btn btn-secondary add-paragraph">Add Paragraph</button>
-        </div>
-        <button type="button" class="btn btn-danger remove-test mt-2">Remove Test</button>
-      </div>`;
-    document.getElementById('tests-container').insertAdjacentHTML('beforeend', testHTML);
-  });
 
   document.addEventListener('click', function (e) {
     if (e.target.classList.contains('add-category')) {
@@ -172,28 +144,42 @@
       e.target.closest('.test-block').remove();
     }
 
+    if (e.target.classList.contains('remove-block')) {
+        e.target.closest('.space-block, .title-block, .paragraph-block').remove();
+    }
+
     const testBlock = e.target.closest('.test-block');
     if (!testBlock) return;
     const categoriesContainer = testBlock.querySelector('.categories-container');
 
     if (e.target.classList.contains('add-space')) {
-      categoriesContainer.insertAdjacentHTML('beforeend', `<hr class="my-4">`);
+        categoriesContainer.insertAdjacentHTML('beforeend', `
+        <div class="space-block my-4">
+            <hr />
+            <button type="button" class="btn btn-sm btn-danger mt-1 remove-block">Remove Space</button>
+        </div>
+        `);
+
     }
 
     if (e.target.classList.contains('add-title')) {
-      categoriesContainer.insertAdjacentHTML('beforeend', `
-        <div class="mb-3">
-          <label class="form-label">Custom Title</label>
-          <input type="text" name="custom_title[]" class="form-control" />
-        </div>`);
+        categoriesContainer.insertAdjacentHTML('beforeend', `
+        <div class="title-block mb-3">
+            <label class="form-label">Custom Title</label>
+            <input type="text" name="custom_title[]" class="form-control" />
+            <button type="button" class="btn btn-sm btn-danger mt-1 remove-block">Remove Title</button>
+        </div>
+        `);
     }
 
     if (e.target.classList.contains('add-paragraph')) {
-      categoriesContainer.insertAdjacentHTML('beforeend', `
-        <div class="mb-3">
-          <label class="form-label">Custom Paragraph</label>
-          <textarea name="custom_paragraph[]" class="form-control" rows="3"></textarea>
-        </div>`);
+        categoriesContainer.insertAdjacentHTML('beforeend', `
+        <div class="paragraph-block mb-3">
+            <label class="form-label">Custom Paragraph</label>
+            <textarea name="custom_paragraph[]" class="form-control" rows="3"></textarea>
+            <button type="button" class="btn btn-sm btn-danger mt-1 remove-block">Remove Paragraph</button>
+        </div>
+        `);
     }
 
     if (e.target.classList.contains('generate-table')) {
@@ -274,6 +260,10 @@
       }
     }
   });
+
+    document.getElementById('save-test').addEventListener('click', function () {
+        alert('Test data saved! (You can add your form submission logic here)');
+    });
 </script>
 
 </body>
