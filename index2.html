@@ -13,42 +13,42 @@
       margin-bottom: 20px;
       box-shadow: 0 0 1px rgba(0,0,0,0.1);
     }
-    
+
     .test-block {
       background: #fff;
       border: 1px solid #dee2e6;
       padding: 15px;
     }
-    
+
     .category-block {
       background: #f8f9fa;
       border: 1px dashed #dee2e6;
       padding: 15px;
     }
-    
+
     .card-header {
       padding: 0.75rem 1.25rem;
     }
-    
+
     .btn-group-xs > .btn, .btn-xs {
       padding: 0.2rem 0.4rem;
       font-size: 0.775rem;
       line-height: 1.5;
       border-radius: 0.2rem;
     }
-    
+
     .table-area table {
       background: white;
     }
-    
+
     .table-area th, .table-area td {
       vertical-align: middle;
     }
-    
+
     .value-type-extra, .reference-extra {
       transition: all 0.3s ease;
     }
-    
+
     .custom-component {
       background: #f0f8ff;
       border-left: 3px solid #4e73df;
@@ -110,9 +110,9 @@
                         </div>
                       </div>
                     </div>
-                    
+
                     <div class="categories-container"></div>
-                    
+
                     <div class="btn-group mt-2">
                       <button type="button" class="btn btn-info btn-sm add-category">
                         <i class="fas fa-folder-plus"></i> Add Category
@@ -179,7 +179,7 @@
           <i class="fas fa-trash"></i> Remove
         </button>
       </div>
-      
+
       <div class="row">
         <div class="col-md-6">
           <div class="form-group">
@@ -204,17 +204,17 @@
             <label>Value Type</label>
             <div class="d-flex flex-wrap">
               <div class="custom-control custom-radio mr-3">
-                <input class="custom-control-input" type="radio" id="value_type_range_${testIdx}_${catIdx}" 
+                <input class="custom-control-input" type="radio" id="value_type_range_${testIdx}_${catIdx}"
                   name="tests[${testIdx}][categories][${catIdx}][value_type]" value="range" checked>
                 <label for="value_type_range_${testIdx}_${catIdx}" class="custom-control-label">Range</label>
               </div>
               <div class="custom-control custom-radio mr-3">
-                <input class="custom-control-input" type="radio" id="value_type_text_${testIdx}_${catIdx}" 
+                <input class="custom-control-input" type="radio" id="value_type_text_${testIdx}_${catIdx}"
                   name="tests[${testIdx}][categories][${catIdx}][value_type]" value="text">
                 <label for="value_type_text_${testIdx}_${catIdx}" class="custom-control-label">Text</label>
               </div>
               <div class="custom-control custom-radio">
-                <input class="custom-control-input" type="radio" id="value_type_yesno_${testIdx}_${catIdx}" 
+                <input class="custom-control-input" type="radio" id="value_type_yesno_${testIdx}_${catIdx}"
                   name="tests[${testIdx}][categories][${catIdx}][value_type]" value="yesno">
                 <label for="value_type_yesno_${testIdx}_${catIdx}" class="custom-control-label">Yes/No</label>
               </div>
@@ -233,17 +233,17 @@
             <label>Reference Type</label>
             <div class="d-flex flex-wrap">
               <div class="custom-control custom-radio mr-3">
-                <input class="custom-control-input" type="radio" id="reference_type_none_${testIdx}_${catIdx}" 
+                <input class="custom-control-input" type="radio" id="reference_type_none_${testIdx}_${catIdx}"
                   name="tests[${testIdx}][categories][${catIdx}][reference_type]" value="none" checked>
                 <label for="reference_type_none_${testIdx}_${catIdx}" class="custom-control-label">None</label>
               </div>
               <div class="custom-control custom-radio mr-3">
-                <input class="custom-control-input" type="radio" id="reference_type_minmax_${testIdx}_${catIdx}" 
+                <input class="custom-control-input" type="radio" id="reference_type_minmax_${testIdx}_${catIdx}"
                   name="tests[${testIdx}][categories][${catIdx}][reference_type]" value="minmax">
                 <label for="reference_type_minmax_${testIdx}_${catIdx}" class="custom-control-label">Min-Max</label>
               </div>
               <div class="custom-control custom-radio">
-                <input class="custom-control-input" type="radio" id="reference_type_table_${testIdx}_${catIdx}" 
+                <input class="custom-control-input" type="radio" id="reference_type_table_${testIdx}_${catIdx}"
                   name="tests[${testIdx}][categories][${catIdx}][reference_type]" value="table">
                 <label for="reference_type_table_${testIdx}_${catIdx}" class="custom-control-label">Ranges Table</label>
               </div>
@@ -258,7 +258,7 @@
   document.getElementById('add-test').addEventListener('click', function () {
     testIndex++;
     categoryIndices[testIndex] = 0;
-    
+
     const testHTML = `
       <div class="test-block">
         <div class="d-flex justify-content-between align-items-center mb-3">
@@ -267,7 +267,7 @@
             <i class="fas fa-trash"></i> Remove Test
           </button>
         </div>
-        
+
         <div class="row">
           <div class="col-md-6">
             <div class="form-group">
@@ -282,9 +282,9 @@
             </div>
           </div>
         </div>
-        
+
         <div class="categories-container"></div>
-        
+
         <div class="btn-group mt-2">
           <button type="button" class="btn btn-info btn-sm add-category">
             <i class="fas fa-folder-plus"></i> Add Category
@@ -300,7 +300,7 @@
           </button>
         </div>
       </div>`;
-      
+
     document.getElementById('tests-container').insertAdjacentHTML('beforeend', testHTML);
     $('.select2').select2();
   });
@@ -310,7 +310,7 @@
     const categoriesContainer = testBlock.find('.categories-container');
     const testIdx = $('.test-block').index(testBlock);
     const catIdx = categoriesContainer.find('.category-block').length;
-    
+
     categoriesContainer.append(addCategoryHTML(testIdx, catIdx));
     $('.select2').select2();
   });
@@ -333,7 +333,7 @@
   $(document).on('click', '.add-title', function (e) {
     const testBlock = $(this).closest('.test-block');
     const categoriesContainer = testBlock.find('.categories-container');
-    
+
     categoriesContainer.append(`
       <div class="custom-component">
         <div class="d-flex justify-content-between align-items-center mb-2">
@@ -351,7 +351,7 @@
   $(document).on('click', '.add-paragraph', function (e) {
     const testBlock = $(this).closest('.test-block');
     const categoriesContainer = testBlock.find('.categories-container');
-    
+
     categoriesContainer.append(`
       <div class="custom-component">
         <div class="d-flex justify-content-between align-items-center mb-2">
@@ -393,7 +393,7 @@
 
     // Rebuild the table
     let tableHTML = '<div class="table-responsive"><table class="table table-bordered table-sm">';
-    
+
     // Header row
     tableHTML += '<thead><tr>';
     tableHTML += '<th>#</th>';
@@ -401,7 +401,7 @@
       tableHTML += `<th>Column ${c+1}</th>`;
     }
     tableHTML += '</tr></thead><tbody>';
-    
+
     // Data rows
     for (let r = 0; r < rows; r++) {
       tableHTML += '<tr>';
@@ -413,14 +413,14 @@
       tableHTML += '</tr>';
     }
     tableHTML += '</tbody></table></div>';
-    
+
     tableArea.html(tableHTML);
   });
 
   $(document).on('change', '[name*="value_type"]', function (e) {
     const block = $(this).closest('.category-block');
     const extraDiv = block.find('.value-type-extra');
-    
+
     if ($(this).val() === 'range') {
       const name = $(this).attr('name').replace('value_type', 'unit');
       extraDiv.html(getUnitDropdown(name));
@@ -433,7 +433,7 @@
   $(document).on('change', '[name*="reference_type"]', function (e) {
     const block = $(this).closest('.category-block');
     const extraDiv = block.find('.reference-extra');
-    
+
     if ($(this).val() === 'minmax') {
       extraDiv.html(`
         <div class="row">
