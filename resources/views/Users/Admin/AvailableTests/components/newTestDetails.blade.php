@@ -61,11 +61,12 @@
 
 
 
-<form action="{{ route('admin.storeNewTest') }}" method="POST">
-    @csrf
+
     <div class="container col-lg-12 col-sm-12">
         <div id="tests-container">
           <div class="test-block">
+            <form action="{{ route('admin.storeNewTest') }}" method="POST">
+            @csrf
             <div class="mb-3 col-lg-8">
               <label class="form-label">Test Name</label>
               <input type="text" name="tests[0][name]" class="form-control test-name" />
@@ -98,6 +99,7 @@
                     <i class="fas fa-align-left me-1"></i> Add Paragraph
                 </button>
             </div>
+        </form>
           </div>
         </div>
 
@@ -107,7 +109,7 @@
             </button>
         </div>
     </div>
-    </form>
+
 
     @push('specificCSS')
     <style>
