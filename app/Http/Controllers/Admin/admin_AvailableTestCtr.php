@@ -8,6 +8,13 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\AvailableTest;
 use App\Models\subcategory;
+
+use App\Models\AvailableTest_New;
+use App\Models\TestCategory_New;
+use App\Models\ReferenceRangeTable;
+use App\Models\TestElement_New;
+
+
 use DB;
 
 
@@ -128,6 +135,110 @@ class admin_AvailableTestCtr extends Controller
 
         return redirect()->back()->with('message','Updated Successfully');
 
+    }
+
+    /**
+     * Store a newly created test in storage.
+     */
+    public function store(Request $request)
+    {
+        // dd($request);
+        try {
+            DB::beginTransaction();
+
+            $testsData = $request->input('tests', []);
+
+            foreach ($testsData as $testData) {
+                // Create the test
+                $test = AvailableTest_New::create([
+                    'name' => $testData['name'] ?? '',
+                    'cost' => $testData['cost'] ?? null,
+                    'price' => $testData['price'] ?? null,
+                ]);
+
+                $displayOrder = 1;
+
+                // Process categories
+                if (isset($testData['categories'])) {
+                    foreach ($testData['categories'] as $categoryData) {
+                        // Create category
+                        $category = TestCategory_New::create([
+                            'availableTests_id' => $test->id,
+                            'name' => $categoryData['name'] ?? '',
+                            'value_type' => $categoryData['value_type'] ?? 'range',
+                            'unit' => isset($categoryData['unit']) ? $categoryData['unit'] : null,
+                            'reference_type' => $categoryData['reference_type'] ?? 'none',
+                            'min_value' => isset($categoryData['min_value']) ? $categoryData['min_value'] : null,
+                            'max_value' => isset($categoryData['max_value']) ? $categoryData['max_value'] : null,
+                            'range_unit' => isset($categoryData['range_unit']) ? $categoryData['range_unit'] : null,
+                            'display_order' => $displayOrder++,
+                        ]);
+
+                        // Process reference range table if applicable
+                        if (isset($categoryData['table'])) {
+                            foreach ($categoryData['table'] as $rowIndex => $rowData) {
+                                foreach ($rowData as $colIndex => $cellValue) {
+                                    ReferenceRangeTable::create([
+                                        'test_categories_id' => $category->id,
+                                        'row' => $rowIndex,
+                                        'column' => $colIndex,
+                                        'value' => $cellValue ?? '',
+                                    ]);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Process custom spaces
+                if (isset($testData['custom_space'])) {
+                    foreach ($testData['custom_space'] as $space) {
+                        TestElement_New::create([
+                            'availableTests_id' => $test->id,
+                            'type' => 'space',
+                            'content' => null,
+                            'display_order' => $displayOrder++,
+                        ]);
+                    }
+                }
+
+                // Process custom titles
+                if (isset($testData['custom_title'])) {
+                    foreach ($testData['custom_title'] as $title) {
+                        if (!empty($title)) {
+                            TestElement_New::create([
+                                'availableTests_id' => $test->id,
+                                'type' => 'title',
+                                'content' => $title,
+                                'display_order' => $displayOrder++,
+                            ]);
+                        }
+                    }
+                }
+
+                // Process custom paragraphs
+                if (isset($testData['custom_paragraph'])) {
+                    foreach ($testData['custom_paragraph'] as $paragraph) {
+                        if (!empty($paragraph)) {
+                            TestElement_New::create([
+                                'availableTests_id' => $test->id,
+                                'type' => 'paragraph',
+                                'content' => $paragraph,
+                                'display_order' => $displayOrder++,
+                            ]);
+                        }
+                    }
+                }
+            }
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Test template created successfully!');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Error creating test template: ' . $e->getMessage())->withInput();
+        }
     }
 
 

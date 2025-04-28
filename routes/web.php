@@ -77,6 +77,11 @@ Route::group(['prefix'=>'Admin','middleware'=>['checkAdmin','auth','lockBack']],
     Route::get('availableTest/delete/{ID}', [admin_AvailableTestCtr::class, 'deleteAvailableTest'])->name('admin.deleteAvailableTest');
     Route::post('availableTest/update', [admin_AvailableTestCtr::class, 'updateAvailableTest'])->name('admin.updateAvailableTest');
 
+    Route::POST('storeNewAvailableTest', [admin_AvailableTestCtr::class, 'store'])->name('admin.storeNewTest');
+
+
+
+
     //Test
     Route::get('AddTest', [admin_TestsCtr::class, 'addTest'])->name('admin.addTest');
     Route::POST('addingTest', [admin_TestsCtr::class, 'addingTest'])->name('admin.addingTest');
