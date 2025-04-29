@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+// Update to TestCategory_New model
 class TestCategory_New extends Model
 {
     use HasFactory;
@@ -12,8 +13,9 @@ class TestCategory_New extends Model
     protected $table = 'test_categories';
 
     protected $fillable = [
-        'availableTests_id', 'name', 'value_type', 'unit',
-        'reference_type', 'min_value', 'max_value', 'range_unit', 'display_order'
+        'availableTests_id', 'name', 'value_type',
+        'unit_enabled', 'unit',  // Added unit_enabled
+        'reference_type', 'min_value', 'max_value', 'display_order' // Removed range_unit
     ];
 
     public function test()

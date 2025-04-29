@@ -18,11 +18,13 @@ class CreateTestCategories extends Migration
             $table->foreignId('availableTests_id')->constrained()->onDelete('cascade');
             $table->string('name');
             $table->enum('value_type', ['range', 'text', 'negpos']);
+            // Add a new column to track if unit is enabled
+            $table->boolean('unit_enabled')->default(false);
             $table->string('unit')->nullable();
             $table->enum('reference_type', ['none', 'minmax', 'table'])->default('none');
             $table->decimal('min_value', 10, 2)->nullable();
             $table->decimal('max_value', 10, 2)->nullable();
-            $table->string('range_unit')->nullable();
+            // Range unit is removed as per requirements
             $table->integer('display_order');
             $table->timestamps();
         });

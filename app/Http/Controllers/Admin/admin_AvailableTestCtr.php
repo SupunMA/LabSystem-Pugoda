@@ -142,7 +142,6 @@ class admin_AvailableTestCtr extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request);
         try {
             DB::beginTransaction();
 
@@ -161,16 +160,19 @@ class admin_AvailableTestCtr extends Controller
                 // Process categories
                 if (isset($testData['categories'])) {
                     foreach ($testData['categories'] as $categoryData) {
+                        // Determine if unit is enabled (if the unit field exists and is not empty)
+                        $unitEnabled = isset($categoryData['unit']) && !empty($categoryData['unit']);
+
                         // Create category
                         $category = TestCategory_New::create([
                             'availableTests_id' => $test->id,
                             'name' => $categoryData['name'] ?? '',
                             'value_type' => $categoryData['value_type'] ?? 'range',
-                            'unit' => isset($categoryData['unit']) ? $categoryData['unit'] : null,
+                            'unit_enabled' => $unitEnabled, // New field
+                            'unit' => $unitEnabled ? $categoryData['unit'] : null,
                             'reference_type' => $categoryData['reference_type'] ?? 'none',
                             'min_value' => isset($categoryData['min_value']) ? $categoryData['min_value'] : null,
                             'max_value' => isset($categoryData['max_value']) ? $categoryData['max_value'] : null,
-                            'range_unit' => isset($categoryData['range_unit']) ? $categoryData['range_unit'] : null,
                             'display_order' => $displayOrder++,
                         ]);
 
