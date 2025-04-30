@@ -11,7 +11,7 @@ class AvailableTest_New extends Model
 
     protected $table = 'availableTests';
 
-    protected $fillable = ['name', 'cost', 'price'];
+    protected $fillable = ['name','specimen', 'cost', 'price'];
 
     public function categories()
     {

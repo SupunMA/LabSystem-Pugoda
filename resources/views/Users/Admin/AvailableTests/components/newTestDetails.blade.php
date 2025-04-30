@@ -68,18 +68,43 @@
             <div class="test-block">
 
                 @csrf
-                <div class="mb-3 col-lg-8">
-                <label class="form-label">Test Name</label>
-                <input type="text" name="tests[0][name]" class="form-control test-name" />
+                <div class="row mb-3">
+                    <div class="mb-3 col-lg-8">
+                    <label class="form-label">Test Name</label>
+                    <input type="text" name="tests[0][name]" class="form-control test-name" />
+                    </div>
+                    <div class="col col-lg-4">
+                    <label class="form-label">Specimen</label>
+                    <select name="tests[0][specimen]" class="form-select form-control">
+                        <option value="">--Select Specimen Type--</option>
+                        <option value="blood">Blood</option>
+                        <option value="urine">Urine</option>
+                        <option value="stool">Stool (Feces)</option>
+                        <option value="sputum">Sputum</option>
+                        <option value="saliva">Saliva</option>
+                        <option value="swab">Swab (e.g., throat, nasal)</option>
+                        <option value="tissue">Tissue (Biopsy)</option>
+                        <option value="csf">Cerebrospinal Fluid (CSF)</option>
+                        <option value="semen">Semen</option>
+                        <option value="vaginal">Vaginal Secretion</option>
+                        <option value="amniotic">Amniotic Fluid</option>
+                        <option value="pleural">Pleural Fluid</option>
+                        <option value="peritoneal">Peritoneal Fluid</option>
+                        <option value="synovial">Synovial Fluid</option>
+                        <option value="bone_marrow">Bone Marrow</option>
+                        <option value="hair">Hair</option>
+                        <option value="nail">Nail</option>
+                    </select>
+                    </div>
                 </div>
                 <div class="row mb-3">
                 <div class="col col-lg-4">
                     <label class="form-label">Cost</label>
-                    <input type="number" name="tests[0][cost]" class="form-control" step="0.01" />
+                    <input type="number" name="tests[0][cost]" class="form-control" step="10.00" />
                 </div>
                 <div class="col col-lg-4">
                     <label class="form-label">Price</label>
-                    <input type="number" name="tests[0][price]" class="form-control" step="0.01" />
+                    <input type="number" name="tests[0][price]" class="form-control" step="10.00" />
                 </div>
                 </div>
                 <div class="categories-container"></div>
@@ -423,18 +448,43 @@ document.addEventListener('DOMContentLoaded', function() {
         const newTest = document.createElement('div');
         newTest.className = 'test-block';
         newTest.innerHTML = `
+            <div class="row mb-3">
             <div class="mb-3 col-lg-8">
               <label class="form-label">Test Name</label>
               <input type="text" name="tests[${testIndex}][name]" class="form-control test-name" />
             </div>
+            <div class="col col-lg-4">
+                <label class="form-label">Specimen</label>
+                <select name="tests[${testIndex}][specimen]" class="form-select form-control">
+                    <option value="">--Select Specimen Type--</option>
+                    <option value="blood">Blood</option>
+                    <option value="urine">Urine</option>
+                    <option value="stool">Stool (Feces)</option>
+                    <option value="sputum">Sputum</option>
+                    <option value="saliva">Saliva</option>
+                    <option value="swab">Swab (e.g., throat, nasal)</option>
+                    <option value="tissue">Tissue (Biopsy)</option>
+                    <option value="csf">Cerebrospinal Fluid (CSF)</option>
+                    <option value="semen">Semen</option>
+                    <option value="vaginal">Vaginal Secretion</option>
+                    <option value="amniotic">Amniotic Fluid</option>
+                    <option value="pleural">Pleural Fluid</option>
+                    <option value="peritoneal">Peritoneal Fluid</option>
+                    <option value="synovial">Synovial Fluid</option>
+                    <option value="bone_marrow">Bone Marrow</option>
+                    <option value="hair">Hair</option>
+                    <option value="nail">Nail</option>
+                </select>
+            </div>
+            </div>
             <div class="row mb-3">
               <div class="col col-lg-4">
                 <label class="form-label">Cost</label>
-                <input type="number" name="tests[${testIndex}][cost]" class="form-control" step="0.01" />
+                <input type="number" name="tests[${testIndex}][cost]" class="form-control" step="10.00" />
               </div>
               <div class="col col-lg-4">
                 <label class="form-label">Price</label>
-                <input type="number" name="tests[${testIndex}][price]" class="form-control" step="0.01" />
+                <input type="number" name="tests[${testIndex}][price]" class="form-control" step="10.00" />
               </div>
             </div>
             <div class="categories-container"></div>

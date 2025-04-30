@@ -151,6 +151,7 @@ class admin_AvailableTestCtr extends Controller
                 // Create the test
                 $test = AvailableTest_New::create([
                     'name' => $testData['name'] ?? '',
+                    'specimen' => $testData['specimen'] ?? null,
                     'cost' => $testData['cost'] ?? null,
                     'price' => $testData['price'] ?? null,
                 ]);
