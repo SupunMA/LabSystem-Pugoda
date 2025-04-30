@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-  <title>MediHelp | {{$viewReportData->AvailableTestName}} Test chit</title>
+  <title>HORIZON | {{$viewReportData->AvailableTestName}} Test chit</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 
@@ -26,7 +26,7 @@
     <div class="row">
       <div class="col-xs-12">
         <h2 class="page-header">
-          <i class="fa fa-flask" aria-hidden="true"></i> MediHelp Lab.
+          <i class="fa fa-flask" aria-hidden="true"></i> HORIZON Lab.
           <small class="pull-right">Downloaded Date: {{ date('Y-m-d') }}</small>
         </h2>
       </div>
@@ -37,7 +37,7 @@
       <div class="col-sm-4 invoice-col">
         From
         <address>
-          <strong>MediHelp Lab.</strong><br>
+          <strong>HORIZON Lab.</strong><br>
           558,<br>
           Galle Road,<br>
           Kalutara.<br>

@@ -51,10 +51,10 @@
         <div class="col-xl-4 col-lg-4 col-md-6 col-sm-9 col-11 text-center">
             <div class="login-box">
                 <div class="login-logo">
-                    <a href="{{ route('login') }}"><b>MediHelp</b> Lab</a>
+                    <a href="{{ route('login') }}"><b>Horizon</b> Lab</a>
                 </div>
                 <div class="login-box-body">
-                    <p class="login-box-msg">Sign in to start your session</p>
+                    <p class="login-box-msg">Log in to Access Your Account.</p>
 
                     <form id="loginForm" action="{{ route('login') }}" method="post">
                         @csrf

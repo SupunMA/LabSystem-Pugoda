@@ -8,13 +8,13 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>MediHelp</title>
+    <title>HORIZON Lab</title>
 {{-- {{ config('app.name', 'Laravel') }} --}}
     <!-- Scripts -->
 
-    
+
     <!-- Fav Icon -->
-  
+
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -33,12 +33,12 @@
     <div id="app">
         <nav class="navbar navbar-expand-sm navbar-dark bg-primary shadow-lg">
             <div class="container">
-                
+
                 <div class="navbar-brand">
-                    MediHelp Lab.
+                    HORIZON Lab.
                 </div>
-                   
-                
+
+
             </div>
         </nav>
 
@@ -47,7 +47,7 @@
         </main>
     </div>
 
-   
+
 {{-- @include('CDN_Css_Js.Js.bootjs') --}}
 @include('layouts.adminComponents.lib.js')
 </body>

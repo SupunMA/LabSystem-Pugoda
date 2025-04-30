@@ -5,18 +5,19 @@
         <div class="row">
 
           <div class="col-lg-3 col-md-6 footer-contact">
-            <h3>MediHelp</h3>
+            <h3>HORIZON</h3>
             <p>
-              MediHelp Lab. <br>
-              558,<br>
-              Galle Road, <br>
-             Kalutara.<br><br>
-              <strong>Phone:</strong> Tel: 034-2030200<br>
-           
+              HORIZON Lab. <br>
+              NO. 148/A4,<br>
+              Infront of Hospital, <br>
+             Bangalawaththa,<br>
+             Pugoda.<br><br>
+              <strong>Phone:</strong> Tel: 0776 267 627<br>
+
             </p>
           </div>
 
-          
+
 
         </div>
       </div>
@@ -26,10 +27,10 @@
 
       <div class="me-md-auto text-center text-md-start">
         <div class="copyright">
-          &copy; Copyright <strong><span>MediHelp</span></strong>. All Rights Reserved
+          &copy; Copyright <strong><span>HORIZON</span></strong>. All Rights Reserved
         </div>
         <div class="credits">
-          Designed by Faculty of Science University of Kelaniya. <br>By D.A.V.A.DE SILVA IM/2018/013</a>
+          Developed by Thakshane 👩‍💻. <br>thakshane.lk</a>
         </div>
       </div>
       <div class="social-links text-center text-md-right pt-3 pt-md-0">

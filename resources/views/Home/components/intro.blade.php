@@ -5,10 +5,10 @@
       <div class="row">
         <div class="col-lg-4 d-flex align-items-stretch">
           <div class="content">
-            <h3>Why Choose Medilab?</h3>
+            <h3>Why Choose HORIZON?</h3>
             <p>
-            Choose Medihelp for unmatched diagnostic precision and personalized care. 
-            Our advanced technology, expert team, and commitment to accuracy ensure reliable results you can trust. 
+            Choose HORIZON for unmatched diagnostic precision and personalized care.
+            Our advanced technology, expert team, and commitment to accuracy ensure reliable results you can trust.
             Your health journey deserves our unwavering excellence.
             </p>
             <div class="text-center">
@@ -23,7 +23,7 @@
                 <div class="icon-box mt-4 mt-xl-0">
                   <i class="bx bx-receipt"></i>
                   <h4>Precision:</h4>
-                  <p>We prioritize utmost accuracy and reliability in all our tests, 
+                  <p>We prioritize utmost accuracy and reliability in all our tests,
                     ensuring that the information we provide is trustworthy and valuable for your health decisions.</p>
                 </div>
               </div>
@@ -31,7 +31,7 @@
                 <div class="icon-box mt-4 mt-xl-0">
                   <i class="bx bx-cube-alt"></i>
                   <h4>Compassion:</h4>
-                  <p>Our team approaches every individual with empathy and understanding, 
+                  <p>Our team approaches every individual with empathy and understanding,
                     recognizing the importance of addressing not just the medical aspects.</p>
                 </div>
               </div>
@@ -60,13 +60,13 @@
 
         <div class="col-xl-7 col-lg-6 icon-boxes d-flex flex-column align-items-stretch justify-content-center py-5 px-lg-5">
           <h3>Pathology Services:</h3>
-          <p>Our comprehensive pathology services encompass a range of diagnostic techniques that analyze bodily samples, aiding in the accurate detection, diagnosis, and monitoring of diseases. 
+          <p>Our comprehensive pathology services encompass a range of diagnostic techniques that analyze bodily samples, aiding in the accurate detection, diagnosis, and monitoring of diseases.
             From routine tests to complex analyses, our pathology expertise contributes to informed medical decisions and personalized patient care.</p>
 
           <div class="icon-box">
             <div class="icon"><i class="bx bx-fingerprint"></i></div>
             <h4 class="title"><a href="">Chemical Pathology</a></h4>
-            <p class="description">The Clinical Biochemistry section carries the largest workload in any medical laboratory. 
+            <p class="description">The Clinical Biochemistry section carries the largest workload in any medical laboratory.
               It performs chemical analysis of blood, urine and body fluids for a wide range of chemical constituents, selected and requested by a medical practitioner.</p>
           </div>
 
@@ -117,10 +117,10 @@
             <p>Available Tests</p>
           </div>
         </div>
-      
+
 
       </div>
-    
+
     </div>
   </section><!-- End Counts Section -->
 
@@ -130,7 +130,7 @@
 
       <div class="section-title">
         <h2>Available Tests</h2>
-        <p>Medihelp's pathology services offer a wide array of diagnostic tests that analyze bodily samples, 
+        <p>HORIZON's pathology services offer a wide array of diagnostic tests that analyze bodily samples,
           providing insights into various health aspects and aiding in accurate diagnosis and informed medical decisions.</p>
       </div>
 
@@ -140,14 +140,13 @@
                 <div class="icon-box">
                     <div class="icon"><i class="fas fa-heartbeat"></i></div>
                     <h4>{{$oneAT->AvailableTestName}}</h4>
-                    
+
                 </div>
                 </div>
         @endforeach
-                
+
 
       </div>
     </div>
   </section><!-- End Services Section -->
 
-  
