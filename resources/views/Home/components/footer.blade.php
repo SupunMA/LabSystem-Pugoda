@@ -30,7 +30,7 @@
           &copy; Copyright <strong><span>HORIZON</span></strong>. All Rights Reserved
         </div>
         <div class="credits">
-          Developed by Thakshane 👩‍💻. <br>thakshane.lk</a>
+          Developed by Thakshane 👩‍💻. <br><a href="http://wwww.thakshane.lk" target="_blank" rel="noopener noreferrer">thakshane.lk</a></a>
         </div>
       </div>
       <div class="social-links text-center text-md-right pt-3 pt-md-0">
