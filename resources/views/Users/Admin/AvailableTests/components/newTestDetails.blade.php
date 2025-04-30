@@ -280,15 +280,27 @@ function addCategoryHTML(testIdx, catIdx) {
   </div>`;
 }
 
-
+let elementOrderCounter = 0;
 document.addEventListener('click', function (e) {
-  if (e.target.classList.contains('add-category')) {
+    // At the beginning of your script
+
+// For categories
+if (e.target.classList.contains('add-category')) {
     const testBlock = e.target.closest('.test-block');
     const categoriesContainer = testBlock.querySelector('.categories-container');
     const testIdx = Array.from(document.querySelectorAll('.test-block')).indexOf(testBlock);
     const catIdx = categoriesContainer.querySelectorAll('.category-block').length;
-    categoriesContainer.insertAdjacentHTML('beforeend', addCategoryHTML(testIdx, catIdx));
-  }
+
+    // Add order tracking hidden field
+    elementOrderCounter++;
+    const categoryHTML = addCategoryHTML(testIdx, catIdx);
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = categoryHTML;
+    const categoryBlock = wrapper.firstElementChild;
+    categoryBlock.insertAdjacentHTML('beforeend', `<input type="hidden" name="tests[${testIdx}][element_order][category_${catIdx}]" value="${elementOrderCounter}">`);
+
+    categoriesContainer.appendChild(categoryBlock);
+}
 
   if (e.target.classList.contains('remove-category')) {
     e.target.closest('.category-block').remove();
@@ -317,35 +329,44 @@ document.addEventListener('click', function (e) {
   const categoriesContainer = testBlock.querySelector('.categories-container');
   const testIdx = Array.from(document.querySelectorAll('.test-block')).indexOf(testBlock);
 
-  if (e.target.classList.contains('add-space')) {
-      categoriesContainer.insertAdjacentHTML('beforeend', `
-      <div class="space-block my-4">
-          <input type="hidden" name="tests[${testIdx}][custom_space][]" value="1">
-          <hr />
-          <button type="button" class="btn btn-sm btn-danger mt-1 remove-block">Remove Space</button>
-      </div>
-      `);
-  }
+// For spaces
+if (e.target.classList.contains('add-space')) {
+    elementOrderCounter++;
+    categoriesContainer.insertAdjacentHTML('beforeend', `
+    <div class="space-block my-4">
+        <input type="hidden" name="tests[${testIdx}][custom_space][]" value="1">
+        <input type="hidden" name="tests[${testIdx}][element_order][space_${categoriesContainer.querySelectorAll('.space-block').length}]" value="${elementOrderCounter}">
+        <hr />
+        <button type="button" class="btn btn-sm btn-danger mt-1 remove-block">Remove Space</button>
+    </div>
+    `);
+}
 
-  if (e.target.classList.contains('add-title')) {
-      categoriesContainer.insertAdjacentHTML('beforeend', `
-      <div class="title-block mb-3">
-          <label class="form-label">Custom Title</label>
-          <input type="text" name="tests[${testIdx}][custom_title][]" class="form-control" />
-          <button type="button" class="btn btn-sm btn-danger mt-1 remove-block">Remove Title</button>
-      </div>
-      `);
-  }
+// Similarly for titles
+if (e.target.classList.contains('add-title')) {
+    elementOrderCounter++;
+    categoriesContainer.insertAdjacentHTML('beforeend', `
+    <div class="title-block mb-3">
+        <label class="form-label">Custom Title</label>
+        <input type="text" name="tests[${testIdx}][custom_title][]" class="form-control" />
+        <input type="hidden" name="tests[${testIdx}][element_order][title_${categoriesContainer.querySelectorAll('.title-block').length}]" value="${elementOrderCounter}">
+        <button type="button" class="btn btn-sm btn-danger mt-1 remove-block">Remove Title</button>
+    </div>
+    `);
+}
 
-  if (e.target.classList.contains('add-paragraph')) {
-      categoriesContainer.insertAdjacentHTML('beforeend', `
-      <div class="paragraph-block mb-3">
-          <label class="form-label">Custom Paragraph</label>
-          <textarea name="tests[${testIdx}][custom_paragraph][]" class="form-control" rows="3"></textarea>
-          <button type="button" class="btn btn-sm btn-danger mt-1 remove-block">Remove Paragraph</button>
-      </div>
-      `);
-  }
+// And for paragraphs
+if (e.target.classList.contains('add-paragraph')) {
+    elementOrderCounter++;
+    categoriesContainer.insertAdjacentHTML('beforeend', `
+    <div class="paragraph-block mb-3">
+        <label class="form-label">Custom Paragraph</label>
+        <textarea name="tests[${testIdx}][custom_paragraph][]" class="form-control" rows="3"></textarea>
+        <input type="hidden" name="tests[${testIdx}][element_order][paragraph_${categoriesContainer.querySelectorAll('.paragraph-block').length}]" value="${elementOrderCounter}">
+        <button type="button" class="btn btn-sm btn-danger mt-1 remove-block">Remove Paragraph</button>
+    </div>
+    `);
+}
 
   if (e.target.classList.contains('generate-table')) {
     const block = e.target.closest('.category-block');
@@ -511,6 +532,112 @@ document.addEventListener('DOMContentLoaded', function() {
 
     container.parentNode.insertBefore(addTestBtn, container.nextSibling);
 });
+
+
+
+
+
+// AJAX Form Submission
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Show loading indicator
+        const saveButton = document.getElementById('save-tests');
+        const originalButtonText = saveButton.innerHTML;
+        saveButton.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Saving...';
+        saveButton.disabled = true;
+
+        // Reset previous validation errors
+        document.querySelectorAll('.is-invalid').forEach(el => {
+            el.classList.remove('is-invalid');
+        });
+        document.querySelectorAll('.invalid-feedback').forEach(el => {
+            el.remove();
+        });
+
+        // Create FormData object
+        const formData = new FormData(this);
+
+        // Send AJAX request
+        $.ajax({
+            url: form.action,
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            success: function(response) {
+                // Reset button
+                saveButton.innerHTML = originalButtonText;
+                saveButton.disabled = false;
+
+                // Show success toast
+                toastr.success(response.message, 'Success');
+
+                // Optional: Reset form or redirect
+                form.reset();
+                // window.location.href = response.redirect;
+            },
+            error: function(xhr) {
+                // Reset button
+                saveButton.innerHTML = originalButtonText;
+                saveButton.disabled = false;
+
+                if (xhr.status === 422) {
+                    // Validation errors
+                    let errors = xhr.responseJSON.errors;
+
+                    // Display validation errors next to fields
+                    Object.keys(errors).forEach(function(key) {
+                        // Handle nested form fields (for test names)
+                        const field = key;
+                        let inputField;
+
+                        // Check if this is a test name error
+                        if (key.match(/tests\.\d+\.name/)) {
+                            const testIndex = key.match(/tests\.(\d+)\.name/)[1];
+                            inputField = document.querySelector(`input[name="tests[${testIndex}][name]"]`);
+                        } else {
+                            inputField = document.querySelector(`[name="${key}"]`);
+                        }
+
+                        if (inputField) {
+                            inputField.classList.add('is-invalid');
+
+                            // Add error message under the field
+                            const feedbackDiv = document.createElement('div');
+                            feedbackDiv.className = 'invalid-feedback';
+                            feedbackDiv.textContent = errors[key][0];
+                            inputField.parentNode.appendChild(feedbackDiv);
+
+                            // Show toast for each error
+                            toastr.error(errors[key][0], 'Validation Error');
+                        } else {
+                            // Generic toast for errors that don't map to a field
+                            toastr.error(errors[key][0], 'Validation Error');
+                        }
+                    });
+                } else {
+                    // General error
+                    toastr.error(xhr.responseJSON?.message || 'An error occurred while saving the test. Please try again.', 'Error');
+                }
+            }
+        });
+    });
+});
+
+// Configure toastr options
+toastr.options = {
+    "closeButton": true,
+    "progressBar": true,
+    "positionClass": "toast-top-right",
+    "timeOut": "8000"
+};
     </script>
 
 

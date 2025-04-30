@@ -14,7 +14,8 @@ use App\Models\TestCategory_New;
 use App\Models\ReferenceRangeTable;
 use App\Models\TestElement_New;
 
-
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use DB;
 
 
@@ -143,33 +144,132 @@ class admin_AvailableTestCtr extends Controller
     public function store(Request $request)
     {
         try {
+            // Prepare validation rules for each test
+            $testsData = $request->input('tests', []);
+            $rules = [];
+            $messages = [];
+
+            foreach ($testsData as $key => $test) {
+                $rules["tests.{$key}.name"] = [
+                    'required',
+                    Rule::unique('availabletests', 'name')
+                ];
+                $messages["tests.{$key}.name.unique"] = "The test name '{$test['name']}' already exists.";
+            }
+
+            // Validate the request
+            $validator = Validator::make($request->all(), $rules, $messages);
+
+            // If validation fails, return the errors via AJAX
+            if ($validator->fails()) {
+                if ($request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'errors' => $validator->errors(),
+                        'message' => 'Validation failed. Please check the form.'
+                    ], 422);
+                }
+
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+
+
             DB::beginTransaction();
 
-            $testsData = $request->input('tests', []);
+        foreach ($testsData as $testData) {
+            // Create the test
+            $test = AvailableTest_New::create([
+                'name' => $testData['name'] ?? '',
+                'specimen' => $testData['specimen'] ?? null,
+                'cost' => $testData['cost'] ?? null,
+                'price' => $testData['price'] ?? null,
+            ]);
 
-            foreach ($testsData as $testData) {
-                // Create the test
-                $test = AvailableTest_New::create([
-                    'name' => $testData['name'] ?? '',
-                    'specimen' => $testData['specimen'] ?? null,
-                    'cost' => $testData['cost'] ?? null,
-                    'price' => $testData['price'] ?? null,
-                ]);
+            // Get element order if available
+            $elementOrder = isset($testData['element_order']) ? $testData['element_order'] : [];
 
-                $displayOrder = 1;
+            // Create a list of all elements with their types and data
+            $allElements = [];
 
-                // Process categories
-                if (isset($testData['categories'])) {
-                    foreach ($testData['categories'] as $categoryData) {
-                        // Determine if unit is enabled (if the unit field exists and is not empty)
+            // Add categories to elements list
+            if (isset($testData['categories'])) {
+                foreach ($testData['categories'] as $index => $categoryData) {
+                    $orderKey = "category_{$index}";
+                    $order = isset($elementOrder[$orderKey]) ? (int)$elementOrder[$orderKey] : 999999;
+                    $allElements[] = [
+                        'type' => 'category',
+                        'data' => $categoryData,
+                        'order' => $order,
+                        'index' => $index
+                    ];
+                }
+            }
+
+            // Add spaces to elements list
+            if (isset($testData['custom_space'])) {
+                foreach ($testData['custom_space'] as $index => $space) {
+                    $orderKey = "space_{$index}";
+                    $order = isset($elementOrder[$orderKey]) ? (int)$elementOrder[$orderKey] : 999999;
+                    $allElements[] = [
+                        'type' => 'space',
+                        'data' => null,
+                        'order' => $order,
+                        'index' => $index
+                    ];
+                }
+            }
+
+            // Add titles to elements list
+            if (isset($testData['custom_title'])) {
+                foreach ($testData['custom_title'] as $index => $title) {
+                    if (!empty($title)) {
+                        $orderKey = "title_{$index}";
+                        $order = isset($elementOrder[$orderKey]) ? (int)$elementOrder[$orderKey] : 999999;
+                        $allElements[] = [
+                            'type' => 'title',
+                            'data' => $title,
+                            'order' => $order,
+                            'index' => $index
+                        ];
+                    }
+                }
+            }
+
+            // Add paragraphs to elements list
+            if (isset($testData['custom_paragraph'])) {
+                foreach ($testData['custom_paragraph'] as $index => $paragraph) {
+                    if (!empty($paragraph)) {
+                        $orderKey = "paragraph_{$index}";
+                        $order = isset($elementOrder[$orderKey]) ? (int)$elementOrder[$orderKey] : 999999;
+                        $allElements[] = [
+                            'type' => 'paragraph',
+                            'data' => $paragraph,
+                            'order' => $order,
+                            'index' => $index
+                        ];
+                    }
+                }
+            }
+
+            // Sort all elements by their order
+            usort($allElements, function($a, $b) {
+                return $a['order'] - $b['order'];
+            });
+
+            // Now create all elements in the correct order
+            $displayOrder = 1;
+
+            foreach ($allElements as $element) {
+                switch ($element['type']) {
+                    case 'category':
+                        $categoryData = $element['data'];
                         $unitEnabled = isset($categoryData['unit']) && !empty($categoryData['unit']);
 
-                        // Create category
                         $category = TestCategory_New::create([
                             'availableTests_id' => $test->id,
                             'name' => $categoryData['name'] ?? '',
                             'value_type' => $categoryData['value_type'] ?? 'range',
-                            'unit_enabled' => $unitEnabled, // New field
+                            'unit_enabled' => $unitEnabled,
                             'unit' => $unitEnabled ? $categoryData['unit'] : null,
                             'reference_type' => $categoryData['reference_type'] ?? 'none',
                             'min_value' => isset($categoryData['min_value']) ? $categoryData['min_value'] : null,
@@ -190,56 +290,59 @@ class admin_AvailableTestCtr extends Controller
                                 }
                             }
                         }
-                    }
-                }
+                        break;
 
-                // Process custom spaces
-                if (isset($testData['custom_space'])) {
-                    foreach ($testData['custom_space'] as $space) {
+                    case 'space':
                         TestElement_New::create([
                             'availableTests_id' => $test->id,
                             'type' => 'space',
                             'content' => null,
                             'display_order' => $displayOrder++,
                         ]);
-                    }
-                }
+                        break;
 
-                // Process custom titles
-                if (isset($testData['custom_title'])) {
-                    foreach ($testData['custom_title'] as $title) {
-                        if (!empty($title)) {
-                            TestElement_New::create([
-                                'availableTests_id' => $test->id,
-                                'type' => 'title',
-                                'content' => $title,
-                                'display_order' => $displayOrder++,
-                            ]);
-                        }
-                    }
-                }
+                    case 'title':
+                        TestElement_New::create([
+                            'availableTests_id' => $test->id,
+                            'type' => 'title',
+                            'content' => $element['data'],
+                            'display_order' => $displayOrder++,
+                        ]);
+                        break;
 
-                // Process custom paragraphs
-                if (isset($testData['custom_paragraph'])) {
-                    foreach ($testData['custom_paragraph'] as $paragraph) {
-                        if (!empty($paragraph)) {
-                            TestElement_New::create([
-                                'availableTests_id' => $test->id,
-                                'type' => 'paragraph',
-                                'content' => $paragraph,
-                                'display_order' => $displayOrder++,
-                            ]);
-                        }
-                    }
+                    case 'paragraph':
+                        TestElement_New::create([
+                            'availableTests_id' => $test->id,
+                            'type' => 'paragraph',
+                            'content' => $element['data'],
+                            'display_order' => $displayOrder++,
+                        ]);
+                        break;
                 }
             }
+        }
 
-            DB::commit();
+        DB::commit();
+
+            // Return success response
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Test template created successfully!'
+                ]);
+            }
 
             return redirect()->back()->with('success', 'Test template created successfully!');
-
         } catch (\Exception $e) {
             DB::rollBack();
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error creating test template: ' . $e->getMessage()
+                ], 500);
+            }
+
             return redirect()->back()->with('error', 'Error creating test template: ' . $e->getMessage())->withInput();
         }
     }
