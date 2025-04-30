@@ -8,45 +8,39 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">List of Test Templates</h3>
-                    </div>
-                    <!-- /.card-header -->
-                    <div class="card-body">
-                        @include('Users.Admin.messages.addMsg')
 
-                        <table id="testsTable" class="table table-bordered table-striped" style="width:100%">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Test Name</th>
-                                    <th>Specimen</th>
-                                    <th>Categories</th>
-                                    <th>Cost</th>
-                                    <th>Price</th>
-                                    <th>Created Date</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Data will be populated via AJAX -->
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Test Name</th>
-                                    <th>Specimen</th>
-                                    <th>Categories</th>
-                                    <th>Cost</th>
-                                    <th>Price</th>
-                                    <th>Created Date</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                </div>
+                @include('Users.Admin.messages.addMsg')
+
+                <table id="testsTable" class="table table-bordered table-striped" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Test Name</th>
+                            <th>Specimen</th>
+                            <th>Categories</th>
+                            <th>Cost</th>
+                            <th>Price</th>
+                            <th>Created Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data will be populated via AJAX -->
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th>ID</th>
+                            <th>Test Name</th>
+                            <th>Specimen</th>
+                            <th>Categories</th>
+                            <th>Cost</th>
+                            <th>Price</th>
+                            <th>Created Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </tfoot>
+                </table>
+
             </div>
         </div>
     </div>
