@@ -16,6 +16,7 @@ use App\Models\TestElement_New;
 
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Yajra\DataTables\Facades\DataTables;
 use DB;
 
 
@@ -103,10 +104,11 @@ class admin_AvailableTestCtr extends Controller
 
     public function allAvailableTest()
     {
-        $AvailableTestsSubcategory = subcategory::with('availableTests')->get();
-        $AvailableTests=AvailableTest::all();
+        // $AvailableTestsSubcategory = subcategory::with('availableTests')->get();
+        // $AvailableTests=AvailableTest::all();
 // dd($AvailableTests,$AvailableTestsSubcategory);
-        return view('Users.Admin.AvailableTests.AllTests',compact('AvailableTests','AvailableTestsSubcategory'));
+        // return view('Users.Admin.AvailableTests.AllTests',compact('AvailableTests','AvailableTestsSubcategory'));
+        return view('Users.Admin.AvailableTests.AllTests');
     }
 
     public function deleteAvailableTest($ID)
@@ -347,5 +349,189 @@ class admin_AvailableTestCtr extends Controller
         }
     }
 
+    public function allTests()
+    {
+        try {
+            $tests = AvailableTest_New::select([
+                'id',
+                'name',
+                'specimen',
+                'cost',
+                'price',
+                'created_at'
+            ])->get();
+
+            return DataTables::of($tests)
+                ->addColumn('actions', function ($test) {
+                    $actions = '<div class="btn-group">';
+                    $actions .= '<button type="button" class="btn btn-info btn-sm viewBtn" data-id="'.$test->id.'" data-name="'.$test->name.'"><i class="fas fa-eye"></i></button>';
+                    $actions .= '<button type="button" class="btn btn-primary btn-sm editBtn"
+                                    data-id="'.$test->id.'"
+                                    data-name="'.htmlspecialchars($test->name, ENT_QUOTES).'"
+                                    data-specimen="'.$test->specimen.'"
+                                    data-cost="'.$test->cost.'"
+                                    data-price="'.$test->price.'">
+                                    <i class="fas fa-edit"></i>
+                                </button>';
+                    $actions .= '<button type="button" class="btn btn-danger btn-sm deleteBtn" data-id="'.$test->id.'" data-name="'.htmlspecialchars($test->name, ENT_QUOTES).'"><i class="fas fa-trash"></i></button>';
+                    $actions .= '</div>';
+                    return $actions;
+                })
+                ->addColumn('specimen', function ($test) {
+                    if (empty($test->specimen)) return '<span class="text-muted">Not specified</span>';
+                    return ucfirst($test->specimen);
+                })
+                ->addColumn('categories_count', function ($test) {
+                    return '<span class="badge badge-info">' . $test->categories()->count() . '</span>';
+                })
+                ->addColumn('cost', function ($test) {
+                    if (empty($test->cost)) return '<span class="text-muted">-</span>';
+                    return number_format($test->cost, 2);
+                })
+                ->addColumn('price', function ($test) {
+                    if (empty($test->price)) return '<span class="text-muted">-</span>';
+                    return number_format($test->price, 2);
+                })
+                ->editColumn('created_at', function ($test) {
+                    return $test->created_at ? $test->created_at->format('M d, Y') : '';
+                })
+                ->rawColumns(['actions', 'specimen', 'categories_count', 'cost', 'price'])
+                ->make(true);
+        } catch (\Exception $e) {
+            \Log::error('DataTables error: ' . $e->getMessage());
+            return response()->json(['error' => 'An error occurred while fetching data'], 500);
+        }
+    }
+    /**
+     * Show test details (for modal view)
+     */
+    public function getTestDetails($id)
+    {
+        try {
+            // Add debugging to trace the issue
+            \Log::info("Loading test details for ID: {$id}");
+
+            $test = AvailableTest_New::with(['categories.referenceRangeTable', 'elements'])
+                ->findOrFail($id);
+
+            \Log::info("Test loaded: " . $test->name);
+            \Log::info("Categories count: " . $test->categories->count());
+
+            return view('Users.Admin.AvailableTests.components.test_details', compact('test'))->render();
+        } catch (\Exception $e) {
+            \Log::error("Error in getTestDetails: " . $e->getMessage());
+            \Log::error($e->getTraceAsString());
+
+            return '<div class="alert alert-danger">
+                    <p><i class="fas fa-exclamation-triangle mr-2"></i> Error loading test details:</p>
+                    <p>'.$e->getMessage().'</p>
+                  </div>';
+        }
+    }
+
+    /**
+     * Update test basic information
+     */
+    public function updateTest(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'test_id' => 'required|exists:availableTests,id',
+                'name' => [
+                    'required',
+                    Rule::unique('availableTests', 'name')->ignore($request->test_id)
+                ],
+                'specimen' => 'nullable|string',
+                'cost' => 'nullable|numeric|min:0',
+                'price' => 'nullable|numeric|min:0',
+            ], [
+                'name.required' => 'Test name is required.',
+                'name.unique' => 'This test name already exists.',
+                'cost.numeric' => 'Cost must be a valid number.',
+                'price.numeric' => 'Price must be a valid number.'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $test = AvailableTest_New::findOrFail($request->test_id);
+
+            $test->update([
+                'name' => $request->name,
+                'specimen' => $request->specimen,
+                'cost' => $request->cost,
+                'price' => $request->price
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Test updated successfully!'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating test: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+        /**
+     * Show the test edit form
+     */
+    public function editTest($id)
+    {
+        $test = AvailableTest_New::with([
+            'categories.referenceRangeTable',
+            'elements'
+        ])->findOrFail($id);
+
+        return view('admin.tests.edit', compact('test'));
+    }
+
+
+    public function deleteTest(Request $request)
+{
+    try {
+        DB::beginTransaction();
+
+        $test = AvailableTest_New::findOrFail($request->test_id);
+        $testName = $test->name;
+
+        // First delete all related reference range tables
+        foreach ($test->categories as $category) {
+            ReferenceRangeTable::where('test_categories_id', $category->id)->delete();
+        }
+
+        // Delete all related categories
+        TestCategory_New::where('availableTests_id', $test->id)->delete();
+
+        // Delete all related test elements
+        TestElement_New::where('availableTests_id', $test->id)->delete();
+
+        // Finally delete the test itself
+        $test->delete();
+
+        DB::commit();
+
+        return response()->json([
+            'success' => true,
+            'message' => "Test '{$testName}' has been deleted successfully."
+        ]);
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Error deleting test: ' . $e->getMessage()
+        ], 500);
+    }
+}
 
 }

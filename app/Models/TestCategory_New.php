@@ -23,8 +23,15 @@ class TestCategory_New extends Model
         return $this->belongsTo(AvailableTest_New::class, 'availableTests_id');
     }
 
+    // In TestCategory_New model
     public function referenceRangeTable()
     {
         return $this->hasMany(ReferenceRangeTable::class, 'test_categories_id');
+    }
+
+
+    public function availableTest()
+    {
+        return $this->belongsTo(AvailableTest_New::class, 'availableTests_id');
     }
 }

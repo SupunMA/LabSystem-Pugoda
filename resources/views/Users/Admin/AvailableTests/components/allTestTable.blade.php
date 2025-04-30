@@ -1,95 +1,139 @@
-<div class="box">
-    <div class="box-header">
-      <h3 class="box-title">List of Patients</h3>
+
+
+
+
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">List of Test Templates</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        @include('Users.Admin.messages.addMsg')
+
+                        <table id="testsTable" class="table table-bordered table-striped" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Test Name</th>
+                                    <th>Specimen</th>
+                                    <th>Categories</th>
+                                    <th>Cost</th>
+                                    <th>Price</th>
+                                    <th>Created Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Data will be populated via AJAX -->
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Test Name</th>
+                                    <th>Specimen</th>
+                                    <th>Categories</th>
+                                    <th>Cost</th>
+                                    <th>Price</th>
+                                    <th>Created Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <!-- /.box-header -->
-    <div class="box-body">
+</section>
 
-        <table id="example1" class="table table-bordered table-striped">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Available Test Name</th>
-                    <th>Categories</th>
-                    <th>Days</th>
-                    <th>Cost</th>
-                    <th>Action</th>
+@include('Users.Admin.AvailableTests.components.updateTest')
+@include('Users.Admin.AvailableTests.components.viewTest')
+@include('Users.Admin.AvailableTests.components.deleteTest')
 
-                </tr>
-            </thead>
-            <tbody>
-
-                @foreach ($AvailableTests as $AvailableTest)
-                    <tr>
-                        <td>{{$AvailableTest->tlid}}</td>
-                        <td>{{$AvailableTest->AvailableTestName}}</td>
-                        <td><ul>
-                        @foreach ($AvailableTestsSubcategory as $Subcategory)
-                            @if ($AvailableTest->tlid == $Subcategory->AvailableTestID)
-
-                                <li> {{$Subcategory->SubCategoryName}}</li>
-
-                               <br>
-                            @endif
-                        @endforeach
-                            </ul>
-                        </td>
-                        <td>{{$AvailableTest->resultDays}} days</td>
-                        <td>{{$AvailableTest->AvailableTestCost}}</td>
-
-
-                        <td>
-                            <a class="btn btn-warning" type="button" data-toggle="modal" data-target="#branchEditModal-{{$AvailableTest->tlid}}" >
-                                <i class="fa fa-pencil" aria-hidden="true"></i>
-                            </a>
-                            <a class="btn btn-danger" type="button" data-toggle="modal" data-target="#branchDeleteModal-{{$AvailableTest->tlid}}"  >
-                                <i class="fa fa-trash-o" aria-hidden="true"></i>
-                            </a>
-                        </td>
-                    </tr>
-
-                            {{-- update modal and delete modal --}}
-                            @include('Users.Admin.AvailableTests.components.updateTest')
-                            @include('Users.Admin.AvailableTests.components.deleteTest')
-                @endforeach
-
-            </tbody>
-            <tfoot>
-                <tr>
-                    <th>ID</th>
-                    <th>Available Test Name</th>
-                    <th>Categories</th>
-                    <th>Days</th>
-                    <th>Cost</th>
-                    <th>Action</th>
-                </tr>
-            </tfoot>
-        </table>
-    </div>
-    <!-- /.box-body -->
-</div>
-  <!-- /.box -->
 
 
 @push('specificJs')
-{{-- toastr msg --}}
-
-<script>
-    $(function () {
-    $('#example1').DataTable()
-    })
-</script>
-
 <script>
     $(document).ready(function() {
-        $('#normal_range').inputmask('99-999', {
-            placeholder: ' ', // Space as a placeholder for each digit
+        $('#testsTable').DataTable({
+            processing: true,
+            serverSide: true,
+            responsive: true,
+            scrollX: true,
+            autoWidth: false,
+            lengthChange: true,
+            ajax: '{{ route("admin.allTests") }}',
+            columns: [
+                { data: 'id' },
+                { data: 'name' },
+                { data: 'specimen' },
+                { data: 'categories_count' },
+                { data: 'cost' },
+                { data: 'price' },
+                { data: 'created_at' },
+                { data: 'actions', orderable: false, searchable: false }
+            ],
+            order: [[0, 'desc']],
+            dom: 'flBrtip',
+            buttons: [
+                {
+                    extend: 'pdf',
+                    text: 'PDF',
+                    orientation: 'portrait',
+                    pageSize: 'A4',
+                    exportOptions: {
+                        columns: ':not(:last-child)'
+                    }
+                },
+                {
+                    extend: 'csv',
+                    text: 'CSV',
+                    exportOptions: {
+                        columns: ':not(:last-child)'
+                    }
+                },
+                {
+                    extend: 'excel',
+                    text: 'Excel',
+                    exportOptions: {
+                        columns: ':not(:last-child)'
+                    }
+                },
+                {
+                    extend: 'print',
+                    text: 'Print',
+                    exportOptions: {
+                        columns: ':not(:last-child)'
+                    }
+                }
+            ]
         });
     });
+
+    // Adjust table on window resize
+    $(window).on('resize', function() {
+        $('#testsTable').DataTable().columns.adjust().draw();
+    });
+
+    // Adjust table when sidebar is toggled
+    $('a[data-widget="pushmenu"]').on('click', function() {
+        setTimeout(function() {
+            $('#testsTable').DataTable().columns.adjust().draw();
+        }, 300);
+    });
+
+    // Initialize toastr
+    toastr.options = {
+        "closeButton": true,
+        "progressBar": true,
+        "positionClass": "toast-top-right",
+        "timeOut": "8000"
+    };
 </script>
-
 @endpush
-
-
-
-
