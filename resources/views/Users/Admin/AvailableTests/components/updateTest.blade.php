@@ -81,7 +81,7 @@
         $('#edit-price').val(btn.data('price'));
 
         // Set the full edit link href
-        $('#full-edit-link').attr('href', `{{ url('admin/tests/edit') }}/${btn.data('id')}`);
+        $('#full-edit-link').attr('href', `{{ url('Admin/tests') }}/${btn.data('id')}/edit`);
 
         $('#editTestModal').modal('show');
     });

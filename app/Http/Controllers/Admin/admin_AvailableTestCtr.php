@@ -484,15 +484,290 @@ class admin_AvailableTestCtr extends Controller
         /**
      * Show the test edit form
      */
-    public function editTest($id)
-    {
-        $test = AvailableTest_New::with([
-            'categories.referenceRangeTable',
-            'elements'
-        ])->findOrFail($id);
+/**
+ * Show the form for editing the specified test.
+ */
+public function editTest($id)
+{
+    try {
+        $test = AvailableTest_New::with(['categories.referenceRangeTable', 'elements'])
+                    ->findOrFail($id);
 
-        return view('admin.tests.edit', compact('test'));
+        // Calculate max indices for JavaScript
+        $catIndex = $test->categories->count();
+        $spaceIndex = $test->elements->where('type', 'space')->count();
+        $titleIndex = $test->elements->where('type', 'title')->count();
+        $paragraphIndex = $test->elements->where('type', 'paragraph')->count();
+
+        return view('Users.Admin.AvailableTests.components.test_EditFull', compact('test', 'catIndex', 'spaceIndex', 'titleIndex', 'paragraphIndex'));
+    } catch (\Exception $e) {
+        return redirect()->route('Users.Admin.AvailableTests.AllTests')->with('error', 'Error loading test: ' . $e->getMessage());
     }
+}
+
+/**
+ * Update the specified test in storage with all its components.
+ */
+/**
+ * Update the specified test in storage with all its components.
+ */
+public function updateTestFull(Request $request, $id)
+{
+    try {
+        // Validate test name uniqueness
+        $validator = Validator::make($request->all(), [
+            'name' => [
+                'required',
+                Rule::unique('availabletests', 'name')->ignore($id)
+            ]
+        ], [
+            'name.unique' => "The test name '{$request->name}' already exists."
+        ]);
+
+        if ($validator->fails()) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => $validator->errors(),
+                    'message' => 'Validation failed. Please check the form.'
+                ], 422);
+            }
+
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        DB::beginTransaction();
+
+        // Find the test
+        $test = AvailableTest_New::findOrFail($id);
+
+        // Update basic test info
+        $test->update([
+            'name' => $request->name,
+            'specimen' => $request->specimen,
+            'cost' => $request->cost,
+            'price' => $request->price,
+        ]);
+
+        // Collect all components with their order values
+        $allComponents = [];
+
+        // Add categories to the components array
+        if ($request->has('categories')) {
+            foreach ($request->categories as $index => $categoryData) {
+                $orderValue = $request->input("order.categories.{$index}", 999999);
+                $allComponents[] = [
+                    'type' => 'category',
+                    'order_value' => intval($orderValue),
+                    'data' => $categoryData,
+                    'index' => $index
+                ];
+            }
+        }
+
+        // Add spaces to the components array
+        if ($request->has('elements') && isset($request->elements['space'])) {
+            foreach ($request->elements['space'] as $index => $spaceData) {
+                $orderValue = $request->input("order.spaces.{$index}", 999999);
+                $allComponents[] = [
+                    'type' => 'space',
+                    'order_value' => intval($orderValue),
+                    'data' => $spaceData,
+                    'index' => $index
+                ];
+            }
+        }
+
+        // Add titles to the components array
+        if ($request->has('elements') && isset($request->elements['title'])) {
+            foreach ($request->elements['title'] as $index => $titleData) {
+                $orderValue = $request->input("order.titles.{$index}", 999999);
+                $allComponents[] = [
+                    'type' => 'title',
+                    'order_value' => intval($orderValue),
+                    'data' => $titleData,
+                    'index' => $index
+                ];
+            }
+        }
+
+        // Add paragraphs to the components array
+        if ($request->has('elements') && isset($request->elements['paragraph'])) {
+            foreach ($request->elements['paragraph'] as $index => $paragraphData) {
+                $orderValue = $request->input("order.paragraphs.{$index}", 999999);
+                $allComponents[] = [
+                    'type' => 'paragraph',
+                    'order_value' => intval($orderValue),
+                    'data' => $paragraphData,
+                    'index' => $index
+                ];
+            }
+        }
+
+        // Sort components by their order_value
+        usort($allComponents, function($a, $b) {
+            return $a['order_value'] - $b['order_value'];
+        });
+
+        // Temporarily update existing items with high display_order values
+        DB::table('test_categories')
+            ->where('availableTests_id', $test->id)
+            ->update(['display_order' => DB::raw('display_order + 10000')]);
+
+        DB::table('availableTest_elements')
+            ->where('availableTests_id', $test->id)
+            ->update(['display_order' => DB::raw('display_order + 10000')]);
+
+        // Process all components in the sorted order
+       // Process all components in the sorted order
+foreach ($allComponents as $component) {
+    $newOrder = $component['order_value']; // Use the order_value from the form
+
+    switch ($component['type']) {
+        case 'category':
+            $categoryData = $component['data'];
+            if (isset($categoryData['id']) && $categoryData['id'] !== 'new') {
+                $category = TestCategory_New::find($categoryData['id']);
+                if ($category) {
+                    $category->update([
+                        'name' => $categoryData['name'] ?? '',
+                        'value_type' => $categoryData['value_type'] ?? 'range',
+                        'unit_enabled' => isset($categoryData['unit']) && !empty($categoryData['unit']),
+                        'unit' => isset($categoryData['unit']) && !empty($categoryData['unit']) ? $categoryData['unit'] : null,
+                        'reference_type' => $categoryData['reference_type'] ?? 'none',
+                        'min_value' => $categoryData['min_value'] ?? null,
+                        'max_value' => $categoryData['max_value'] ?? null,
+                        'display_order' => $newOrder,
+                    ]);
+                }
+            } else {
+                $category = TestCategory_New::create([
+                    'availableTests_id' => $test->id,
+                    'name' => $categoryData['name'] ?? '',
+                    'value_type' => $categoryData['value_type'] ?? 'range',
+                    'unit_enabled' => isset($categoryData['unit']) && !empty($categoryData['unit']),
+                    'unit' => isset($categoryData['unit']) && !empty($categoryData['unit']) ? $categoryData['unit'] : null,
+                    'reference_type' => $categoryData['reference_type'] ?? 'none',
+                    'min_value' => $categoryData['min_value'] ?? null,
+                    'max_value' => $categoryData['max_value'] ?? null,
+                    'display_order' => $newOrder,
+                ]);
+            }
+            break;
+
+        case 'space':
+            $spaceData = $component['data'];
+            if (isset($spaceData['id']) && $spaceData['id'] !== 'new') {
+                $space = TestElement_New::find($spaceData['id']);
+                if ($space) {
+                    $space->update([
+                        'display_order' => $newOrder,
+                    ]);
+                }
+            } else {
+                TestElement_New::create([
+                    'availableTests_id' => $test->id,
+                    'type' => 'space',
+                    'content' => null,
+                    'display_order' => $newOrder,
+                ]);
+            }
+            break;
+
+        case 'title':
+            $titleData = $component['data'];
+            if (isset($titleData['id']) && $titleData['id'] !== 'new') {
+                $title = TestElement_New::find($titleData['id']);
+                if ($title) {
+                    $title->update([
+                        'content' => $titleData['content'] ?? '',
+                        'display_order' => $newOrder,
+                    ]);
+                }
+            } else {
+                if (!empty($titleData['content'])) {
+                    TestElement_New::create([
+                        'availableTests_id' => $test->id,
+                        'type' => 'title',
+                        'content' => $titleData['content'],
+                        'display_order' => $newOrder,
+                    ]);
+                }
+            }
+            break;
+
+        case 'paragraph':
+            $paragraphData = $component['data'];
+            if (isset($paragraphData['id']) && $paragraphData['id'] !== 'new') {
+                $paragraph = TestElement_New::find($paragraphData['id']);
+                if ($paragraph) {
+                    $paragraph->update([
+                        'content' => $paragraphData['content'] ?? '',
+                        'display_order' => $newOrder,
+                    ]);
+                }
+            } else {
+                if (!empty($paragraphData['content'])) {
+                    TestElement_New::create([
+                        'availableTests_id' => $test->id,
+                        'type' => 'paragraph',
+                        'content' => $paragraphData['content'],
+                        'display_order' => $newOrder,
+                    ]);
+                }
+            }
+            break;
+    }
+}
+
+        // Handle deleted categories
+        if ($request->has('deleted_categories')) {
+            foreach ($request->deleted_categories as $categoryId) {
+                $category = TestCategory_New::find($categoryId);
+                if ($category) {
+                    // Delete reference range table entries first
+                    ReferenceRangeTable::where('test_categories_id', $category->id)->delete();
+                    // Then delete the category
+                    $category->delete();
+                }
+            }
+        }
+
+        // Handle deleted elements
+        if ($request->has('deleted_elements')) {
+            foreach ($request->deleted_elements as $elementId) {
+                TestElement_New::where('id', $elementId)->delete();
+            }
+        }
+
+        DB::commit();
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Test template updated successfully!'
+            ]);
+        }
+
+        return redirect()->route('admin.allAvailableTest')->with('success', 'Test template updated successfully!');
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating test template: ' . $e->getMessage()
+            ], 500);
+        }
+
+        return redirect()->back()->with('error', 'Error updating test template: ' . $e->getMessage())->withInput();
+    }
+}
+
+
+
+
 
 
     public function deleteTest(Request $request)
