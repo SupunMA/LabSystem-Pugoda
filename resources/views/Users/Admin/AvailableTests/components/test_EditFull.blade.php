@@ -73,7 +73,7 @@
                                 <!-- Components Container -->
                                 <div class="mt-4">
                                     <h4>Test Components</h4>
-                                    <p class="text-muted">Drag and drop to reorder components (coming soon)</p>
+                                    <p class="text-muted">"If you want to change the order of the elements, You must first remove all of them and Save, then add the elements in the new order."</p>
 
                                     <div id="components-container" class="categories-container">
                                         @php
