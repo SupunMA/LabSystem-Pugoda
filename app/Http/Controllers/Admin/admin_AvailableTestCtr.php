@@ -350,58 +350,64 @@ class admin_AvailableTestCtr extends Controller
     }
 
     public function allTests()
-    {
-        try {
-            $tests = AvailableTest_New::select([
-                'id',
-                'name',
-                'specimen',
-                'cost',
-                'price',
-                'created_at'
-            ])->get();
+{
+    try {
+        $tests = AvailableTest_New::select([
+            'id',
+            'name',
+            'specimen',
+            'cost',
+            'price',
+            'created_at'
+        ])->get();
 
-            return DataTables::of($tests)
-                ->addColumn('actions', function ($test) {
-                    $actions = '<div class="btn-group">';
-                    $actions .= '<button type="button" class="btn btn-info btn-sm viewBtn" data-id="'.$test->id.'" data-name="'.$test->name.'"><i class="fas fa-eye"></i></button>';
-                    $actions .= '<button type="button" class="btn btn-primary btn-sm editBtn"
-                                    data-id="'.$test->id.'"
-                                    data-name="'.htmlspecialchars($test->name, ENT_QUOTES).'"
-                                    data-specimen="'.$test->specimen.'"
-                                    data-cost="'.$test->cost.'"
-                                    data-price="'.$test->price.'">
-                                    <i class="fas fa-edit"></i>
-                                </button>';
-                    $actions .= '<button type="button" class="btn btn-danger btn-sm deleteBtn" data-id="'.$test->id.'" data-name="'.htmlspecialchars($test->name, ENT_QUOTES).'"><i class="fas fa-trash"></i></button>';
-                    $actions .= '</div>';
-                    return $actions;
-                })
-                ->addColumn('specimen', function ($test) {
-                    if (empty($test->specimen)) return '<span class="text-muted">Not specified</span>';
-                    return ucfirst($test->specimen);
-                })
-                ->addColumn('categories_count', function ($test) {
-                    return '<span class="badge badge-info">' . $test->categories()->count() . '</span>';
-                })
-                ->addColumn('cost', function ($test) {
-                    if (empty($test->cost)) return '<span class="text-muted">-</span>';
-                    return number_format($test->cost, 2);
-                })
-                ->addColumn('price', function ($test) {
-                    if (empty($test->price)) return '<span class="text-muted">-</span>';
-                    return number_format($test->price, 2);
-                })
-                ->editColumn('created_at', function ($test) {
-                    return $test->created_at ? $test->created_at->format('M d, Y') : '';
-                })
-                ->rawColumns(['actions', 'specimen', 'categories_count', 'cost', 'price'])
-                ->make(true);
-        } catch (\Exception $e) {
-            \Log::error('DataTables error: ' . $e->getMessage());
-            return response()->json(['error' => 'An error occurred while fetching data'], 500);
-        }
+        return DataTables::of($tests)
+            ->addColumn('actions', function ($test) {
+                $actions = '<div class="btn-group">';
+                $actions .= '<button type="button" class="btn btn-info btn-sm viewBtn" data-id="'.$test->id.'" data-name="'.$test->name.'"><i class="fas fa-eye"></i></button>';
+                $actions .= '<button type="button" class="btn btn-primary btn-sm editBtn"
+                                data-id="'.$test->id.'"
+                                data-name="'.htmlspecialchars($test->name, ENT_QUOTES).'"
+                                data-specimen="'.$test->specimen.'"
+                                data-cost="'.$test->cost.'"
+                                data-price="'.$test->price.'">
+                                <i class="fas fa-edit"></i>
+                            </button>';
+
+                // Add View Template button
+                $actions .= '<button type="button" class="btn btn-secondary btn-sm viewTemplateBtn" data-id="'.$test->id.'" data-name="'.htmlspecialchars($test->name, ENT_QUOTES).'">
+                                <i class="fas fa-file-alt"></i>
+                            </button>';
+
+                $actions .= '<button type="button" class="btn btn-danger btn-sm deleteBtn" data-id="'.$test->id.'" data-name="'.htmlspecialchars($test->name, ENT_QUOTES).'"><i class="fas fa-trash"></i></button>';
+                $actions .= '</div>';
+                return $actions;
+            })
+            ->addColumn('specimen', function ($test) {
+                if (empty($test->specimen)) return '<span class="text-muted">Not specified</span>';
+                return ucfirst($test->specimen);
+            })
+            ->addColumn('categories_count', function ($test) {
+                return '<span class="badge badge-info">' . $test->categories()->count() . '</span>';
+            })
+            ->addColumn('cost', function ($test) {
+                if (empty($test->cost)) return '<span class="text-muted">-</span>';
+                return number_format($test->cost, 2);
+            })
+            ->addColumn('price', function ($test) {
+                if (empty($test->price)) return '<span class="text-muted">-</span>';
+                return number_format($test->price, 2);
+            })
+            ->editColumn('created_at', function ($test) {
+                return $test->created_at ? $test->created_at->format('M d, Y') : '';
+            })
+            ->rawColumns(['actions', 'specimen', 'categories_count', 'cost', 'price'])
+            ->make(true);
+    } catch (\Exception $e) {
+        \Log::error('DataTables error: ' . $e->getMessage());
+        return response()->json(['error' => 'An error occurred while fetching data'], 500);
     }
+}
     /**
      * Show test details (for modal view)
      */
@@ -766,7 +772,48 @@ foreach ($allComponents as $component) {
 }
 
 
+/**
+ * Get test template structure
+ */
+public function getTestTemplateStructure($id)
+{
+    try {
+        $test = AvailableTest_New::with(['categories.referenceRangeTable', 'elements'])
+            ->findOrFail($id);
 
+        // Combine categories and elements to sort by display order
+        $components = collect();
+
+        foreach($test->categories as $category) {
+            $components->push([
+                'type' => 'category',
+                'display_order' => $category->display_order,
+                'data' => $category
+            ]);
+        }
+
+        foreach($test->elements as $element) {
+            $components->push([
+                'type' => $element->type,
+                'display_order' => $element->display_order,
+                'data' => $element
+            ]);
+        }
+
+        $components = $components->sortBy('display_order');
+
+        return response()->json([
+            'success' => true,
+            'test' => $test,
+            'components' => $components
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Error loading test template: ' . $e->getMessage()
+        ], 500);
+    }
+}
 
 
 

@@ -87,6 +87,7 @@ Route::group(['prefix'=>'Admin','middleware'=>['checkAdmin','auth','lockBack']],
     // Full Edit Page
     Route::get('/tests/{id}/edit', [admin_AvailableTestCtr::class, 'editTest'])->name('admin.editTest');
     Route::post('/tests/{id}/update', [admin_AvailableTestCtr::class, 'updateTestFull'])->name('admin.updateTestFull');
+    Route::get('/tests/{id}/template', [admin_AvailableTestCtr::class, 'getTestTemplateStructure'])->name('admin.testTemplate');
 
 
     //Test
