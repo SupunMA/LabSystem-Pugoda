@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratory Report</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 0;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            width: 210mm;
+            height: 297mm;
+            box-sizing: border-box;
+            font-size: 12px;
+        }
+        .container {
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+        .logo {
+            width: 50px;
+            margin-right: 10px;
+        }
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+        .logo-text h1 {
+            color: #e45735;
+            margin: 0;
+            font-size: 24px;
+            font-weight: bold;
+            line-height: 1;
+        }
+        .logo-text h2 {
+            color: #2d5b84;
+            margin: 0;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .contact-info {
+            text-align: right;
+            color: #2d5b84;
+            font-size: 11px;
+        }
+        .report-title {
+            color: #2d5b84;
+            text-align: center;
+            font-size: 16px;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+        .divider {
+            height: 2px;
+            background-color: #2d5b84;
+            margin-bottom: 20px;
+        }
+        .patient-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            margin-bottom: 20px;
+        }
+        .patient-details, .report-details {
+            padding: 10px;
+        }
+        .info-row {
+            display: flex;
+            margin-bottom: 8px;
+        }
+        .info-value {
+            font-size: 11px;
+        }
+        .info-label {
+            width: 110px;
+            font-weight: bold;
+            font-size: 11px;
+        }
+        .specimen-info {
+            margin-bottom: 20px;
+        }
+        .test-results table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .test-results th {
+            background-color: #f2f2f2;
+            text-align: left;
+            padding: 6px;
+            font-size: 11px;
+        }
+        .test-results td {
+            padding: 6px;
+            border-bottom: 1px solid #ddd;
+            font-size: 11px;
+        }
+        .technologist-signature {
+            position: absolute;
+            bottom: 80px;
+            right: 20px;
+            text-align: right;
+            padding-top: 10px;
+            border-top: 1px dotted #000;
+            width: 200px;
+            color: #2d5b84;
+            font-weight: bold;
+            font-size: 11px;
+        }
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            border-top: 1px solid #e45735;
+            padding-top: 10px;
+        }
+        .footer-logo {
+            height: 40px;
+        }
+        .footer-text {
+            color: #666;
+            font-size: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo-container">
+                <div class="logo">
+                    <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="5" y="5" width="10" height="40" fill="#2d5b84" />
+                        <rect x="20" y="15" width="10" height="30" fill="#2d5b84" />
+                        <rect x="35" y="10" width="10" height="35" fill="#2d5b84" />
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1>HORIZON</h1>
+                    <h2>LABORATORY</h2>
+                </div>
+            </div>
+            <div class="contact-info">
+                <div>100, Main road, Colombo</div>
+                <div>+947712545</div>
+                <div>horizon@gamill.com</div>
+                <div>register 1029</div>
+            </div>
+        </div>
+
+        <div class="report-title">Confidential Laboratory Report</div>
+        <div class="divider"></div>
+
+        <div class="patient-info">
+            <div class="patient-details">
+                <div class="info-row">
+                    <div class="info-label">PATIENT NAME:</div>
+                    <div class="info-value" id="patient-name"></div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">AGE:</div>
+                    <div class="info-value" id="patient-age"></div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Gender:</div>
+                    <div class="info-value" id="patient-gender"></div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">REPORT ID:</div>
+                    <div class="info-value" id="report-id-1"></div>
+                </div>
+            </div>
+            <div class="report-details">
+                <div class="info-row">
+                    <div class="info-label">DATE:</div>
+                    <div class="info-value" id="report-date"></div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">REPORT ID:</div>
+                    <div class="info-value" id="report-id-2"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="specimen-info">
+            <div class="info-row">
+                <div class="info-label">SPECIMEN:</div>
+                <div class="info-value" id="specimen-type"></div>
+            </div>
+        </div>
+
+        <div class="test-results">
+            <div class="info-row">
+                <div class="info-label">TEST NAME</div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Test</th>
+                        <th>Result</th>
+                        <th>References</th>
+                    </tr>
+                </thead>
+                <tbody id="test-results-body">
+                    <!-- Test results will be added here dynamically -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="technologist-signature">
+            Laboratory technologist
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="footer-left">
+            <img src="/api/placeholder/120/40" alt="Mindray" class="footer-logo" />
+            <span class="footer-text">healthcare within reach</span>
+        </div>
+        <div class="footer-center">
+            <span class="footer-text">some text here</span>
+        </div>
+        <div class="footer-right">
+            <img src="/api/placeholder/120/40" alt="Labomed" class="footer-logo" />
+            <span class="footer-text">ideas for vision</span>
+        </div>
+    </div>
+
+    <script>
+        // This JavaScript function can be used to populate the report data
+        function populateReport(data) {
+            document.getElementById('patient-name').textContent = data.patientName || '';
+            document.getElementById('patient-age').textContent = data.age || '';
+            document.getElementById('patient-gender').textContent = data.gender || '';
+            document.getElementById('report-id-1').textContent = data.reportId || '';
+            document.getElementById('report-id-2').textContent = data.reportId || '';
+            document.getElementById('report-date').textContent = data.reportDate || '';
+            document.getElementById('specimen-type').textContent = data.specimenType || '';
+
+            const testResultsBody = document.getElementById('test-results-body');
+            testResultsBody.innerHTML = '';
+
+            if (data.testResults && data.testResults.length > 0) {
+                data.testResults.forEach(test => {
+                    const row = document.createElement('tr');
+
+                    const testCell = document.createElement('td');
+                    testCell.textContent = test.name || '';
+                    row.appendChild(testCell);
+
+                    const resultCell = document.createElement('td');
+                    resultCell.textContent = test.result || '';
+                    row.appendChild(resultCell);
+
+                    const referenceCell = document.createElement('td');
+                    referenceCell.textContent = test.reference || '';
+                    row.appendChild(referenceCell);
+
+                    testResultsBody.appendChild(row);
+                });
+            }
+        }
+
+        // Example of how to use the function
+        // You can replace this with your Laravel approach to fetch and populate data
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sample data - in Laravel you'd likely fetch this from your backend
+            const sampleData = {
+                patientName: 'John Doe',
+                age: '45',
+                gender: 'Male',
+                reportId: 'LAB-2023-001',
+                reportDate: '2023-05-04',
+                specimenType: 'Blood',
+                testResults: [
+                    { name: 'Hemoglobin', result: '14.5 g/dL', reference: '13.5-17.5 g/dL' },
+                    { name: 'White Blood Cell Count', result: '7.5 x 10^9/L', reference: '4.5-11.0 x 10^9/L' }
+                ]
+            };
+
+            populateReport(sampleData);
+        });
+
+    </script>
+</body>
+</html>
