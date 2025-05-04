@@ -61,10 +61,6 @@
                                 </div>
                                 <div class="row mb-3">
                                     <div class="col col-lg-4">
-                                        <label class="form-label">Cost</label>
-                                        <input type="number" name="cost" class="form-control" step="0.01" value="{{ $test->cost }}" />
-                                    </div>
-                                    <div class="col col-lg-4">
                                         <label class="form-label">Price</label>
                                         <input type="number" name="price" class="form-control" step="0.01" value="{{ $test->price }}" />
                                     </div>

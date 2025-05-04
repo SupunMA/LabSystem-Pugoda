@@ -18,7 +18,6 @@
                             <th>Test Name</th>
                             <th>Specimen</th>
                             <th>Categories</th>
-                            <th>Cost</th>
                             <th>Price</th>
                             <th>Created Date</th>
                             <th>Actions</th>
@@ -33,7 +32,6 @@
                             <th>Test Name</th>
                             <th>Specimen</th>
                             <th>Categories</th>
-                            <th>Cost</th>
                             <th>Price</th>
                             <th>Created Date</th>
                             <th>Actions</th>
@@ -69,7 +67,6 @@
                 { data: 'name' },
                 { data: 'specimen' },
                 { data: 'categories_count' },
-                { data: 'cost' },
                 { data: 'price' },
                 { data: 'created_at' },
                 { data: 'actions', orderable: false, searchable: false }

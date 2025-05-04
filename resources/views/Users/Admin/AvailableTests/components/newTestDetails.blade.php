@@ -99,10 +99,6 @@
                 </div>
                 <div class="row mb-3">
                 <div class="col col-lg-4">
-                    <label class="form-label">Cost</label>
-                    <input type="number" name="tests[0][cost]" class="form-control" step="10.00" />
-                </div>
-                <div class="col col-lg-4">
                     <label class="form-label">Price</label>
                     <input type="number" name="tests[0][price]" class="form-control" step="10.00" />
                 </div>
@@ -499,10 +495,6 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
             </div>
             <div class="row mb-3">
-              <div class="col col-lg-4">
-                <label class="form-label">Cost</label>
-                <input type="number" name="tests[${testIndex}][cost]" class="form-control" step="10.00" />
-              </div>
               <div class="col col-lg-4">
                 <label class="form-label">Price</label>
                 <input type="number" name="tests[${testIndex}][price]" class="form-control" step="10.00" />

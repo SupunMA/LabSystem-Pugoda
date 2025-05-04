@@ -12,7 +12,7 @@ class AvailableTest_New extends Model
     protected $table = 'availableTests';
     protected $primaryKey = 'id';
 
-    protected $fillable = ['name','specimen', 'cost', 'price'];
+    protected $fillable = ['name','specimen',  'price'];
 
     public function categories()
     {

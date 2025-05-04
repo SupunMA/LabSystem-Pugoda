@@ -17,7 +17,6 @@ class CreateAvailableTests extends Migration
             $table->id();
             $table->string('name');
             $table->string('specimen');
-            $table->decimal('cost', 10, 2)->nullable();
             $table->decimal('price', 10, 2)->nullable();
             $table->timestamps();
         });

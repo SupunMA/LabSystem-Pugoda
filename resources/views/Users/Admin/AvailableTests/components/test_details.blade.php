@@ -11,10 +11,6 @@
                     <td>{{ ucfirst($test->specimen ?? 'Not specified') }}</td>
                 </tr>
                 <tr>
-                    <th class="bg-light">Cost</th>
-                    <td>{{ $test->cost ? number_format($test->cost, 2) : 'Not specified' }}</td>
-                </tr>
-                <tr>
                     <th class="bg-light">Price</th>
                     <td>{{ $test->price ? number_format($test->price, 2) : 'Not specified' }}</td>
                 </tr>

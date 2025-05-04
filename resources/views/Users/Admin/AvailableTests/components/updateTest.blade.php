@@ -43,12 +43,6 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Cost</label>
-                                <input type="number" id="edit-cost" name="cost" class="form-control" step="10.00">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
                                 <label>Price</label>
                                 <input type="number" id="edit-price" name="price" class="form-control" step="10.00">
                             </div>
@@ -77,7 +71,6 @@
         $('#edit-id').val(btn.data('id'));
         $('#edit-name').val(btn.data('name'));
         $('#edit-specimen').val(btn.data('specimen'));
-        $('#edit-cost').val(btn.data('cost'));
         $('#edit-price').val(btn.data('price'));
 
         // Set the full edit link href

@@ -183,7 +183,6 @@ class admin_AvailableTestCtr extends Controller
             $test = AvailableTest_New::create([
                 'name' => $testData['name'] ?? '',
                 'specimen' => $testData['specimen'] ?? null,
-                'cost' => $testData['cost'] ?? null,
                 'price' => $testData['price'] ?? null,
             ]);
 
@@ -356,7 +355,6 @@ class admin_AvailableTestCtr extends Controller
             'id',
             'name',
             'specimen',
-            'cost',
             'price',
             'created_at'
         ])->get();
@@ -369,7 +367,6 @@ class admin_AvailableTestCtr extends Controller
                                 data-id="'.$test->id.'"
                                 data-name="'.htmlspecialchars($test->name, ENT_QUOTES).'"
                                 data-specimen="'.$test->specimen.'"
-                                data-cost="'.$test->cost.'"
                                 data-price="'.$test->price.'">
                                 <i class="fas fa-edit"></i>
                             </button>';
@@ -390,10 +387,6 @@ class admin_AvailableTestCtr extends Controller
             ->addColumn('categories_count', function ($test) {
                 return '<span class="badge badge-info">' . $test->categories()->count() . '</span>';
             })
-            ->addColumn('cost', function ($test) {
-                if (empty($test->cost)) return '<span class="text-muted">-</span>';
-                return number_format($test->cost, 2);
-            })
             ->addColumn('price', function ($test) {
                 if (empty($test->price)) return '<span class="text-muted">-</span>';
                 return number_format($test->price, 2);
@@ -401,7 +394,7 @@ class admin_AvailableTestCtr extends Controller
             ->editColumn('created_at', function ($test) {
                 return $test->created_at ? $test->created_at->format('M d, Y') : '';
             })
-            ->rawColumns(['actions', 'specimen', 'categories_count', 'cost', 'price'])
+            ->rawColumns(['actions', 'specimen', 'categories_count', 'price'])
             ->make(true);
     } catch (\Exception $e) {
         \Log::error('DataTables error: ' . $e->getMessage());
@@ -448,12 +441,10 @@ class admin_AvailableTestCtr extends Controller
                     Rule::unique('availableTests', 'name')->ignore($request->test_id)
                 ],
                 'specimen' => 'nullable|string',
-                'cost' => 'nullable|numeric|min:0',
                 'price' => 'nullable|numeric|min:0',
             ], [
                 'name.required' => 'Test name is required.',
                 'name.unique' => 'This test name already exists.',
-                'cost.numeric' => 'Cost must be a valid number.',
                 'price.numeric' => 'Price must be a valid number.'
             ]);
 
@@ -469,7 +460,6 @@ class admin_AvailableTestCtr extends Controller
             $test->update([
                 'name' => $request->name,
                 'specimen' => $request->specimen,
-                'cost' => $request->cost,
                 'price' => $request->price
             ]);
 
@@ -551,7 +541,6 @@ public function updateTestFull(Request $request, $id)
         $test->update([
             'name' => $request->name,
             'specimen' => $request->specimen,
-            'cost' => $request->cost,
             'price' => $request->price,
         ]);
 
