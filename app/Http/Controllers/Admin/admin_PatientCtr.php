@@ -81,7 +81,7 @@ class admin_PatientCtr extends Controller
                     'gender' => $patient->gender === 'M' ? 'Male' : ($patient->gender === 'F' ? 'Female' : 'Other'),
                     'mobile' => $patient->mobile,
                     'email' => optional($patient->user)->email ?? 'N/A',
-                    'address' => $patient->address,
+                    'address' => $patient->address ?? 'N/A',
                     'actions' => '
                                 <button
                                     class="btn btn-warning editBtn"

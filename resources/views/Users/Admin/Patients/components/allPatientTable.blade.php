@@ -107,17 +107,36 @@
             columns: [
                 { data: 'id' },
                 { data: 'name' },
-                { data: 'nic' },
+                {
+                    data: 'nic',
+                    render: function(data, type, row) {
+                        // Check if data is null, undefined, or empty string
+                        if (!data || data === '') {
+                            return 'N/A';
+                        }
+
+                        // Return the data as is
+                        return data;
+                    }
+                },
                 { data: 'dob' },
                 { data: 'gender' },
                 {
                     data: 'mobile',
                     render: function(data, type, row) {
+                        // Check if data is null, undefined, empty string, or doesn't exist
+                        if (!data || data === '') {
+                            return 'N/A';
+                        }
+
+                        // If it's for display and has correct length, format it
                         if (type === 'display' && data.length === 10) {
                             return '(' + data.substr(0, 3) + ') ' +
                                 data.substr(3, 3) + '-' +
                                 data.substr(6);
                         }
+
+                        // Otherwise return the data as is
                         return data;
                     }
                 },
