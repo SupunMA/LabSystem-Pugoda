@@ -36,6 +36,45 @@
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
     }
+
+    /* Custom login form styling */
+    .login-info-text {
+        font-size: 12px;
+        color: #666;
+        margin-top: 5px;
+        text-align: left;
+    }
+
+    .form-row {
+        margin-bottom: 15px;
+        width: 100%;
+    }
+
+    .checkbox-container {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .checkbox-container input[type="checkbox"] {
+        margin-right: 8px;
+    }
+
+    .btn-signin {
+        width: 100%;
+        padding: 10px;
+        background-color: #007bff;
+        border: none;
+        color: white;
+        font-weight: bold;
+        border-radius: 3px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn-signin:hover {
+        background-color: #0053cf;
+    }
 </style>
 
 <div class="container">
@@ -66,11 +105,22 @@
                             </div>
                         @endif
 
-                        {{-- NIC Field --}}
+                        {{-- Identifier Field (NIC or Mobile) --}}
                         <div class="form-group has-feedback">
-                            <input type="text" name="nic" class="form-control @error('nic') is-invalid @enderror" placeholder="NIC Number" value="{{ old('nic') }}" required>
+                            <input type="text" name="identifier" class="form-control @error('identifier') is-invalid @enderror @error('nic') is-invalid @enderror @error('mobile') is-invalid @enderror"
+                                   placeholder="NIC or Phone Number" value="{{ old('identifier') ?: old('nic') ?: old('mobile') }}" required>
                             <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                            @error('identifier')
+                                <span class="text-danger" role="alert">
+                                    <small>{{ $message }}</small>
+                                </span>
+                            @enderror
                             @error('nic')
+                                <span class="text-danger" role="alert">
+                                    <small>{{ $message }}</small>
+                                </span>
+                            @enderror
+                            @error('mobile')
                                 <span class="text-danger" role="alert">
                                     <small>{{ $message }}</small>
                                 </span>
@@ -88,10 +138,17 @@
                             @enderror
                         </div>
 
-                        <div class="row">
-                            <div class="col-xs-4">
-                                <button type="submit" id="loginButton" class="btn btn-primary btn-block btn-flat">Sign In</button>
+                        {{-- Remember Me Checkbox Row --}}
+                        <div class="form-row">
+                            <div class="checkbox-container">
+                                <input type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
+                                <label for="remember">Remember Me</label>
                             </div>
+                        </div>
+
+                        {{-- Sign In Button Row --}}
+                        <div class="form-row">
+                            <button type="submit" id="loginButton" class="btn-signin">Sign In</button>
                         </div>
                     </form>
 
