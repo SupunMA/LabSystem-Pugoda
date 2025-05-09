@@ -111,7 +111,7 @@ class RegisterController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'gender' => ['required', 'string', 'in:M,F,O'],
-            'dob' => ['required', 'string', 'date','before:-1 years'],
+            'dob' => ['required', 'string', 'date'],
           'email' => ['nullable', 'email', 'max:255', 'unique:users'],
             'nic' => ['required', 'regex:/^(\d{9}[Vv]|\d{12})$/', 'unique:users','max:15',],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
