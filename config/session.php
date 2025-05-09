@@ -35,6 +35,11 @@ return [
 
     'expire_on_close' => false,
 
+    // Remember checked
+
+    'remember_lifetime' => env('SESSION_REMEMBER_LIFETIME', 43200), // 30 days in minutes
+
+
     /*
     |--------------------------------------------------------------------------
     | Session Encryption
