@@ -130,6 +130,13 @@ class RegisterController extends Controller
         $user->role = $request->role;
 
         $patient = new Patient();
+
+
+        // Clean the phone number by removing non-digit characters
+        $cleanedMobile = preg_replace('/[^0-9]/', '', $request->mobile);
+
+        // Replace the formatted number with the cleaned version
+        $request->merge(['mobile' => $cleanedMobile]);
         $patient->mobile = $request->mobile;
        //change the date format
         $formattedDate = Carbon::parse($request->dob)->format('Y-m-d');

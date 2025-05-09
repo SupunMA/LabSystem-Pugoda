@@ -110,7 +110,17 @@
                 { data: 'nic' },
                 { data: 'dob' },
                 { data: 'gender' },
-                { data: 'mobile' },
+                {
+                    data: 'mobile',
+                    render: function(data, type, row) {
+                        if (type === 'display' && data.length === 10) {
+                            return '(' + data.substr(0, 3) + ') ' +
+                                data.substr(3, 3) + '-' +
+                                data.substr(6);
+                        }
+                        return data;
+                    }
+                },
                 { data: 'email' },
                 { data: 'address' },
                 { data: 'actions', orderable: false, searchable: false } // actions column
