@@ -112,12 +112,13 @@ class RegisterController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'gender' => ['required', 'string', 'in:M,F,O'],
             'dob' => ['required', 'string', 'date'],
-          'email' => ['nullable', 'email', 'max:255', 'unique:users'],
-            'nic' => ['required', 'regex:/^(\d{9}[Vv]|\d{12})$/', 'unique:users','max:15',],
+            'email' => ['nullable', 'email', 'max:255', 'unique:users'],
+            'nic' => ['required_without:mobile', 'nullable', 'regex:/^(\d{9}[Vv]|\d{12})$/', 'unique:users', 'max:15'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'mobile' =>['string','unique:patients'],
-            'address' =>['string']
+            'mobile' => ['required_without:nic', 'nullable', 'string', 'unique:patients'],
+            'address' => ['string', 'nullable']
         ]);
+
 
 
         $user = new User();

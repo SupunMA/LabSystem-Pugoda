@@ -51,25 +51,15 @@
 
 
 
-                {{-- Mobile --}}
-
+                {{-- email --}}
                 <div class="col-lg-6 col-12">
-
-
-                    <!-- phone mask -->
                     <div class="form-group">
-                        <label>Mobile</label>
-
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                              <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                            </div>
-                            <input type="text" class="form-control" data-inputmask="&quot;mask&quot;: &quot;(999) 999-9999&quot;" data-mask="" inputmode="text" name="mobile">
-                        </div>
+                        <label>Email Address</label>
+                        <input type="email" class="form-control" name="email" placeholder="Email (Optional)">
                     </div>
-                    <!-- /.form group -->
-
                 </div>
+
+
             </div>
 
 
