@@ -371,10 +371,11 @@ class admin_AvailableTestCtr extends Controller
                                 <i class="fas fa-edit"></i>
                             </button>';
 
-                // Add View Template button
-                $actions .= '<button type="button" class="btn btn-secondary btn-sm viewTemplateBtn" data-id="'.$test->id.'" data-name="'.htmlspecialchars($test->name, ENT_QUOTES).'">
-                                <i class="fas fa-file-alt"></i>
-                            </button>';
+// Add View Template button
+$actions .= '<a href="'.route('admin.viewTestReport', ['id' => $test->id]).'" class="btn btn-secondary btn-sm" target="_blank">
+                <i class="fas fa-file-alt"></i>
+            </a>';
+
 
                 $actions .= '<button type="button" class="btn btn-danger btn-sm deleteBtn" data-id="'.$test->id.'" data-name="'.htmlspecialchars($test->name, ENT_QUOTES).'"><i class="fas fa-trash"></i></button>';
                 $actions .= '</div>';
@@ -385,7 +386,8 @@ class admin_AvailableTestCtr extends Controller
                 return ucfirst($test->specimen);
             })
             ->addColumn('categories_count', function ($test) {
-                return '<span class="badge badge-info">' . $test->categories()->count() . '</span>';
+                return '<div class="rounded-circle bg-success text-white d-inline-flex justify-content-center align-items-center" style="width: 25px; height: 25px;">' . $test->categories()->count() . '</div>';
+
             })
             ->addColumn('price', function ($test) {
                 if (empty($test->price)) return '<span class="text-muted">-</span>';
@@ -844,5 +846,208 @@ public function getTestTemplateStructure($id)
         ], 500);
     }
 }
+
+//view report
+// In your controller
+/**
+ * Display a preview of the test report
+ */
+public function viewTestReport($id)
+{
+    try {
+        // Get the test and its associated data
+        $test = AvailableTest_New::with([
+            'categories' => function($q) {
+                $q->orderBy('display_order');
+            },
+            'elements' => function($q) {
+                $q->orderBy('display_order');
+            }
+        ])->findOrFail($id);
+
+        // Load reference tables for categories
+        foreach($test->categories as $category) {
+            if ($category->reference_type === 'table') {
+                // Get the reference table data
+                $tableData = ReferenceRangeTable::where('test_categories_id', $category->id)
+                    ->get();
+
+                // Find the number of columns
+                $maxColumn = $tableData->max('column');
+
+                // Organize data into a proper grid
+                $referenceTable = [];
+                foreach ($tableData as $cell) {
+                    if (!isset($referenceTable[$cell->row])) {
+                        $referenceTable[$cell->row] = array_fill(0, $maxColumn + 1, '');
+                    }
+                    $referenceTable[$cell->row][$cell->column] = $cell->value;
+                }
+
+                $category->referenceTable = $referenceTable;
+            }
+        }
+
+        // Collect all elements in display order
+        $allElements = [];
+
+        // Add categories
+        foreach ($test->categories as $category) {
+            $allElements[] = [
+                'type' => 'category',
+                'data' => $category,
+                'order' => $category->display_order
+            ];
+        }
+
+        // Add other elements
+        foreach ($test->elements as $element) {
+            $allElements[] = [
+                'type' => $element->type,
+                'data' => $element,
+                'order' => $element->display_order
+            ];
+        }
+
+        // Sort elements by display order
+        usort($allElements, function($a, $b) {
+            return $a['order'] - $b['order'];
+        });
+
+        // Prepare test results
+        $testResults = [];
+        foreach ($allElements as $element) {
+            switch ($element['type']) {
+                case 'category':
+                    $category = $element['data'];
+
+                    // Generate sample result based on value type
+                    $result = $this->generateSampleResult($category);
+
+                    // Generate reference range
+                    $reference = $this->formatReference($category);
+
+                    $testResults[] = [
+                        'name' => $category->name,
+                        'result' => $result,
+                        'reference' => $reference,
+                        'isCategory' => true
+                    ];
+                    break;
+
+                case 'title':
+                    $testResults[] = [
+                        'name' => $element['data']->content,
+                        'result' => '',
+                        'reference' => '',
+                        'isTitle' => true
+                    ];
+                    break;
+
+                case 'paragraph':
+                    $testResults[] = [
+                        'name' => '',
+                        'result' => $element['data']->content,
+                        'reference' => '',
+                        'isParagraph' => true
+                    ];
+                    break;
+
+                case 'space':
+                    $testResults[] = [
+                        'name' => '',
+                        'result' => '',
+                        'reference' => '',
+                        'isSpace' => true
+                    ];
+                    break;
+            }
+        }
+
+        // Sample data for the preview
+        $sampleData = [
+            'patientName' => 'Sample Patient',
+            'age' => '45',
+            'gender' => 'Male',
+            'reportId' => 'DEMO-'.date('Ymd').'-'.$id,
+            'reportDate' => date('Y-m-d'),
+            'specimenType' => $test->specimen,
+            'testName' => $test->name, // Added test name here
+            'testResults' => $testResults
+        ];
+
+        // Return the view with the sample data
+        return view('Users.labReport', compact('sampleData'));
+
+    } catch (\Exception $e) {
+        \Log::error('Report preview error: ' . $e->getMessage());
+        return back()->with('error', 'Failed to generate report preview: ' . $e->getMessage());
+    }
+}
+
+/**
+ * Generate a sample result based on category type
+ */
+private function generateSampleResult($category)
+{
+    switch ($category->value_type) {
+        case 'negpos':
+            return rand(0, 1) ? 'Negative' : 'Positive';
+
+        case 'text':
+            $sampleTexts = ['Normal', 'No abnormality detected', 'Within normal limits'];
+            return $sampleTexts[array_rand($sampleTexts)];
+
+        case 'range':
+            // Generate a random number within or near the reference range
+            if ($category->reference_type === 'minmax' && $category->min_value !== null && $category->max_value !== null) {
+                $min = floatval($category->min_value);
+                $max = floatval($category->max_value);
+                $value = $min + (mt_rand() / mt_getrandmax()) * ($max - $min);
+                $value = round($value, 1);
+
+                if ($category->unit_enabled && $category->unit) {
+                    return $value . ' ' . $category->unit;
+                }
+                return $value;
+            }
+
+            return mt_rand(50, 150);
+    }
+}
+
+/**
+ * Format reference range for display
+ */
+private function formatReference($category)
+{
+    if ($category->reference_type === 'none') {
+        return '-';
+    } else if ($category->reference_type === 'minmax') {
+        $range = '';
+        if ($category->min_value !== null && $category->max_value !== null) {
+            $range = "{$category->min_value} - {$category->max_value}";
+        } else if ($category->min_value !== null) {
+            $range = "> {$category->min_value}";
+        } else if ($category->max_value !== null) {
+            $range = "< {$category->max_value}";
+        }
+
+        if ($category->unit_enabled && $category->unit && !empty($range)) {
+            $range .= " {$category->unit}";
+        }
+
+        return $range;
+    } else if ($category->reference_type === 'table') {
+        // Return the reference table
+        return [
+            'isTable' => true,
+            'data' => $category->referenceTable
+        ];
+    }
+
+    return '';
+}
+
 
 }

@@ -84,6 +84,8 @@ Route::group(['prefix'=>'Admin','middleware'=>['checkAdmin','auth','lockBack']],
     Route::post('/update-tests', [admin_AvailableTestCtr::class, 'updateTest'])->name('admin.updateTestnew'); //done
     Route::get('/tests/{id}/details', [admin_AvailableTestCtr::class, 'getTestDetails'])->name('admin.testDetails'); //done
     Route::post('/delete-test', [admin_AvailableTestCtr::class, 'deleteTest'])->name('admin.deleteAvailableTestNEW');//done
+
+    Route::get('/tests/{id}/report', [admin_AvailableTestCtr::class, 'viewTestReport'])->name('admin.viewTestReport');
     // Full Edit Page
     Route::get('/tests/{id}/edit', [admin_AvailableTestCtr::class, 'editTest'])->name('admin.editTest');
     Route::post('/tests/{id}/update', [admin_AvailableTestCtr::class, 'updateTestFull'])->name('admin.updateTestFull');

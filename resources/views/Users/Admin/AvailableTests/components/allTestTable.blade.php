@@ -127,5 +127,15 @@
         "positionClass": "toast-top-right",
         "timeOut": "8000"
     };
+
+
+    // View Template button handler
+$(document).on('click', '.viewTemplateBtn', function() {
+    const testId = $(this).data('id');
+    window.open(`{{ url('/tests') }}/${testId}/report`, '_blank');
+});
 </script>
+
+
+
 @endpush
