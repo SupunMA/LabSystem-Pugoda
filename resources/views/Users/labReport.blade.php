@@ -9,17 +9,33 @@
         size: A4;
         margin: 0;
     }
-    body {
-        font-family: Arial, sans-serif;
+    html, body {
+        width: 100%;
+        height: 100%;
         margin: 0;
         padding: 0;
+    }
+    body {
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .page {
         width: 210mm;
         height: 297mm;
+        margin: 0 auto;
+        position: relative;
+        background: white;
         box-sizing: border-box;
-        font-size: 12px;
     }
     .container {
         padding: 20px;
+        padding-bottom: 100px; /* Make space for footer */
+        width: 100%;
+        box-sizing: border-box;
     }
     .header {
         display: flex;
@@ -27,6 +43,7 @@
         align-items: flex-start;
         margin-bottom: 20px;
         background-color: transparent;
+        width: 100%;
     }
     .logo-container {
         display: flex;
@@ -69,11 +86,13 @@
         height: 2px;
         background-color: #2d5b84;
         margin-bottom: 20px;
+        width: 100%;
     }
     .patient-info {
         display: grid;
         grid-template-columns: 1fr 1fr;
         margin-bottom: 20px;
+        width: 100%;
     }
     .patient-details, .report-details {
         padding: 10px;
@@ -92,6 +111,10 @@
     }
     .specimen-info {
         margin-bottom: 20px;
+        width: 100%;
+    }
+    .test-results {
+        width: 100%;
     }
     .test-results table {
         width: 100%;
@@ -118,9 +141,6 @@
     }
 
     .technologist-signature {
-        position: absolute;
-        bottom: 80px;
-        right: 20px;
         text-align: right;
         padding-top: 10px;
         border-top: 1px dotted #000;
@@ -128,19 +148,32 @@
         color: #2d5b84;
         font-weight: bold;
         font-size: 11px;
-    }
-    .footer {
         position: absolute;
-        bottom: 20px;
+        right: 20px;
+        bottom: 80px;
+    }
+
+    .footer-wrapper {
+        position: absolute;
+        bottom: 0;
         left: 0;
         right: 0;
+        height: 60px;
+        width: 100%;
+    }
+
+    .footer {
         display: flex;
         justify-content: space-between;
         align-items: center;
         padding: 0 20px;
         border-top: 1px solid #e45735;
         padding-top: 10px;
+        width: calc(100% - 40px);
+        position: absolute;
+        bottom: 20px;
     }
+
     .footer-logo {
         height: 40px;
     }
@@ -175,6 +208,7 @@
         text-align: center;
         border-bottom: 1px solid #ddd;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        width: 100%;
     }
 
     @media print {
@@ -214,20 +248,22 @@
         background-color: transparent;
     }
 </style>
-
-
 </head>
 <body>
-    <div class="preview-controls">
-        <button onclick="window.print()" style="padding: 10px 20px; background-color: #2d5b84; color: white; border: none; border-radius: 4px; cursor: pointer; margin-right: 10px;">
-            <i class="fas fa-print"></i> Print Preview
-        </button>
-        <a href="{{ route('admin.allAvailableTest') }}" style="padding: 10px 20px; background-color: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer; text-decoration: none;">
-            <i class="fas fa-arrow-left"></i> Back to Tests
-        </a>
-        <p style="margin-top: 5px; color: #666; font-size: 12px;">This is a preview showing how the lab report will appear. Sample data is used.</p>
-    </div>
+<div class="preview-controls">
+    <button onclick="downloadReport()" style="padding: 10px 20px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; margin-right: 10px;">
+        <i class="fas fa-download"></i> Download Report
+    </button>
+    <button onclick="window.print()" style="padding: 10px 20px; background-color: #2d5b84; color: white; border: none; border-radius: 4px; cursor: pointer; margin-right: 10px;">
+        <i class="fas fa-print"></i> Print Preview
+    </button>
+    <a href="{{ route('admin.allAvailableTest') }}" style="padding: 10px 20px; background-color: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer; text-decoration: none;">
+        <i class="fas fa-arrow-left"></i> Back to Tests
+    </a>
+    <p style="margin-top: 5px; color: #666; font-size: 12px;">This is a preview showing how the lab report will appear. Sample data is used.</p>
+</div>
 
+<div class="page">
     <div class="container">
         <div class="header">
             <div class="logo-container">
@@ -297,69 +333,112 @@
         </div>
 
         <div class="test-results">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Test</th>
-                        <th>Result</th>
-                        <th>Reference Range</th>
+    <table>
+        <thead>
+            <tr>
+                <th>Test</th>
+                <th>Result</th>
+                <th>Reference Range</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($sampleData['testResults'] as $test)
+                @if(isset($test['isSpace']) && $test['isSpace'])
+                    <tr class="space-row">
+                        <td colspan="3" height="20"></td>
                     </tr>
-                </thead>
-                <tbody>
-                    @foreach ($sampleData['testResults'] as $test)
-                        @if(isset($test['isSpace']) && $test['isSpace'])
-                            <tr class="space-row">
-                                <td colspan="3" height="20"></td>
-                            </tr>
-                        @elseif(isset($test['isTitle']) && $test['isTitle'])
-                            <tr class="title-row">
-                                <td colspan="3">{{ $test['name'] }}</td>
-                            </tr>
-                        @elseif(isset($test['isParagraph']) && $test['isParagraph'])
-                            <tr class="paragraph-row">
-                                <td colspan="3">{{ $test['result'] }}</td>
-                            </tr>
-                        @else
-                            <tr>
-                                <td>{{ $test['name'] }}</td>
-                                <td>{{ $test['result'] }}</td>
-                                <td>
-                                    @if(is_array($test['reference']) && isset($test['reference']['isTable']) && $test['reference']['isTable'])
-                                        <table class="reference-table">
-                                            @foreach($test['reference']['data'] as $rowIndex => $row)
-                                                <tr>
-                                                    @foreach($row as $cellValue)
-                                                        <td>{{ $cellValue }}</td>
-                                                    @endforeach
-                                                </tr>
+                @elseif(isset($test['isTitle']) && $test['isTitle'])
+                    <tr class="title-row">
+                        <td colspan="3">{{ $test['name'] }}</td>
+                    </tr>
+                @elseif(isset($test['isParagraph']) && $test['isParagraph'])
+                    <tr class="paragraph-row">
+                        <td colspan="3">{{ $test['result'] }}</td>
+                    </tr>
+                @else
+                    <tr>
+                        <td>{{ $test['name'] }}</td>
+                        <td>{{ $test['result'] }}</td>
+                        <td>
+                            @if(is_array($test['reference']) && isset($test['reference']['isTable']) && $test['reference']['isTable'])
+                                <table class="reference-table">
+                                    @foreach($test['reference']['data'] as $rowIndex => $row)
+                                        <tr>
+                                            @foreach($row as $cellValue)
+                                                <td>{{ $cellValue }}</td>
                                             @endforeach
-                                        </table>
-                                    @else
-                                        {{ $test['reference'] }}
-                                    @endif
-                                </td>
-                            </tr>
-                        @endif
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+                                        </tr>
+                                    @endforeach
+                                </table>
+                            @else
+                                {{ $test['reference'] }}
+                            @endif
+                        </td>
+                    </tr>
+                @endif
+            @endforeach
+        </tbody>
+    </table>
+</div>
 
         <div class="technologist-signature">
             Laboratory Technologist
         </div>
     </div>
 
-    <div class="footer">
-        <div class="footer-left">
-            <span class="footer-text">healthcare within reach</span>
-        </div>
-        <div class="footer-center">
-            <span class="footer-text">Report Preview Mode</span>
-        </div>
-        <div class="footer-right">
-            <span class="footer-text">ideas for vision</span>
+    <div class="footer-wrapper">
+        <div class="footer">
+            <div class="footer-left">
+                <span class="footer-text">healthcare within reach</span>
+            </div>
+            <div class="footer-center">
+                <span class="footer-text">Report Preview Mode</span>
+            </div>
+            <div class="footer-right">
+                <span class="footer-text">ideas for vision</span>
+            </div>
         </div>
     </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+    function downloadReport() {
+        // Create a clone of the document for export
+        const pageElement = document.querySelector('.page');
+        const clone = pageElement.cloneNode(true);
+
+        // Create a temporary container to hold just the page
+        const container = document.createElement('div');
+        container.style.width = '210mm';
+        container.style.height = '297mm';
+        container.style.margin = '0';
+        container.style.position = 'relative';
+        container.style.backgroundColor = 'white';
+        container.appendChild(clone);
+
+        // Set HTML2PDF options with fixed dimensions
+        const opt = {
+            margin: 0,
+            filename: 'Lab_Report.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                letterRendering: true
+            },
+            jsPDF: {
+                unit: 'mm',
+                format: 'a4',
+                orientation: 'portrait'
+            }
+        };
+
+        // Generate and download PDF - use the page element directly instead of body
+        html2pdf().from(pageElement).set(opt).save();
+    }
+</script>
+
 </body>
 </html>
