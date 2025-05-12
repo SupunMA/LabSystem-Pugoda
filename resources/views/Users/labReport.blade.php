@@ -87,11 +87,11 @@
         color: #2d5b84;
         text-align: center;
         font-size: 18px;
-        margin: 15px 0;
+        margin: 5px 0;
         font-weight: bold;
     }
     .divider {
-        height: 2px;
+        height: 4px;
         background-color: #2d5b84;
         margin-bottom: 5px;
         width: 100%;
@@ -110,7 +110,7 @@
         margin-bottom: 8px;
     }
     .info-value {
-        font-size: 12px;
+        font-size: 14px;
     }
     .info-label {
         width: 110px;
@@ -144,7 +144,7 @@
     .test-results td {
         padding: 6px;
         border-bottom: 1px solid #ddd;
-        font-size: 12px;
+        font-size: 13px;
         background-color: transparent;
     }
 
@@ -176,12 +176,21 @@
         background-color: white;
     }
 
-    .footer-logo {
-        height: 40px;
+    .footer-item {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        width: 48%;
     }
+
+    .footer-logo {
+        width: 25%;
+        margin-right: 15px;
+    }
+
     .footer-text {
-        color: #666;
-        font-size: 10px;
+        color: #2d5b84;
+        font-size: 12px;
     }
 
     /* Specific styling for reference tables */
@@ -420,11 +429,11 @@ function createReportPage(isFirstPage, pageNumber, totalPages) {
                         <h2>LABORATORY</h2>
                     </div>
                 </div>
-                <div class="contact-info">
-                    <div>100, Main road, Colombo</div>
-                    <div>+947712545</div>
-                    <div>horizon@gamill.com</div>
-                    <div>register 1029</div>
+                <div class="contact-info"  style="font-weight: bold; font-size: 15px">
+                    <div >No. 148/A4, Infront of Hospital, Bangalawaththa, Pugoda.</div>
+                    <div style="font-weight: bold; color: red; font-size: 20px;">0776 267 627</div>
+                    <div>horizonpugoda@gamill.com</div>
+                    <div>SLMC No. 2102</div>
                 </div>
             </div>
 
@@ -445,10 +454,6 @@ function createReportPage(isFirstPage, pageNumber, totalPages) {
                         <div class="info-label">GENDER:</div>
                         <div class="info-value">${sampleData.gender}</div>
                     </div>
-                    <div class="info-row">
-                        <div class="info-label">REPORT ID:</div>
-                        <div class="info-value">${sampleData.reportId}</div>
-                    </div>
                 </div>
                 <div class="report-details">
                     <div class="info-row">
@@ -458,6 +463,10 @@ function createReportPage(isFirstPage, pageNumber, totalPages) {
                     <div class="info-row">
                         <div class="info-label">REPORT ID:</div>
                         <div class="info-value">${sampleData.reportId}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">PRINTED DATE:</div>
+                        <div class="info-value">${formatDate(new Date())}</div>
                     </div>
                 </div>
             </div>
@@ -496,23 +505,19 @@ function createReportPage(isFirstPage, pageNumber, totalPages) {
     page.appendChild(pageNumberDiv);
 
     // Add the footer
-    const footer = document.createElement('div');
-    footer.className = 'footer';
-    footer.innerHTML = `
-        <div class="footer-left">
-              <p>dfgdfgdfg</p>
-            <span class="footer-text">healthcare within reach</span>
-        </div>
-        <div class="footer-center">
-              <p>dfgdfgdfg</p>
-            <span class="footer-text">Report Preview Mode</span>
-        </div>
-        <div class="footer-right">
-            <p>dfgdfgdfg</p>
-            <span class="footer-text">Printed on: ${formatDate(new Date())}</span>
-        </div>
-    `;
-    page.appendChild(footer);
+const footer = document.createElement('div');
+footer.className = 'footer';
+footer.innerHTML = `
+    <div class="footer-item">
+        <img src="https://bootflare.com/wp-content/uploads/2024/01/Mindray-Logo-1536x864.png" class="footer-logo">
+        <span class="footer-text">BC - 10 Fully Automated Hematology Analyzer <br> BA - 88A Biochemistry Analyzer</span>
+    </div>
+    <div class="footer-item">
+        <img src="https://th.bing.com/th/id/R.528ea67c70a8b88e4f07b6567175c74b?rik=RDLPE98IbpDh0Q&riu=http%3a%2f%2fasfgestion.com%2fimages%2flabomed%2fLabomed_Logo_min.png&ehk=sxPj6Y0OXXeHpX7lqL%2fNLOANJg%2fbvRvL6asrK5Qy4y4%3d&risl=&pid=ImgRaw&r=0" class="footer-logo">
+        <span class="footer-text">Quality Control by:<br> Biolabo Extrol - P / Biolabo Extrol - N</span>
+    </div>
+`;
+page.appendChild(footer);
 
     return { page, testResultsContainer: testResultsDiv };
 }
@@ -576,7 +581,7 @@ function createReportPage(isFirstPage, pageNumber, totalPages) {
             // Add technologist signature to the last page
             const techSignature = document.createElement('div');
             techSignature.className = 'technologist-signature';
-            techSignature.textContent = 'Laboratory Technologist';
+            techSignature.textContent = 'Medical Laboratory Technologist';
             page.querySelector('.container').appendChild(techSignature);
 
             pages.push(page);
