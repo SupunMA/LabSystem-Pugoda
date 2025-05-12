@@ -68,14 +68,14 @@
     .logo-text h1 {
         color: #e45735;
         margin: 0;
-        font-size: 24px;
+        font-size: 35px;
         font-weight: bold;
         line-height: 1;
     }
     .logo-text h2 {
         color: #2d5b84;
         margin: 0;
-        font-size: 14px;
+        font-size: 18px;
         font-weight: bold;
     }
     .contact-info {
@@ -87,13 +87,13 @@
         color: #2d5b84;
         text-align: center;
         font-size: 18px;
-        margin: 5px 0;
+        margin: 5px 0px;
         font-weight: bold;
     }
     .divider {
         height: 4px;
         background-color: #2d5b84;
-        margin-bottom: 5px;
+        margin-bottom: 35px;
         width: 100%;
     }
     .patient-info {
@@ -273,13 +273,13 @@
     }
 
     /* Page number indicator */
-    .page-number {
+    /* .page-number {
         position: absolute;
         bottom: 10px;
         right: 20px;
         font-size: 10px;
         color: #666;
-    }
+    } */
 
     /* Continuation header for additional pages */
     .continuation-header {
@@ -499,10 +499,10 @@ function createReportPage(isFirstPage, pageNumber, totalPages) {
     container.appendChild(testResultsDiv);
 
     // Add a page number indicator
-    const pageNumberDiv = document.createElement('div');
-    pageNumberDiv.className = 'page-number';
-    pageNumberDiv.textContent = `Page ${pageNumber} of ${totalPages}`;
-    page.appendChild(pageNumberDiv);
+    // const pageNumberDiv = document.createElement('div');
+    // pageNumberDiv.className = 'page-number';
+    // pageNumberDiv.textContent = `Page ${pageNumber} of ${totalPages}`;
+    // page.appendChild(pageNumberDiv);
 
     // Add the footer
 const footer = document.createElement('div');
