@@ -418,14 +418,10 @@ function createReportPage(isFirstPage, pageNumber, totalPages) {
             <div class="header">
                 <div class="logo-container">
                     <div class="logo">
-                        <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="5" y="5" width="10" height="40" fill="#2d5b84" />
-                            <rect x="20" y="15" width="10" height="30" fill="#2d5b84" />
-                            <rect x="35" y="10" width="10" height="35" fill="#2d5b84" />
-                        </svg>
+                        <img src="{{ asset('img/report-logo.png') }}" width="100%">
                     </div>
                     <div class="logo-text">
-                        <h1>HORIZON</h1>
+                        <h1><b>HORIZON</b></h1>
                         <h2>LABORATORY</h2>
                     </div>
                 </div>
