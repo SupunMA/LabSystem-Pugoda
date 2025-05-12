@@ -315,9 +315,7 @@
 </head>
 <body>
 <div class="preview-controls">
-    <button onclick="downloadReport()()" style="padding: 10px 20px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; margin-right: 10px;">
-        <i class="fas fa-download"></i> Download Report
-    </button>
+
     <button onclick="window.print()" style="padding: 10px 20px; background-color: #2d5b84; color: white; border: none; border-radius: 4px; cursor: pointer; margin-right: 10px;">
         <i class="fas fa-print"></i> Print Preview
     </button>
@@ -466,13 +464,14 @@ function createReportPage(isFirstPage, pageNumber, totalPages) {
 
             <div class="specimen-info">
                 <div class="info-row">
-                    <div class="info-label">TEST NAME:</div>
-                    <div class="info-value">${sampleData.testName || 'Not specified'}</div>
-                </div>
-                <div class="info-row">
                     <div class="info-label">SPECIMEN:</div>
                     <div class="info-value">${sampleData.specimenType || 'Not specified'}</div>
                 </div>
+                <div class="info-row">
+                    <div class="info-label">TEST NAME:</div>
+                    <div class="info-value">${sampleData.testName || 'Not specified'}</div>
+                </div>
+
             </div>
         `;
     } else {
@@ -725,40 +724,12 @@ function generateMultiPageReport() {
     updateReportElements();
 }
 
-// Modify the downloadReport function to apply toggle states before generating PDF
-function downloadReport() {
-    // Make sure the report reflects current toggle states
-    updateReportElements();
 
-    const reportContainer = document.getElementById('report-container');
 
-    // Set HTML2PDF options
-    const opt = {
-        margin: 0,
-        filename: 'Lab_Report.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
-            scale: 3,
-            useCORS: true,
-            logging: false,
-            letterRendering: true
-        },
-        jsPDF: {
-            unit: 'mm',
-            format: 'a4',
-            orientation: 'portrait'
-        },
-        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-    };
-
-    // Generate and download PDF
-    html2pdf().from(reportContainer).set(opt).save();
-}
-
-    // Initialize the report on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        generateMultiPageReport();
-    });
+// Initialize the report on page load
+document.addEventListener('DOMContentLoaded', function() {
+    generateMultiPageReport();
+});
 
 
 
