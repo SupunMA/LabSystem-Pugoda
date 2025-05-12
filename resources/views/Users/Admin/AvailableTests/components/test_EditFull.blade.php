@@ -390,16 +390,46 @@ document.addEventListener('click', function (e) {
                         <div class="unit-dropdown" style="display: none;">
                             <label class="form-label">Unit</label>
                             <select name="categories[${nextCategoryIndex}][unit]" class="form-select form-control">
-                                <option value="">--Select Unit--</option>
-                                <option value="mg/dL">mg/dL</option>
-                                <option value="mmol/L">mmol/L</option>
-                                <option value="g/L">g/L</option>
-                                <option value="IU/L">IU/L</option>
-                                <option value="ng/mL">ng/mL</option>
-                                <option value="µg/mL">µg/mL</option>
-                                <option value="mmHg">mmHg</option>
-                                <option value="mEq/L">mEq/L</option>
-                                <option value="%">%</option>
+          <option value="">--Select Unit--</option>
+            <option value="%">%</option>
+            <option value="Femtolitres">Femtolitres</option>
+            <option value="Grams">Grams</option>
+            <option value="Grams per decilitre">Grams per decilitre (g/dL)</option>
+            <option value="Grams per litre">Grams per litre (g/L)</option>
+            <option value="International units per litre">International units per litre (IU/L)</option>
+            <option value="International units per millilitre">International units per millilitre (IU/mL)</option>
+            <option value="Micrograms">Micrograms (mcg)</option>
+            <option value="Micrograms per decilitre">Micrograms per decilitre (mcg/dL)</option>
+            <option value="Micrograms per litre">Micrograms per litre (mcg/L)</option>
+            <option value="Microkatals per litre">Microkatals per litre (mckat/L)</option>
+            <option value="Microlitres">Microlitres (mcL)</option>
+            <option value="Micromoles per litre">Micromoles per litre (mcmol/L)</option>
+            <option value="Milliequivalents">Milliequivalents (mEq)</option>
+            <option value="Milliequivalents per litre">Milliequivalents per litre (mEq/L)</option>
+            <option value="Milligrams">Milligrams (mg)</option>
+            <option value="Milligrams per decilitre">Milligrams per decilitre (mg/dL)</option>
+            <option value="Milligrams per litre">Milligrams per litre (mg/L)</option>
+            <option value="Milli-international units per litre">Milli-international units per litre (mIU/L)</option>
+            <option value="Millilitres">Millilitres (mL)</option>
+            <option value="Millimetres">Millimetres (mm)</option>
+            <option value="Millimetres of mercury">Millimetres of mercury (mm Hg)</option>
+            <option value="Millimoles">Millimoles (mmol)</option>
+            <option value="Millimoles per litre">Millimoles per litre (mmol/L)</option>
+            <option value="Milliosmoles per kilogram of water">Milliosmoles per kilogram of water (mOsm/kg water)</option>
+            <option value="Milliunits per gram">Milliunits per gram (mU/g)</option>
+            <option value="Milliunits per litre">Milliunits per litre (mU/L)</option>
+            <option value="Nanograms per decilitre">Nanograms per decilitre (ng/dL)</option>
+            <option value="Nanograms per litre">Nanograms per litre (ng/L)</option>
+            <option value="Nanograms per millilitre">Nanograms per millilitre (ng/mL)</option>
+            <option value="Nanograms per millilitre per hour">Nanograms per millilitre per hour (ng/mL/hr)</option>
+            <option value="Nanomoles">Nanomoles (nmol)</option>
+            <option value="Nanomoles per litre">Nanomoles per litre (nmol/L)</option>
+            <option value="Picograms">Picograms (pg)</option>
+            <option value="Picograms per millilitre">Picograms per millilitre (pg/mL)</option>
+            <option value="Picomoles per litre">Picomoles per litre (pmol/L)</option>
+            <option value="Titres">Titres</option>
+            <option value="Units per litre">Units per litre (U/L)</option>
+            <option value="Units per millilitre">Units per millilitre (U/mL)</option>
                             </select>
                         </div>
                     </div>
@@ -589,16 +619,46 @@ document.addEventListener('change', function(e) {
                     <div class="unit-dropdown" style="display: none;">
                         <label class="form-label">Unit</label>
                         <select name="categories[${categoryIndex}][unit]" class="form-select form-control">
-                            <option value="">--Select Unit--</option>
-                            <option value="mg/dL">mg/dL</option>
-                            <option value="mmol/L">mmol/L</option>
-                            <option value="g/L">g/L</option>
-                            <option value="IU/L">IU/L</option>
-                            <option value="ng/mL">ng/mL</option>
-                            <option value="µg/mL">µg/mL</option>
-                            <option value="mmHg">mmHg</option>
-                            <option value="mEq/L">mEq/L</option>
-                            <option value="%">%</option>
+          <option value="">--Select Unit--</option>
+            <option value="%">%</option>
+            <option value="Femtolitres">Femtolitres</option>
+            <option value="Grams">Grams</option>
+            <option value="Grams per decilitre">Grams per decilitre (g/dL)</option>
+            <option value="Grams per litre">Grams per litre (g/L)</option>
+            <option value="International units per litre">International units per litre (IU/L)</option>
+            <option value="International units per millilitre">International units per millilitre (IU/mL)</option>
+            <option value="Micrograms">Micrograms (mcg)</option>
+            <option value="Micrograms per decilitre">Micrograms per decilitre (mcg/dL)</option>
+            <option value="Micrograms per litre">Micrograms per litre (mcg/L)</option>
+            <option value="Microkatals per litre">Microkatals per litre (mckat/L)</option>
+            <option value="Microlitres">Microlitres (mcL)</option>
+            <option value="Micromoles per litre">Micromoles per litre (mcmol/L)</option>
+            <option value="Milliequivalents">Milliequivalents (mEq)</option>
+            <option value="Milliequivalents per litre">Milliequivalents per litre (mEq/L)</option>
+            <option value="Milligrams">Milligrams (mg)</option>
+            <option value="Milligrams per decilitre">Milligrams per decilitre (mg/dL)</option>
+            <option value="Milligrams per litre">Milligrams per litre (mg/L)</option>
+            <option value="Milli-international units per litre">Milli-international units per litre (mIU/L)</option>
+            <option value="Millilitres">Millilitres (mL)</option>
+            <option value="Millimetres">Millimetres (mm)</option>
+            <option value="Millimetres of mercury">Millimetres of mercury (mm Hg)</option>
+            <option value="Millimoles">Millimoles (mmol)</option>
+            <option value="Millimoles per litre">Millimoles per litre (mmol/L)</option>
+            <option value="Milliosmoles per kilogram of water">Milliosmoles per kilogram of water (mOsm/kg water)</option>
+            <option value="Milliunits per gram">Milliunits per gram (mU/g)</option>
+            <option value="Milliunits per litre">Milliunits per litre (mU/L)</option>
+            <option value="Nanograms per decilitre">Nanograms per decilitre (ng/dL)</option>
+            <option value="Nanograms per litre">Nanograms per litre (ng/L)</option>
+            <option value="Nanograms per millilitre">Nanograms per millilitre (ng/mL)</option>
+            <option value="Nanograms per millilitre per hour">Nanograms per millilitre per hour (ng/mL/hr)</option>
+            <option value="Nanomoles">Nanomoles (nmol)</option>
+            <option value="Nanomoles per litre">Nanomoles per litre (nmol/L)</option>
+            <option value="Picograms">Picograms (pg)</option>
+            <option value="Picograms per millilitre">Picograms per millilitre (pg/mL)</option>
+            <option value="Picomoles per litre">Picomoles per litre (pmol/L)</option>
+            <option value="Titres">Titres</option>
+            <option value="Units per litre">Units per litre (U/L)</option>
+            <option value="Units per millilitre">Units per millilitre (U/mL)</option>
                         </select>
                     </div>
                 </div>`;
