@@ -521,7 +521,7 @@ page.appendChild(footer);
     // Function to distribute test results across pages
     function distributeTestResults(testResults) {
         sampleData.testResults = generateSampleTestResults();
-        const testResultsPerPage = isFirstPage => isFirstPage ? 26 : 35; // Fewer results on first page due to header
+        const testResultsPerPage = isFirstPage => isFirstPage ? 17 : 35; // Fewer results on first page due to header
         let currentPage = 1;
         let resultsOnCurrentPage = 0;
         let isFirstPage = true;
@@ -548,7 +548,7 @@ page.appendChild(footer);
             const result = sampleData.testResults[i];
 
             if (resultsOnCurrentPage >= testResultsPerPage(isFirstPage) ||
-                (result.isTitle && resultsOnCurrentPage > 0 && resultsOnCurrentPage >= testResultsPerPage(isFirstPage) - 7)) {
+                (result.isTitle && resultsOnCurrentPage > 0 && resultsOnCurrentPage >= testResultsPerPage(isFirstPage) - 5)) {
                 // Create a new page
                 const { page, testResultsContainer } = createReportPage(isFirstPage, currentPage, totalPages);
 
