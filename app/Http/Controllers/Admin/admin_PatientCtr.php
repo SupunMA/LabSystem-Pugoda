@@ -149,11 +149,12 @@ class admin_PatientCtr extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'nic' => ['required', 'regex:/^(\d{9}[Vv]|\d{12})$/',Rule::unique('users', 'nic')->ignore($request->userID, 'id')],
+            'nic' => ['required_without:mobile', 'nullable', 'regex:/^(\d{9}[Vv]|\d{12})$/',Rule::unique('users', 'nic')->ignore($request->userID, 'id')],
             'gender' => ['required', 'string', 'in:M,F,O'],
-            'dob' => ['required', 'string', 'date','before:-1 years'],
-            'mobile' => ['string', Rule::unique('patients', 'mobile')->ignore($request->pid, 'pid'),'required'],
-            'address' => ['string']
+            'dob' => ['required', 'string', 'date'],
+            'mobile' => ['required_without:nic', 'nullable','string', Rule::unique('patients', 'mobile')->ignore($request->pid, 'pid')],
+            'address' => ['string','nullable'],
+            'email' => ['nullable', 'email', 'max:255'],
         ]);
 
         try {
@@ -168,7 +169,8 @@ class admin_PatientCtr extends Controller
             User::where('id', $request->userID)
                 ->update([
                     'name' => $request->name,
-                    'nic' => $request->nic
+                    'nic' => $request->nic,
+                    'email' => $request->email,
                 ]);
 
             return response()->json(['success' => true, 'message' => 'Patient updated successfully']);

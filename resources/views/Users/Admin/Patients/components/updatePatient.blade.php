@@ -44,10 +44,10 @@
             </div>
 
 
-            {{-- <div class="form-group">
+            <div class="form-group">
               <label>Email</label>
               <input type="email" id="edit-email" name="email" class="form-control">
-            </div> --}}
+            </div>
             <div class="form-group">
               <label>Address</label>
               <textarea id="edit-address" name="address" class="form-control"></textarea>
