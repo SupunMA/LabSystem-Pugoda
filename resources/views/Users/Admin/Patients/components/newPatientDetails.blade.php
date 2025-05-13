@@ -150,31 +150,35 @@
             processData: false,
             contentType: false,
             success: function (response) {
-            toastr.success('Patient added successfully!', 'Success');
-            $('#patient-form')[0].reset();
-            $('.is-invalid').removeClass('is-invalid');
-        },
+                toastr.success('Patient added successfully!', 'Success');
+                $('#patient-form')[0].reset();
+                $('.is-invalid').removeClass('is-invalid');
+
+                // Redirect to the all patients page after success
+                setTimeout(function () {
+                    window.location.href = "{{ route('admin.allPatient') }}";
+                }, 3000); // Redirect after 2 seconds (adjust as needed)
+            },
             error: function (xhr) {
-            if (xhr.status === 422) {
-                let errors = xhr.responseJSON.errors;
-                $.each(errors, function (key, value) {
-                    $(`[name="${key}"]`).addClass('is-invalid');
-                    toastr.error(value[0], 'Validation Error');
-                });
-            } else {
-                toastr.error('Something went wrong. Please try again.', 'Error');
+                if (xhr.status === 422) {
+                    let errors = xhr.responseJSON.errors;
+                    $.each(errors, function (key, value) {
+                        $(`[name="${key}"]`).addClass('is-invalid');
+                        toastr.error(value[0], 'Validation Error');
+                    });
+                } else {
+                    toastr.error('Something went wrong. Please try again.', 'Error');
+                }
             }
-        }
         });
     });
 
     toastr.options = {
-  "closeButton": true,
-  "progressBar": true,
-  "positionClass": "toast-top-right",
-  "timeOut": "8000"
-};
-
+        "closeButton": true,
+        "progressBar": true,
+        "positionClass": "toast-top-right",
+        "timeOut": "8000"
+    };
 </script>
 
 @endpush
