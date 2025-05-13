@@ -141,6 +141,14 @@
     $('#patient-form').on('submit', function (e) {
         e.preventDefault(); // Prevent default form submission
 
+        // Get the button and spinner elements
+        const saveButton = $('#saveButton');
+        const loadingSpinner = $('#loadingSpinner');
+
+        // Show the spinner and disable the button
+        loadingSpinner.show();
+        saveButton.prop('disabled', true);
+
         let formData = new FormData(this);
 
         $.ajax({
@@ -157,7 +165,7 @@
                 // Redirect to the all patients page after success
                 setTimeout(function () {
                     window.location.href = "{{ route('admin.allPatient') }}";
-                }, 3000); // Redirect after 2 seconds (adjust as needed)
+                }, 3000); // Redirect after 3 seconds
             },
             error: function (xhr) {
                 if (xhr.status === 422) {
@@ -169,6 +177,11 @@
                 } else {
                     toastr.error('Something went wrong. Please try again.', 'Error');
                 }
+            },
+            complete: function () {
+                // Hide the spinner and re-enable the button
+                loadingSpinner.hide();
+                saveButton.prop('disabled', false);
             }
         });
     });

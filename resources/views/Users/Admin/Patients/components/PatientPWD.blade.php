@@ -68,7 +68,10 @@
         <div class="card-footer">
             <div class="form-group text-right mb-0">
                 <small class="form-text text-muted text-right">Please check details again.</small><br>
-                <button type="submit" class="btn btn-danger btn-lg float-right"><b>&nbsp; Save All&nbsp;</b></button>
+                <button type="submit" class="btn btn-success btn-lg float-right" id="saveButton">
+                    <span class="spinner" id="loadingSpinner" style="display: none;"></span>
+                    <b>&nbsp; Save All&nbsp;</b>
+                </button>
             </div>
         </div>
         <!-- /.card-footer -->
@@ -150,6 +153,28 @@
     .radio-button:hover + .radio-tile {
         border-color: #007bff;
     }
+
+    /* Spinner styles */
+.spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3); /* Light border */
+    border-top: 3px solid white; /* Spinner color */
+    border-radius: 50%; /* Make it circular */
+    animation: spin 1s linear infinite; /* Spin animation */
+    margin-right: 10px; /* Add spacing between spinner and text */
+}
+
+/* Keyframes for spinner animation */
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
 </style>
 @endpush
 @push('specificJs')
