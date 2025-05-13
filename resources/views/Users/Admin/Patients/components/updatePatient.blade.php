@@ -21,17 +21,22 @@
                 <label>NIC</label>
                 <input type="text" id="edit-nic" name="nic" class="form-control">
               </div>
-            <div class="form-group">
-              <label>Date of Birth (M/D/Y)</label>
-              <input type="date" id="edit-dob" name="dob" class="form-control">
+            <div class="form-group row">
+            <!-- Date of Birth Field -->
+            <div class="col-md-6">
+                <label>Date of Birth (M/D/Y)</label>
+                <input type="date" id="edit-dob" name="dob" class="form-control">
             </div>
-            <div class="form-group">
-              <label>Gender</label>
-              <select id="edit-gender" name="gender" class="form-control">
+
+            <!-- Gender Field -->
+            <div class="col-md-6">
+                <label>Gender</label>
+                <select id="edit-gender" name="gender" class="form-control">
                 <option value="M">Male</option>
                 <option value="F">Female</option>
                 <option value="O">Other</option>
-              </select>
+                </select>
+            </div>
             </div>
             <div class="form-group">
               <label>Mobile</label>
