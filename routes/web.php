@@ -92,6 +92,11 @@ Route::group(['prefix'=>'Admin','middleware'=>['checkAdmin','auth','lockBack']],
     Route::get('/tests/{id}/template', [admin_AvailableTestCtr::class, 'getTestTemplateStructure'])->name('admin.testTemplate');
 
 
+
+    //request Test
+    Route::get('/getAvailableTests', [admin_TestsCtr::class, 'getAvailableTests'])->name('admin.getAvailableTests');
+    Route::post('/request-test', [admin_TestsCtr::class, 'requestTest'])->name('requestTest');
+
     //Test
     Route::get('AddTest', [admin_TestsCtr::class, 'addTest'])->name('admin.addTest');
     Route::POST('addingTest', [admin_TestsCtr::class, 'addingTest'])->name('admin.addingTest');

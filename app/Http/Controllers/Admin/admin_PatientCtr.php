@@ -83,24 +83,30 @@ class admin_PatientCtr extends Controller
                     'email' => optional($patient->user)->email ?? 'N/A',
                     'address' => $patient->address ?? 'N/A',
                     'actions' => '
-                                <button
-                                    class="btn btn-warning editBtn"
-                                    data-id="' . $patient->userID . '"
-                                    data-pid="' . $patient->pid . '"
-                                    data-name="' . e(optional($patient->user)->name) . '"
-                                    data-nic="' . e(optional($patient->user)->nic) . '"
-                                    data-dob="' . e($patient->dob) . '"
-                                    data-gender="' . e($patient->gender) . '"
-                                    data-mobile="' . e($patient->mobile) . '"
-                                    data-email="' . e(optional($patient->user)->email) . '"
-                                    data-address="' . e($patient->address) . '">
-                                    <i class="fa fa-pencil"></i>
-                                </button>
-                                <button
-                                    class="btn btn-danger deleteBtn"
-                                    data-id="' . $patient->userID . '">
-                                    <i class="fa fa-trash"></i>
-                                </button>'
+                        <button
+                            class="btn btn-warning editBtn"
+                            data-id="' . $patient->userID . '"
+                            data-pid="' . $patient->pid . '"
+                            data-name="' . e(optional($patient->user)->name) . '"
+                            data-nic="' . e(optional($patient->user)->nic) . '"
+                            data-dob="' . e($patient->dob) . '"
+                            data-gender="' . e($patient->gender) . '"
+                            data-mobile="' . e($patient->mobile) . '"
+                            data-email="' . e(optional($patient->user)->email) . '"
+                            data-address="' . e($patient->address) . '">
+                            <i class="fa fa-pencil"></i>
+                        </button>
+                        <button
+                            class="btn btn-danger deleteBtn"
+                            data-id="' . $patient->userID . '">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                        <button
+                            class="btn btn-primary requestTestBtn"
+                            data-id="' . $patient->pid . '"
+                            data-name="' . e(optional($patient->user)->name) . '">
+                            <i class="fa fa-flask"></i> Request Test
+                        </button>'
                 ];
             });
 

@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Patient;
 use App\Models\AvailableTest;
+use App\Models\AvailableTest_New;
+use App\Models\RequestedTests;
 use App\Models\Test;
 
 use Carbon\Carbon;
@@ -119,5 +121,37 @@ class admin_TestsCtr extends Controller
         return view('Users.Admin.Tests.components.invoice-print',compact('viewReportData'));
     }
 
+
+    //new
+
+       public function getAvailableTests()
+   {
+       $tests = AvailableTest_New::all();
+       return response()->json($tests);
+   }
+
+   public function requestTest(Request $request)
+{
+    // Validate the incoming request
+    $request->validate([
+        'patient_id' => 'required|exists:patients,pid', // Ensure patient exists
+        'test_id' => 'required|exists:availableTests,id', // Ensure test exists
+        'test_date' => 'required|date', // Ensure valid date
+    ]);
+
+    // Fetch the test price from the availableTests table
+    $test = AvailableTest_New::findOrFail($request->test_id);
+
+    // Create a new test request
+    RequestedTests::create([
+        'patient_id' => $request->patient_id,
+        'test_id' => $request->test_id,
+        'price' => $test->price, // Save the price at the time of the request
+        'test_date' => $request->test_date,
+    ]);
+
+    // Return a success response
+    return response()->json(['message' => 'Test requested successfully!'], 201);
+}
 
 }
