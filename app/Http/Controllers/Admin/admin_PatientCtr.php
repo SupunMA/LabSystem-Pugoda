@@ -152,7 +152,7 @@ class admin_PatientCtr extends Controller
             'nic' => ['required_without:mobile', 'nullable', 'regex:/^(\d{9}[Vv]|\d{12})$/',Rule::unique('users', 'nic')->ignore($request->userID, 'id')],
             'gender' => ['required', 'string', 'in:M,F,O'],
             'dob' => ['required', 'string', 'date'],
-            'mobile' => ['required_without:nic', 'nullable','string', Rule::unique('patients', 'mobile')->ignore($request->pid, 'pid')],
+            'mobile' => ['required_without:nic', 'nullable','string', Rule::unique('patients', 'mobile')->ignore($request->pid, 'pid'),'regex:/^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/'],
             'address' => ['string','nullable'],
             'email' => ['nullable', 'email', 'max:255'],
         ]);

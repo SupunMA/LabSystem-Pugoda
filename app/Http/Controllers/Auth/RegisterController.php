@@ -115,7 +115,7 @@ class RegisterController extends Controller
             'email' => ['nullable', 'email', 'max:255', 'unique:users'],
             'nic' => ['required_without:mobile', 'nullable', 'regex:/^(\d{9}[Vv]|\d{12})$/', 'unique:users', 'max:15'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'mobile' => ['required_without:nic', 'nullable', 'string', 'unique:patients'],
+            'mobile' => ['required_without:nic', 'nullable', 'string', 'unique:patients','regex:/^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/'],
             'address' => ['string', 'nullable']
         ]);
 
