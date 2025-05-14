@@ -420,7 +420,7 @@ $actions .= '<a href="'.route('admin.viewTestReport', ['id' => $test->id]).'" cl
             \Log::info("Test loaded: " . $test->name);
             \Log::info("Categories count: " . $test->categories->count());
 
-            return view('Users.Admin.AvailableTests.components.test_details', compact('test'))->render();
+            return view('Users.Admin.AvailableTests.components.internalTest.test_details', compact('test'))->render();
         } catch (\Exception $e) {
             \Log::error("Error in getTestDetails: " . $e->getMessage());
             \Log::error($e->getTraceAsString());
@@ -499,7 +499,7 @@ public function editTest($id)
         $titleIndex = $test->elements->where('type', 'title')->count();
         $paragraphIndex = $test->elements->where('type', 'paragraph')->count();
 
-        return view('Users.Admin.AvailableTests.components.test_EditFull', compact('test', 'catIndex', 'spaceIndex', 'titleIndex', 'paragraphIndex'));
+        return view('Users.Admin.AvailableTests.components.internalTest.test_EditFull', compact('test', 'catIndex', 'spaceIndex', 'titleIndex', 'paragraphIndex'));
     } catch (\Exception $e) {
         return redirect()->route('Users.Admin.AvailableTests.AllTests')->with('error', 'Error loading test: ' . $e->getMessage());
     }
@@ -1136,5 +1136,41 @@ private function formatReference($category)
     }
 
 
+
+    public function updateExternalAvailableTest(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'specimen' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+        ]);
+
+        $test = AvailableTest_New::findOrFail($id);
+        $test->update([
+            'name' => $request->name,
+            'specimen' => $request->specimen,
+            'price' => $request->price,
+        ]);
+
+        return response()->json(['message' => 'Test updated successfully!']);
+    }
+
+public function destroyExternalAvailableTest(Request $request)
+{
+    try {
+        // Find the test by ID
+        $test = AvailableTest_New::findOrFail($request->test_id);
+
+        // Delete the test
+        $test->delete();
+
+        // Return a success response
+        return response()->json(['message' => 'Test deleted successfully!']);
+    } catch (\Exception $e) {
+        // Log the error and return a failure response
+        \Log::error('Delete Test Error: ' . $e->getMessage());
+        return response()->json(['message' => 'An error occurred while deleting the test.'], 500);
+    }
+}
 
 }

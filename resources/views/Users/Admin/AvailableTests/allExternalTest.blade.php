@@ -37,6 +37,8 @@
 
 
 
+@include('Users.Admin.AvailableTests.components.externalTest.deleteModal')
+@include('Users.Admin.AvailableTests.components.externalTest.editModal')
 
 
 
