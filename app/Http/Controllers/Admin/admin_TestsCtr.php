@@ -12,6 +12,8 @@ use App\Models\AvailableTest_New;
 use App\Models\RequestedTests;
 use App\Models\Test;
 
+use Yajra\DataTables\Facades\DataTables;
+
 use Carbon\Carbon;
 
 class admin_TestsCtr extends Controller
@@ -153,5 +155,105 @@ class admin_TestsCtr extends Controller
     // Return a success response
     return response()->json(['message' => 'Test requested successfully!'], 201);
 }
+
+
+public function getAllExternalRequestedTests()
+{
+    try {
+        // Fetch requested tests with related patient, user, and test details
+        $tests = RequestedTests::select([
+                'requested_tests.id',
+                'requested_tests.test_date',
+                'requested_tests.price',
+                'patients.dob',
+                'users.nic',
+                'users.name as patient_name',
+                'availableTests.name as test_name',
+                'availableTests.is_internal',
+            ])
+            ->join('patients', 'requested_tests.patient_id', '=', 'patients.pid') // Join patients table
+            ->join('users', 'patients.userID', '=', 'users.id') // Join users table to get NIC and name
+            ->join('availableTests', 'requested_tests.test_id', '=', 'availableTests.id') // Join availableTests table
+            ->where('availableTests.is_internal', false) // Fetch only external tests
+            ->get();
+
+        // Return data for DataTables
+        return DataTables::of($tests)
+            ->addColumn('actions', function ($test) {
+                return '
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary btn-sm editBtn" data-id="' . $test->id . '">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm deleteBtn" data-id="' . $test->id . '">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                ';
+            })
+            ->editColumn('test_date', function ($test) {
+                return $test->test_date ? \Carbon\Carbon::parse($test->test_date)->format('M d, Y') : 'N/A';
+            })
+            ->editColumn('dob', function ($test) {
+                return $test->dob ? \Carbon\Carbon::parse($test->dob)->format('M d, Y') : 'N/A';
+            })
+            ->rawColumns(['actions']) // Mark the actions column as raw HTML
+            ->make(true);
+    } catch (\Exception $e) {
+        \Log::error('Error fetching requested tests: ' . $e->getMessage());
+        return response()->json(['error' => 'An error occurred while fetching data'], 500);
+    }
+}
+
+
+public function getAllInternalRequestedTests()
+{
+    try {
+        // Fetch requested tests with related patient, user, and test details
+        $tests = RequestedTests::select([
+                'requested_tests.id',
+                'requested_tests.test_date',
+                'requested_tests.price',
+                'patients.dob',
+                'users.nic',
+                'users.name as patient_name',
+                'availableTests.name as test_name',
+                'availableTests.is_internal',
+            ])
+            ->join('patients', 'requested_tests.patient_id', '=', 'patients.pid') // Join patients table
+            ->join('users', 'patients.userID', '=', 'users.id') // Join users table to get NIC and name
+            ->join('availableTests', 'requested_tests.test_id', '=', 'availableTests.id') // Join availableTests table
+            ->where('availableTests.is_internal', true) // Fetch only internal (onsite) tests
+            ->get();
+
+        // Return data for DataTables
+        return DataTables::of($tests)
+            ->addColumn('actions', function ($test) {
+                return '
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary btn-sm editBtn" data-id="' . $test->id . '">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm deleteBtn" data-id="' . $test->id . '">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                ';
+            })
+            ->editColumn('test_date', function ($test) {
+                return $test->test_date ? \Carbon\Carbon::parse($test->test_date)->format('M d, Y') : 'N/A';
+            })
+            ->editColumn('dob', function ($test) {
+                return $test->dob ? \Carbon\Carbon::parse($test->dob)->format('M d, Y') : 'N/A';
+            })
+            ->rawColumns(['actions']) // Mark the actions column as raw HTML
+            ->make(true);
+    } catch (\Exception $e) {
+        \Log::error('Error fetching requested tests: ' . $e->getMessage());
+        return response()->json(['error' => 'An error occurred while fetching data'], 500);
+    }
+}
+
+
 
 }

@@ -11,12 +11,15 @@
                 @csrf
                 <div class="modal-body">
                     <input type="hidden" name="patient_id" id="patientId">
-                    <div class="form-group">
-                        <label for="testName">Select Test</label>
-                        <select class="form-control" id="testName" name="test_id" required>
-                            <!-- Options will be populated dynamically -->
-                        </select>
-                    </div>
+<div class="form-group">
+    <label for="testName">Select Test</label>
+    <small class="form-text text-muted" style="font-size: 1.0rem;">
+        Note: <span style="color: red;">Red</span> indicate <span style="color: red;">Send-Out</span> tests, <span style="color: blue;">Blue</span> represent <span style="color: blue;">On-Site</span> tests.
+    </small>
+    <select class="form-control" id="testName" name="test_id" required>
+        <!-- Options will be populated dynamically -->
+    </select>
+</div>
                     <div class="form-group">
                         <label for="testDate">Test Date (M/D/Y)</label>
                         <div class="input-group">
@@ -37,7 +40,49 @@
 </div>
 
 
-@push('specificJs')
+@push('specificJs').
+<script>
+    $(document).on('click', '.requestTestBtn', function () {
+        const patientId = $(this).data('id');
+        const patientName = $(this).data('name');
+
+        // Set patient details in the modal
+        $('#patientId').val(patientId);
+        $('#patientName').text(patientName);
+
+        // Fetch available tests
+        $.ajax({
+            url: '{{ route("admin.getAvailableTests") }}', // Create this route
+            type: 'GET',
+            success: function (response) {
+                const testSelect = $('#testName');
+                testSelect.empty(); // Clear existing options
+
+                // Add a placeholder option
+                testSelect.append('<option value="" disabled selected>Select On-Site or Send-Out Tests</option>');
+
+                // Populate the dropdown with test options
+                response.forEach(test => {
+                    const fontColor = test.is_internal ? 'blue' : 'red';
+                    testSelect.append(`<option value="${test.id}" data-color="${fontColor}" style="color: ${fontColor};">${test.name} (${test.specimen}) - Rs/රු.${test.price}</option>`);
+                });
+
+                // Show the modal
+                $('#requestTestModal').modal('show');
+            },
+            error: function () {
+                toastr.error('Failed to fetch available tests. Please try again.');
+            }
+        });
+    });
+
+    // Change the color of the select element based on the selected option
+    $('#testName').on('change', function () {
+        const selectedOption = $(this).find('option:selected');
+        const color = selectedOption.data('color'); // Get the color from the data attribute
+        $(this).css('color', color); // Apply the color to the select element
+    });
+</script>
 
 <script>
     document.getElementById('setTodayBtn').addEventListener('click', function () {

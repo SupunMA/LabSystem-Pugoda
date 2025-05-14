@@ -1,15 +1,8 @@
-
-
-
-
-
 <!-- Main content -->
 <section class="content">
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
-
-                @include('Users.Admin.messages.addMsg')
 
                 <table id="testsTable" class="table table-bordered table-striped" style="width:100%">
                     <thead>

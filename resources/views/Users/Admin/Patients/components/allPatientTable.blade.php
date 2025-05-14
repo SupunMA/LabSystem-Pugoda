@@ -206,34 +206,6 @@
 
 
 
-<script>
-    $(document).on('click', '.requestTestBtn', function () {
-    const patientId = $(this).data('id');
-    const patientName = $(this).data('name');
 
-    // Set patient details in the modal
-    $('#patientId').val(patientId);
-    $('#patientName').text(patientName);
-
-    // Fetch available tests
-    $.ajax({
-        url: '{{ route("admin.getAvailableTests") }}', // Create this route
-        type: 'GET',
-        success: function (response) {
-            const testSelect = $('#testName');
-            testSelect.empty(); // Clear existing options
-            response.forEach(test => {
-                testSelect.append(`<option value="${test.id}">${test.name} (${test.specimen}) - Rs/රු.${test.price}</option>`);
-            });
-
-            // Show the modal
-            $('#requestTestModal').modal('show');
-        },
-        error: function () {
-            toastr.error('Failed to fetch available tests. Please try again.');
-        }
-    });
-});
-</script>
 
 @endpush
