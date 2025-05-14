@@ -18,6 +18,7 @@ class CreateAvailableTests extends Migration
             $table->string('name');
             $table->string('specimen');
             $table->decimal('price', 10, 2)->nullable();
+            $table->boolean('is_internal')->default(1); // Add column for internal/external test with default value 1
             $table->timestamps();
         });
     }
