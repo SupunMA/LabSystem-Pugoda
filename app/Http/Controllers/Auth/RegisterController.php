@@ -108,6 +108,13 @@ class RegisterController extends Controller
 
     function addingPatient(Request $request)
     {
+
+        // Clean the phone number by removing non-digit characters
+        $cleanedMobile = preg_replace('/[^0-9]/', '', $request->mobile);
+
+        // Replace the formatted number with the cleaned version
+        $request->merge(['mobile' => $cleanedMobile]);
+
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'gender' => ['required', 'string', 'in:M,F,O'],
@@ -115,7 +122,7 @@ class RegisterController extends Controller
             'email' => ['nullable', 'email', 'max:255', 'unique:users'],
             'nic' => ['required_without:mobile', 'nullable', 'regex:/^(\d{9}[Vv]|\d{12})$/', 'unique:users', 'max:15'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'mobile' => ['required_without:nic', 'nullable', 'string', 'unique:patients','regex:/^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/'],
+            'mobile' => ['required_without:nic', 'nullable', 'string', 'unique:patients'],
             'address' => ['string', 'nullable']
         ]);
 
@@ -133,11 +140,7 @@ class RegisterController extends Controller
         $patient = new Patient();
 
 
-        // Clean the phone number by removing non-digit characters
-        $cleanedMobile = preg_replace('/[^0-9]/', '', $request->mobile);
 
-        // Replace the formatted number with the cleaned version
-        $request->merge(['mobile' => $cleanedMobile]);
         $patient->mobile = $request->mobile;
        //change the date format
         $formattedDate = Carbon::parse($request->dob)->format('Y-m-d');
