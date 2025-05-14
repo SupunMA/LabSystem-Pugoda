@@ -21,23 +21,23 @@
                         <label>Specimen</label>
                         <select id="edit-specimen" name="specimen" class="form-control">
                             <option value="">--Select Specimen Type--</option>
-                            <option value="blood">Blood</option>
-                            <option value="urine">Urine</option>
-                            <option value="stool">Stool (Feces)</option>
-                            <option value="sputum">Sputum</option>
-                            <option value="saliva">Saliva</option>
-                            <option value="swab">Swab (e.g., throat, nasal)</option>
-                            <option value="tissue">Tissue (Biopsy)</option>
-                            <option value="csf">Cerebrospinal Fluid (CSF)</option>
-                            <option value="semen">Semen</option>
-                            <option value="vaginal">Vaginal Secretion</option>
-                            <option value="amniotic">Amniotic Fluid</option>
-                            <option value="pleural">Pleural Fluid</option>
-                            <option value="peritoneal">Peritoneal Fluid</option>
-                            <option value="synovial">Synovial Fluid</option>
-                            <option value="bone_marrow">Bone Marrow</option>
-                            <option value="hair">Hair</option>
-                            <option value="nail">Nail</option>
+                            <option value="Blood">Blood</option>
+                            <option value="Urine">Urine</option>
+                            <option value="Stool">Stool (Feces)</option>
+                            <option value="Sputum">Sputum</option>
+                            <option value="Saliva">Saliva</option>
+                            <option value="Swab">Swab (e.g., throat, nasal)</option>
+                            <option value="Tissue">Tissue (Biopsy)</option>
+                            <option value="CSF">Cerebrospinal Fluid (CSF)</option>
+                            <option value="Semen">Semen</option>
+                            <option value="Vaginal">Vaginal Secretion</option>
+                            <option value="Amniotic">Amniotic Fluid</option>
+                            <option value="Pleural">Pleural Fluid</option>
+                            <option value="Peritoneal">Peritoneal Fluid</option>
+                            <option value="Synovial">Synovial Fluid</option>
+                            <option value="Bone Marrow">Bone Marrow</option>
+                            <option value="Hair">Hair</option>
+                            <option value="Nail">Nail</option>
                         </select>
                     </div>
                     <div class="row">
