@@ -5,13 +5,13 @@
     <!-- Button to View External Available Tests -->
     <a class="btn btn-danger mb-3" href="{{ route('admin.allExternalAvailableTest') }}">
         <i class="fa fa-th-list" aria-hidden="true"></i>
-        <b> View External Available Tests</b>
+        <b> View SendOut Available Tests</b>
     </a>
 
     <!-- Card for the Form -->
     <div class="card card-primary">
         <div class="card-header">
-            <h3 class="card-title">Add External Available Test</h3>
+            <h3 class="card-title">Add SendOut Available Test</h3>
         </div>
         <!-- /.card-header -->
 
@@ -77,7 +77,7 @@
 @endsection
 
 @section('header')
-Add External Available Test
+Add SendOut Available Test
 @endsection
 
 @push('specificCSS')

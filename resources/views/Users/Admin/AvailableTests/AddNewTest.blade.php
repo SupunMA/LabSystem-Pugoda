@@ -4,7 +4,7 @@
 <div class="container-fluid ">
     <a class="btn btn-danger mb-1" href="{{route('admin.allAvailableTest')}}">
         <i class="fa fa-th-list" aria-hidden="true"></i>
-        <b>View Available Test</b>
+        <b>View OnSite Available Test</b>
     </a>
     <br><br>
     <div class="row">
@@ -19,5 +19,5 @@
 @endsection
 
 @section('header')
-Add New Test
+Add OnSite Test
 @endsection

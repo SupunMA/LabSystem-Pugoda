@@ -4,7 +4,7 @@
 <div class="container-fluid ">
     <a class="btn btn-danger mb-1" href="{{route('admin.addExternalAvailableTest')}}">
         <i class="fa fa-plus" aria-hidden="true"></i>
-        <b>Add External Available Test</b>
+        <b>Add SendOut Available Test</b>
     </a>
 
 
@@ -46,7 +46,7 @@
 @endsection
 
 @section('header')
-All External Available Tests
+All SendOut Available Tests
 @endsection
 
 

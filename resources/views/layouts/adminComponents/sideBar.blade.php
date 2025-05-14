@@ -119,13 +119,13 @@
                         <li class="nav-item">
                             <a href="{{ route('admin.addTest') }}" class="nav-link {{ Route::currentRouteNamed('admin.addTest') ? 'active' : '' }} ">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Horizon Tests</p>
+                                <p>OnSite Tests</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('admin.allTest') }}" class="nav-link {{ Route::currentRouteNamed('admin.allTest') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>External Tests</p>
+                                <p>SendOut Tests</p>
                             </a>
                         </li>
                     </ul>
@@ -144,13 +144,13 @@
                         <li class="nav-item">
                             <a href="{{ route('admin.addReport') }}" class="nav-link {{ Route::currentRouteNamed('admin.addReport') ? 'active' : '' }} ">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Horizon Reports</p>
+                                <p>OnSite Reports</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('admin.allReport') }}" class="nav-link {{ Route::currentRouteNamed('admin.allReport') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>External Reports</p>
+                                <p>SendOut Reports</p>
                             </a>
                         </li>
                     </ul>
@@ -169,13 +169,13 @@
                         <li class="nav-item">
                             <a href="{{ route('admin.addAvailableTest') }}" class="nav-link {{ Route::currentRouteNamed('admin.addAvailableTest') ? 'active' : '' }} ">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Add New Test</p>
+                                <p>Add OnSite Test</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('admin.allAvailableTest') }}" class="nav-link {{ Route::currentRouteNamed('admin.allAvailableTest') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>All Available Tests</p>
+                                <p>All OnSite Tests</p>
                             </a>
                         </li>
 
@@ -183,13 +183,13 @@
                         <li class="nav-item">
                             <a href="{{ route('admin.addExternalAvailableTest') }}" class="nav-link {{ Route::currentRouteNamed('admin.addExternalAvailableTest') ? 'active' : '' }} ">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Add External Test</p>
+                                <p>Add onSite Test</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('admin.allExternalAvailableTest') }}" class="nav-link {{ Route::currentRouteNamed('admin.allExternalAvailableTest') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>All External Tests</p>
+                                <p>All SendOut Tests</p>
                             </a>
                         </li>
                     </ul>
