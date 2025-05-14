@@ -49,7 +49,7 @@
                 </li>
 
                 <li class="nav-item">
-                    <a href="{{ route('admin.addTest') }}" class="nav-link {{ Route::currentRouteNamed('admin.addTest') ? 'active' : ' ' }}">
+                    <a href="{{ route('admin.allPatient') }}" class="nav-link {{ Route::currentRouteNamed('admin.allPatient') ? 'active' : ' ' }}">
                     <i class="nav-icon fas fa-tachometer-alt"></i>
                         <p>Request Test
                             <span class="right badge badge-danger">Live</span>
@@ -82,7 +82,7 @@
                     </ul>
                 </li>
 
-                <li class="nav-item {{ Route::currentRouteNamed('admin.addDoctor') || Route::currentRouteNamed('admin.allDoctor') ? 'menu-open' : 'menu-close' }}">
+                {{-- <li class="nav-item {{ Route::currentRouteNamed('admin.addDoctor') || Route::currentRouteNamed('admin.allDoctor') ? 'menu-open' : 'menu-close' }}">
                     <a href="#" class="nav-link {{ Route::currentRouteNamed('admin.addDoctor') || Route::currentRouteNamed('admin.allDoctor') ? 'active' : '' }} ">
                         <i class="fas fa-users"></i>
                         <p>
@@ -104,14 +104,14 @@
                             </a>
                         </li>
                     </ul>
-                </li>
+                </li> --}}
 
 
                 <li class="nav-item {{ Route::currentRouteNamed('admin.addTest') || Route::currentRouteNamed('admin.allTest') ? 'menu-open' : 'menu-close' }}">
                     <a href="#" class="nav-link {{ Route::currentRouteNamed('admin.addTest') || Route::currentRouteNamed('admin.allTest') ? 'active' : '' }} ">
                         <i class="fas fa-users"></i>
                         <p>
-                            Tests
+                            Requested Tests
                             <i class="right fas fa-angle-left"></i>
                         </p>
                     </a>
@@ -119,13 +119,13 @@
                         <li class="nav-item">
                             <a href="{{ route('admin.addTest') }}" class="nav-link {{ Route::currentRouteNamed('admin.addTest') ? 'active' : '' }} ">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Add Test</p>
+                                <p>Horizon Tests</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('admin.allTest') }}" class="nav-link {{ Route::currentRouteNamed('admin.allTest') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>All Tests</p>
+                                <p>External Tests</p>
                             </a>
                         </li>
                     </ul>
@@ -144,21 +144,21 @@
                         <li class="nav-item">
                             <a href="{{ route('admin.addReport') }}" class="nav-link {{ Route::currentRouteNamed('admin.addReport') ? 'active' : '' }} ">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Add Report</p>
+                                <p>Horizon Reports</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('admin.allReport') }}" class="nav-link {{ Route::currentRouteNamed('admin.allReport') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>All Reports</p>
+                                <p>External Reports</p>
                             </a>
                         </li>
                     </ul>
                 </li>
 
 
-                <li class="nav-item {{ Route::currentRouteNamed('admin.addAvailableTest') || Route::currentRouteNamed('admin.allAvailableTest') ? 'menu-open' : 'menu-close' }}">
-                    <a href="#" class="nav-link {{ Route::currentRouteNamed('admin.addAvailableTest') || Route::currentRouteNamed('admin.allAvailableTest') ? 'active' : '' }} ">
+                <li class="nav-item {{ Route::currentRouteNamed('admin.addAvailableTest') || Route::currentRouteNamed('admin.allAvailableTest') || Route::currentRouteNamed('admin.addExternalAvailableTest') || Route::currentRouteNamed('admin.allExternalAvailableTest')? 'menu-open' : 'menu-close' }}">
+                    <a href="#" class="nav-link {{ Route::currentRouteNamed('admin.addAvailableTest') || Route::currentRouteNamed('admin.allAvailableTest') || Route::currentRouteNamed('admin.addExternalAvailableTest') || Route::currentRouteNamed('admin.allExternalAvailableTest')? 'active' : '' }} ">
                         <i class="fas fa-users"></i>
                         <p>
                             Available Tests
@@ -176,6 +176,20 @@
                             <a href="{{ route('admin.allAvailableTest') }}" class="nav-link {{ Route::currentRouteNamed('admin.allAvailableTest') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>All Available Tests</p>
+                            </a>
+                        </li>
+
+
+                        <li class="nav-item">
+                            <a href="{{ route('admin.addExternalAvailableTest') }}" class="nav-link {{ Route::currentRouteNamed('admin.addExternalAvailableTest') ? 'active' : '' }} ">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Add External Test</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.allExternalAvailableTest') }}" class="nav-link {{ Route::currentRouteNamed('admin.allExternalAvailableTest') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>All External Tests</p>
                             </a>
                         </li>
                     </ul>

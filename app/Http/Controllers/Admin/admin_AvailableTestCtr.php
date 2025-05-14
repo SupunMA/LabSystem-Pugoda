@@ -1050,4 +1050,16 @@ private function formatReference($category)
 }
 
 
+
+//External Available tests
+    public function addExternalAvailableTest()
+    {
+        return view('Users.Admin.AvailableTests.addexternalTest');
+    }
+
+    public function allExternalAvailableTest()
+    {
+        return view('Users.Admin.AvailableTests.allExternalTest');
+    }
+
 }

@@ -90,6 +90,9 @@ Route::group(['prefix'=>'Admin','middleware'=>['checkAdmin','auth','lockBack']],
     Route::get('/tests/{id}/edit', [admin_AvailableTestCtr::class, 'editTest'])->name('admin.editTest');
     Route::post('/tests/{id}/update', [admin_AvailableTestCtr::class, 'updateTestFull'])->name('admin.updateTestFull');
     Route::get('/tests/{id}/template', [admin_AvailableTestCtr::class, 'getTestTemplateStructure'])->name('admin.testTemplate');
+    //external test
+    Route::get('AddExternalAvailableTest', [admin_AvailableTestCtr::class, 'addExternalAvailableTest'])->name('admin.addExternalAvailableTest');
+    Route::get('allExternalAvailableTest', [admin_AvailableTestCtr::class, 'allExternalAvailableTest'])->name('admin.allExternalAvailableTest');
 
 
 
