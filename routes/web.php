@@ -93,6 +93,8 @@ Route::group(['prefix'=>'Admin','middleware'=>['checkAdmin','auth','lockBack']],
     //external test
     Route::get('AddExternalAvailableTest', [admin_AvailableTestCtr::class, 'addExternalAvailableTest'])->name('admin.addExternalAvailableTest');
     Route::get('allExternalAvailableTest', [admin_AvailableTestCtr::class, 'allExternalAvailableTest'])->name('admin.allExternalAvailableTest');
+    Route::post('addExternal-Available-Test', [admin_AvailableTestCtr::class, 'addingExternalAvailableTest'])->name('admin.addingExternalAvailableTest');
+    Route::get('getExternal-Available-Test', [admin_AvailableTestCtr::class, 'getExternalAvailableTest'])->name('admin.getExternalAvailableTest');
 
 
 

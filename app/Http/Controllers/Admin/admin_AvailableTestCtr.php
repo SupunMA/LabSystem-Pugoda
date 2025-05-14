@@ -1062,4 +1062,77 @@ private function formatReference($category)
         return view('Users.Admin.AvailableTests.allExternalTest');
     }
 
+     public function addingExternalAvailableTest(Request $request)
+    {
+        // Validate the incoming request
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'specimen' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'is_internal' => 'required|boolean',
+        ]);
+
+        // Create a new available test
+        $availableTest = AvailableTest_New::create([
+            'name' => $request->name,
+            'specimen' => $request->specimen,
+            'price' => $request->price,
+            'is_internal' => $request->is_internal,
+        ]);
+
+        // Return a success response
+        return response()->json([
+            'message' => 'Test added successfully!',
+            'data' => $availableTest
+        ], 201);
+    }
+
+    public function getExternalAvailableTest()
+    {
+        try {
+            $tests = AvailableTest_New::select([
+                'id',
+                'name',
+                'specimen',
+                'price',
+                'created_at'
+            ])
+            ->where('is_internal', false) // Fetch rows where is_internal is false
+            ->get();
+
+            return DataTables::of($tests)
+                ->addColumn('actions', function ($test) {
+                    $actions = '<div class="btn-group">';
+                    $actions .= '<button type="button" class="btn btn-primary btn-sm editBtn"
+                                    data-id="'.$test->id.'"
+                                    data-name="'.htmlspecialchars($test->name, ENT_QUOTES).'"
+                                    data-specimen="'.$test->specimen.'"
+                                    data-price="'.$test->price.'">
+                                    <i class="fas fa-edit"></i>
+                                </button>';
+                    $actions .= '<button type="button" class="btn btn-danger btn-sm deleteBtn" data-id="'.$test->id.'" data-name="'.htmlspecialchars($test->name, ENT_QUOTES).'"><i class="fas fa-trash"></i></button>';
+                    $actions .= '</div>';
+                    return $actions;
+                })
+                ->addColumn('specimen', function ($test) {
+                    if (empty($test->specimen)) return '<span class="text-muted">Not specified</span>';
+                    return ucfirst($test->specimen);
+                })
+                ->addColumn('price', function ($test) {
+                    if (empty($test->price)) return '<span class="text-muted">-</span>';
+                    return number_format($test->price, 2);
+                })
+                ->editColumn('created_at', function ($test) {
+                    return $test->created_at ? $test->created_at->format('M d, Y') : '';
+                })
+                ->rawColumns(['actions', 'specimen', 'categories_count', 'price'])
+                ->make(true);
+        } catch (\Exception $e) {
+            \Log::error('DataTables error: ' . $e->getMessage());
+            return response()->json(['error' => 'An error occurred while fetching data'], 500);
+        }
+    }
+
+
+
 }
