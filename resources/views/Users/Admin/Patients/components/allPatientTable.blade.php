@@ -223,7 +223,7 @@
             const testSelect = $('#testName');
             testSelect.empty(); // Clear existing options
             response.forEach(test => {
-                testSelect.append(`<option value="${test.id}">${test.name} (${test.specimen}) - $${test.price}</option>`);
+                testSelect.append(`<option value="${test.id}">${test.name} (${test.specimen}) - Rs/රු.${test.price}</option>`);
             });
 
             // Show the modal
