@@ -44,10 +44,10 @@
     </div>
 </section>
 
-@include('Users.Admin.AvailableTests.components.updateTest')
-@include('Users.Admin.AvailableTests.components.viewTest')
-@include('Users.Admin.AvailableTests.components.deleteTest')
-@include('Users.Admin.AvailableTests.components.newTemplate')
+@include('Users.Admin.AvailableTests.components.internalTest.updateTest')
+@include('Users.Admin.AvailableTests.components.internalTest.viewTest')
+@include('Users.Admin.AvailableTests.components.internalTest.deleteTest')
+@include('Users.Admin.AvailableTests.components.internalTest.newTemplate')
 
 
 
