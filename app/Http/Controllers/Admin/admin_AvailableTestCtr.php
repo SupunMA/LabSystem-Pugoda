@@ -357,7 +357,9 @@ class admin_AvailableTestCtr extends Controller
             'specimen',
             'price',
             'created_at'
-        ])->get();
+        ])
+        ->where('is_internal', true) // Fetch rows where is_internal is false
+        ->get();
 
         return DataTables::of($tests)
             ->addColumn('actions', function ($test) {
