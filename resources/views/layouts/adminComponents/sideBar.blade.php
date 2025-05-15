@@ -183,7 +183,7 @@
                         <li class="nav-item">
                             <a href="{{ route('admin.addExternalAvailableTest') }}" class="nav-link {{ Route::currentRouteNamed('admin.addExternalAvailableTest') ? 'active' : '' }} ">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Add onSite Test</p>
+                                <p>Add SendOut Test</p>
                             </a>
                         </li>
                         <li class="nav-item">

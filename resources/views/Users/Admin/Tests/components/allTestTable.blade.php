@@ -101,7 +101,7 @@ $(document).ready(function () {
         buttons: [
             {
                 extend: 'pdf',
-                text: 'Export to PDF',
+                text: 'PDF',
                 orientation: 'portrait',
                 pageSize: 'A4',
                 exportOptions: {
@@ -109,22 +109,15 @@ $(document).ready(function () {
                 },
             },
             {
-                extend: 'csv',
-                text: 'Export to CSV',
-                exportOptions: {
-                    columns: ':not(:last-child)', // Exclude the Actions column
-                },
-            },
-            {
                 extend: 'excel',
-                text: 'Export to Excel',
+                text: 'Excel',
                 exportOptions: {
                     columns: ':not(:last-child)', // Exclude the Actions column
                 },
             },
             {
                 extend: 'print',
-                text: 'Print Table',
+                text: 'Print',
                 exportOptions: {
                     columns: ':not(:last-child)', // Exclude the Actions column
                 },
