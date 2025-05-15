@@ -109,7 +109,7 @@
 
                 <li class="nav-item {{ Route::currentRouteNamed('admin.addTest') || Route::currentRouteNamed('admin.allTest') ? 'menu-open' : 'menu-close' }}">
                     <a href="#" class="nav-link {{ Route::currentRouteNamed('admin.addTest') || Route::currentRouteNamed('admin.allTest') ? 'active' : '' }} ">
-                        <i class="fas fa-users"></i>
+                        <i class="fa fa-flask" ></i>
                         <p>
                             Requested Tests
                             <i class="right fas fa-angle-left"></i>
@@ -134,7 +134,7 @@
 
                 <li class="nav-item {{ Route::currentRouteNamed('admin.addReport') || Route::currentRouteNamed('admin.allReport') ? 'menu-open' : 'menu-close' }}">
                     <a href="#" class="nav-link {{ Route::currentRouteNamed('admin.addReport') || Route::currentRouteNamed('admin.allReport') ? 'active' : '' }} ">
-                        <i class="fas fa-users"></i>
+                        <i class="fa fa-file-text" aria-hidden="true"></i>
                         <p>
                             Reports
                             <i class="right fas fa-angle-left"></i>
@@ -159,7 +159,7 @@
 
                 <li class="nav-item {{ Route::currentRouteNamed('admin.addAvailableTest') || Route::currentRouteNamed('admin.allAvailableTest') || Route::currentRouteNamed('admin.addExternalAvailableTest') || Route::currentRouteNamed('admin.allExternalAvailableTest')? 'menu-open' : 'menu-close' }}">
                     <a href="#" class="nav-link {{ Route::currentRouteNamed('admin.addAvailableTest') || Route::currentRouteNamed('admin.allAvailableTest') || Route::currentRouteNamed('admin.addExternalAvailableTest') || Route::currentRouteNamed('admin.allExternalAvailableTest')? 'active' : '' }} ">
-                        <i class="fas fa-users"></i>
+                        <i class="fa fa-list-ol" aria-hidden="true"></i>
                         <p>
                             Available Tests
                             <i class="right fas fa-angle-left"></i>
@@ -198,7 +198,7 @@
 
                 <li class="nav-item">
                     <a href="{{ route('AdminViewUpdateProfile') }}" class="nav-link {{ Route::currentRouteNamed('AdminViewUpdateProfile') ? 'active' : ' ' }}">
-                    <i class="nav-icon fas fa-tachometer-alt"></i>
+                    <i class="fa fa-user" aria-hidden="true"></i>
                         <p>My Profile
                             <span class="right badge badge-danger">Update</span>
                         </p>
