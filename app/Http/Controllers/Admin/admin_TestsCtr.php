@@ -11,7 +11,8 @@ use App\Models\AvailableTest;
 use App\Models\AvailableTest_New;
 use App\Models\RequestedTests;
 use App\Models\Test;
-
+use App\Models\ReportPath;
+use DB;
 use Yajra\DataTables\Facades\DataTables;
 
 use Carbon\Carbon;
@@ -95,20 +96,23 @@ public function getAllExternalRequestedTests()
             ->join('users', 'patients.userID', '=', 'users.id') // Join users table to get NIC and name
             ->join('availableTests', 'requested_tests.test_id', '=', 'availableTests.id') // Join availableTests table
             ->where('availableTests.is_internal', false) // Fetch only external tests
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                      ->from('report_paths')
+                      ->whereColumn('report_paths.requested_test_id', 'requested_tests.id'); // Exclude tests with reports
+            })
             ->get();
 
         // Return data for DataTables
         return DataTables::of($tests)
             ->addColumn('actions', function ($test) {
+                // Render the Upload Report button dynamically
                 return '
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-primary btn-sm editBtn" data-id="' . $test->id . '">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button type="button" class="btn btn-danger btn-sm deleteBtn" data-id="' . $test->id . '">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
-                    </div>
+                    <button type="button" class="btn btn-success btn-sm uploadReportBtn"
+                            data-id="' . $test->id . '"
+                            data-patient-name="' . htmlspecialchars($test->patient_name, ENT_QUOTES, 'UTF-8') . '">
+                        <i class="fas fa-upload"></i> Upload Report
+                    </button>
                 ';
             })
             ->editColumn('test_date', function ($test) {
@@ -124,6 +128,7 @@ public function getAllExternalRequestedTests()
         return response()->json(['error' => 'An error occurred while fetching data'], 500);
     }
 }
+
 
 
 public function getAllInternalRequestedTests()
@@ -187,10 +192,13 @@ public function getAllInternalRequestedTests()
 
             $file = $request->file('reportFile');
             $fileName = 'report_' . $request->testId . '.' . $file->getClientOriginalExtension();
-            $file->storeAs('reports', $fileName, 'public'); // Save file to storage/app/public/reports
+            $filePath = $file->storeAs('reports', $fileName, 'public'); // Save file to storage/app/public/reports
 
-            // Optionally, update the database with the file path
-            // RequestedTests::where('id', $request->testId)->update(['report_path' => $fileName]);
+            // Save the file path in the report_paths table
+            ReportPath::create([
+                'requested_test_id' => $request->testId,
+                'file_path' => $filePath,
+            ]);
 
             return response()->json(['success' => 'Report uploaded successfully!']);
         } catch (\Exception $e) {

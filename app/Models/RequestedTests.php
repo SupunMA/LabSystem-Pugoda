@@ -35,4 +35,9 @@ class RequestedTests extends Model
     {
         return $this->belongsTo(AvailableTest_New::class, 'test_id', 'id');
     }
+
+    public function reportPaths()
+    {
+        return $this->hasMany(ReportPath::class, 'requested_test_id');
+    }
 }
