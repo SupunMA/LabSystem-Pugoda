@@ -108,6 +108,7 @@ Route::group(['prefix'=>'Admin','middleware'=>['checkAdmin','auth','lockBack']],
     Route::get('/getRequest-testInternal', [admin_TestsCtr::class, 'getAllInternalRequestedTests'])->name('getAllInternalRequestedTests');
     Route::get('/getRequest-test', [admin_TestsCtr::class, 'getAllExternalRequestedTests'])->name('getAllExternalRequestedTests');
     Route::post('/uploadPdf', [admin_TestsCtr::class, 'uploadPdf'])->name('admin.uploadPdf');
+    Route::delete('/admin/delete-requested-test', [admin_TestsCtr::class, 'deleteSendOutRequestedTest'])->name('admin.deleteSendOutRequestedTest');
 
 
     //Report

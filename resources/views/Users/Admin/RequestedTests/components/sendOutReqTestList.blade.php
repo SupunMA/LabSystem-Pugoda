@@ -86,11 +86,38 @@
     </div>
 </div>
 
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteTestModal" tabindex="-1" role="dialog" aria-labelledby="deleteTestModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteTestModalLabel">
+                    <i class="fas fa-trash"></i> Confirm Delete
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the requested test for <span id="deletePatientName" class="fw-bold"></span>?</p>
+                <input type="hidden" id="deleteTestId">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 @push('specificJs')
 <script>
 $(document).ready(function () {
     let selectedFileUrl = null; // Store the selected file's URL for viewing
 
+    // Initialize DataTable
     $('#testsTable').DataTable({
         processing: true,
         serverSide: true,
@@ -137,6 +164,11 @@ $(document).ready(function () {
                                 data-id="${row.id}"
                                 data-patient-name="${row.patient_name}">
                             <i class="fas fa-upload"></i> Upload Report
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm deleteTestBtn"
+                                data-id="${row.id}"
+                                data-patient-name="${row.patient_name}">
+                            <i class="fas fa-trash"></i> Delete
                         </button>
                     `;
                 }
@@ -234,6 +266,38 @@ $(document).ready(function () {
                 $('#reportFile').val(''); // Clear the file input after upload
                 $('#viewPdfBtn').hide().prop('disabled', true); // Hide and disable the "View PDF" button
                 selectedFileUrl = null; // Reset the selected file URL
+            }
+        });
+    });
+
+    // Handle Delete Button Click
+    $(document).on('click', '.deleteTestBtn', function () {
+        const testId = $(this).data('id');
+        const patientName = $(this).data('patient-name');
+
+        $('#deleteTestId').val(testId); // Set the test ID in the hidden input
+        $('#deletePatientName').text(patientName); // Set the patient's name in the modal
+        $('#deleteTestModal').modal('show'); // Show the delete confirmation modal
+    });
+
+    // Handle Confirm Delete Button Click
+    $('#confirmDeleteBtn').on('click', function () {
+        const testId = $('#deleteTestId').val();
+
+        $.ajax({
+            url: '{{ route("admin.deleteSendOutRequestedTest") }}', // Laravel route for deleting the requested test
+            type: 'DELETE',
+            data: {
+                _token: '{{ csrf_token() }}',
+                id: testId,
+            },
+            success: function (response) {
+                toastr.success('Requested test deleted successfully!');
+                $('#deleteTestModal').modal('hide'); // Hide the modal
+                $('#testsTable').DataTable().ajax.reload(); // Reload the table
+            },
+            error: function (xhr, status, error) {
+                toastr.error('Failed to delete the requested test. Please try again.');
             }
         });
     });

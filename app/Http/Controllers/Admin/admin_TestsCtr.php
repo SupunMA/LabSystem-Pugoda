@@ -106,12 +106,17 @@ public function getAllExternalRequestedTests()
         // Return data for DataTables
         return DataTables::of($tests)
             ->addColumn('actions', function ($test) {
-                // Render the Upload Report button dynamically
+                // Render the Upload Report and Delete buttons dynamically
                 return '
                     <button type="button" class="btn btn-success btn-sm uploadReportBtn"
                             data-id="' . $test->id . '"
                             data-patient-name="' . htmlspecialchars($test->patient_name, ENT_QUOTES, 'UTF-8') . '">
                         <i class="fas fa-upload"></i> Upload Report
+                    </button>
+                    <button type="button" class="btn btn-danger btn-sm deleteTestBtn"
+                            data-id="' . $test->id . '"
+                            data-patient-name="' . htmlspecialchars($test->patient_name, ENT_QUOTES, 'UTF-8') . '">
+                        <i class="fas fa-trash"></i> Delete
                     </button>
                 ';
             })
@@ -204,6 +209,23 @@ public function getAllInternalRequestedTests()
         } catch (\Exception $e) {
             \Log::error('Error uploading report: ' . $e->getMessage());
             return response()->json(['error' => 'Failed to upload report.'], 500);
+        }
+    }
+
+    //send out request delete
+    public function deleteSendOutRequestedTest(Request $request)
+    {
+        try {
+            $request->validate([
+                'id' => 'required|exists:requested_tests,id',
+            ]);
+
+            RequestedTests::findOrFail($request->id)->delete();
+
+            return response()->json(['success' => 'Requested test deleted successfully!']);
+        } catch (\Exception $e) {
+            \Log::error('Error deleting requested test: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to delete requested test.'], 500);
         }
     }
 
