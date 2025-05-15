@@ -42,7 +42,7 @@
     </div>
     <!-- /.card -->
 </div>
-<!-- /.col -->>
+<!-- /.col -->
 {{-- End of First Card --}}
 
 @push('specificJs')
