@@ -32,7 +32,7 @@ class admin_TestsCtr extends Controller
 
     public function addTest()
     {
-        return view('Users.Admin.Tests.AddNewTest');
+        return view('Users.Admin.RequestedTests.onSiteReqTest');
     }
 
 
@@ -40,7 +40,7 @@ class admin_TestsCtr extends Controller
 
     public function allTest()
     {
-        return view('Users.Admin.Tests.AllTests');
+        return view('Users.Admin.RequestedTests.sendOutReqTest');
     }
 
 
@@ -175,5 +175,28 @@ public function getAllInternalRequestedTests()
 }
 
 
+
+// upload pdf
+    public function uploadPdf(Request $request)
+    {
+        try {
+            $request->validate([
+                'reportFile' => 'required|mimes:pdf|max:2048', // Validate PDF file
+                'testId' => 'required|exists:requested_tests,id', // Ensure test ID exists
+            ]);
+
+            $file = $request->file('reportFile');
+            $fileName = 'report_' . $request->testId . '.' . $file->getClientOriginalExtension();
+            $file->storeAs('reports', $fileName, 'public'); // Save file to storage/app/public/reports
+
+            // Optionally, update the database with the file path
+            // RequestedTests::where('id', $request->testId)->update(['report_path' => $fileName]);
+
+            return response()->json(['success' => 'Report uploaded successfully!']);
+        } catch (\Exception $e) {
+            \Log::error('Error uploading report: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to upload report.'], 500);
+        }
+    }
 
 }

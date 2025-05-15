@@ -9,7 +9,7 @@
 
     {{-- <div class="row"> --}}
 
-        @include('Users.Admin.Tests.components.newTestDetails')
+        @include('Users.Admin.RequestedTests.components.onSiteReqTestList')
 
     {{-- </div> --}}
 

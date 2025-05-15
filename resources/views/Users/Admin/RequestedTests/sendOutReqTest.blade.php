@@ -9,7 +9,7 @@
         {{-- <div class="row"> --}}
 
             {{-- Client Details form --}}
-            @include('Users.Admin.Tests.components.allTestTable')
+            @include('Users.Admin.RequestedTests.components.sendOutReqTestList')
 
             {{-- Client Password form --}}
 

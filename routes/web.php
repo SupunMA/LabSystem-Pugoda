@@ -107,6 +107,7 @@ Route::group(['prefix'=>'Admin','middleware'=>['checkAdmin','auth','lockBack']],
     Route::get('AllTest', [admin_TestsCtr::class, 'allTest'])->name('admin.allTest');
     Route::get('/getRequest-testInternal', [admin_TestsCtr::class, 'getAllInternalRequestedTests'])->name('getAllInternalRequestedTests');
     Route::get('/getRequest-test', [admin_TestsCtr::class, 'getAllExternalRequestedTests'])->name('getAllExternalRequestedTests');
+    Route::post('/uploadPdf', [admin_TestsCtr::class, 'uploadPdf'])->name('admin.uploadPdf');
 
 
     //Report

@@ -50,7 +50,7 @@ $(document).ready(function () {
         autoWidth: false, // Disable automatic column width calculation
         lengthChange: true, // Allow users to change the number of rows displayed
         ajax: {
-            url: '{{ route("getAllExternalRequestedTests") }}', // Laravel route for fetching data
+            url: '{{ route("getAllInternalRequestedTests") }}', // Laravel route for fetching data
             type: 'GET', // HTTP method
             error: function (xhr, error, code) {
                 console.error('Error fetching data:', error); // Log errors for debugging
@@ -151,11 +151,6 @@ $(document).ready(function () {
     };
 
 
-    // View Template button handler
-$(document).on('click', '.viewTemplateBtn', function() {
-    const testId = $(this).data('id');
-    window.open(`{{ url('/tests') }}/${testId}/report`, '_blank');
-});
 </script>
 
 
