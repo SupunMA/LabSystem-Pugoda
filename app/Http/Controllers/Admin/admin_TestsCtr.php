@@ -12,6 +12,9 @@ use App\Models\AvailableTest_New;
 use App\Models\RequestedTests;
 use App\Models\Test;
 use App\Models\ReportPath;
+use App\Models\TestResult;
+use App\Models\TestCategory_New;
+
 use DB;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -144,6 +147,7 @@ public function getAllInternalRequestedTests()
                 'requested_tests.id',
                 'requested_tests.test_date',
                 'requested_tests.price',
+                'requested_tests.test_id', // Added test_id for fetching categories
                 'patients.dob',
                 'users.nic',
                 'users.name as patient_name',
@@ -153,16 +157,19 @@ public function getAllInternalRequestedTests()
             ->join('patients', 'requested_tests.patient_id', '=', 'patients.pid') // Join patients table
             ->join('users', 'patients.userID', '=', 'users.id') // Join users table to get NIC and name
             ->join('availableTests', 'requested_tests.test_id', '=', 'availableTests.id') // Join availableTests table
+            ->leftJoin('test_results', 'requested_tests.id', '=', 'test_results.requested_test_id') // Left join with test_results
             ->where('availableTests.is_internal', true) // Fetch only internal (onsite) tests
+            ->whereNull('test_results.requested_test_id') // Exclude rows where results already exist
             ->get();
 
         // Return data for DataTables
         return DataTables::of($tests)
             ->addColumn('actions', function ($test) {
+                // Replace Edit button with Add Result button
                 return '
                     <div class="btn-group">
-                        <button type="button" class="btn btn-primary btn-sm editBtn" data-id="' . $test->id . '">
-                            <i class="fas fa-edit"></i> Edit
+                        <button type="button" class="btn btn-success btn-sm addResultBtn" data-id="' . $test->id . '" data-test-id="' . $test->test_id . '">
+                            <i class="fas fa-flask"></i> Add Result
                         </button>
                         <button type="button" class="btn btn-danger btn-sm deleteBtn" data-id="' . $test->id . '">
                             <i class="fas fa-trash"></i> Delete
@@ -228,5 +235,68 @@ public function getAllInternalRequestedTests()
             return response()->json(['error' => 'Failed to delete requested test.'], 500);
         }
     }
+
+// Add this new method to get test categories for a specific test
+public function getTestCategories($testId)
+{
+    try {
+        $categories = TestCategory_New::where('availableTests_id', $testId)
+            ->orderBy('display_order')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'categories' => $categories
+        ]);
+    } catch (\Exception $e) {
+        \Log::error('Error fetching test categories: ' . $e->getMessage());
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to fetch test categories'
+        ], 500);
+    }
+}
+
+// Add this method to store test results
+public function storeTestResults(Request $request)
+{
+    try {
+        $validatedData = $request->validate([
+            'requested_test_id' => 'required|exists:requested_tests,id',
+            'results' => 'required|array',
+            'results.*.category_id' => 'required|exists:test_categories,id',
+            'results.*.value' => 'required'
+        ]);
+
+        // Check if results already exist for this test
+        $existingResults = TestResult::where('requested_test_id', $validatedData['requested_test_id'])->exists();
+
+        if ($existingResults) {
+            // Delete existing results if they exist (to update)
+            TestResult::where('requested_test_id', $validatedData['requested_test_id'])->delete();
+        }
+
+        // Store each result
+        foreach ($validatedData['results'] as $result) {
+            TestResult::create([
+                'requested_test_id' => $validatedData['requested_test_id'],
+                'category_id' => $result['category_id'],
+                'result_value' => $result['value'],
+                'added_by' => auth()->id() // Assuming you have authentication
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Test results saved successfully'
+        ]);
+    } catch (\Exception $e) {
+        \Log::error('Error saving test results: ' . $e->getMessage());
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to save test results'
+        ], 500);
+    }
+}
 
 }

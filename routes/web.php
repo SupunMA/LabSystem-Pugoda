@@ -110,6 +110,11 @@ Route::group(['prefix'=>'Admin','middleware'=>['checkAdmin','auth','lockBack']],
     Route::post('/uploadPdf', [admin_TestsCtr::class, 'uploadPdf'])->name('admin.uploadPdf');
     Route::delete('/admin/delete-requested-test', [admin_TestsCtr::class, 'deleteSendOutRequestedTest'])->name('admin.deleteSendOutRequestedTest');
 
+    // Get test categories for a specific test
+    Route::get('/test-categories/{testId}', [admin_TestsCtr::class, 'getTestCategories'])->name('getTestCategories');
+    // Store test results
+    Route::post('/store-test-results', [admin_TestsCtr::class, 'storeTestResults'])->name('storeTestResults');
+
 
     //Report
     Route::get('AddReport', [admin_ReportsCtr::class, 'addReport'])->name('admin.addReport');
