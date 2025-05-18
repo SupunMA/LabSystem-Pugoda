@@ -48,6 +48,11 @@ Route::middleware(['middleware'=>'lockBack'])->group(function(){
     Auth::routes();
 });
 
+// Report files (no need for lockBack)
+Route::group(['prefix'=>'Admin','middleware'=>['auth','checkAdmin']], function () {
+    Route::get('/reports/download/{id}', [admin_ReportsCtr::class, 'download'])->name('reports.download');
+    Route::get('/reports/preview/{id}', [admin_ReportsCtr::class, 'preview'])->name('reports.preview');
+});
 
 //admin
 Route::group(['prefix'=>'Admin','middleware'=>['checkAdmin','auth','lockBack']],function(){
@@ -123,6 +128,11 @@ Route::group(['prefix'=>'Admin','middleware'=>['checkAdmin','auth','lockBack']],
     Route::get('report/delete/{ID}', [admin_ReportsCtr::class, 'deleteReport'])->name('admin.deleteReport');
     Route::post('report/update', [admin_ReportsCtr::class, 'updateReport'])->name('admin.updateReport');
     Route::get('report/view/{ID}', [admin_ReportsCtr::class, 'viewReport'])->name('admin.viewReport');
+    // new report
+    //pdf
+    Route::get('/reports/data', [admin_ReportsCtr::class, 'getReports'])->name('reports.data');
+    // Route::get('/reports/download/{id}', [admin_ReportsCtr::class, 'download'])->name('reports.download');
+    // Route::get('/reports/preview/{id}', [admin_ReportsCtr::class, 'preview'])->name('reports.preview');
 
     //Profile
     Route::get('/myProfile', [admin_ProfileCtr::class, 'AdminViewUpdateProfile'])->name('AdminViewUpdateProfile');

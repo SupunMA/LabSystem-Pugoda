@@ -10,6 +10,16 @@ use App\Models\Patient;
 use App\Models\AvailableTest;
 use App\Models\Test;
 use App\Models\Report;
+use App\Models\ReportPath;
+use Yajra\DataTables\Facades\DataTables;
+use DB;
+
+use Illuminate\Support\Facades\Storage;
+
+use App\Models\RequestedTest;
+
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 use Carbon\Carbon;
 
@@ -79,20 +89,7 @@ class admin_ReportsCtr extends Controller
 
     public function allReport()
     {
-        //all done test with other tables
-        $allReportData = User::join('patients', 'patients.userID', '=', 'users.id')
-        ->join('tests', 'tests.pid', '=', 'patients.pid')
-        ->join('available_tests', 'available_tests.tlid', '=', 'tests.tlid')
-        ->join('reports', 'reports.tid', '=', 'tests.tid')
-        ->join('subcategories', 'subcategories.AvailableTestID', '=', 'available_tests.tlid')
-        ->select('*')
-        ->where('tests.done','=', 1)
-        ->get();
-
-// dd($allReportData);
-
-// dd($allReportData);
-        return view('Users.Admin.Reports.AllReport',compact('allReportData'));
+        return view('Users.Admin.Reports.AllReport');
     }
 
     public function deleteReport($ID)
@@ -146,6 +143,78 @@ class admin_ReportsCtr extends Controller
         return view('Users.Admin.Reports.components.invoice-print',compact('viewReportData'));
     }
 
+
+    //new
+    public function getReports()
+    {
+        $reports = DB::table('report_paths')
+            ->join('requested_tests', 'report_paths.requested_test_id', '=', 'requested_tests.id')
+            ->join('patients', 'requested_tests.patient_id', '=', 'patients.pid')
+            ->join('users', 'patients.userID', '=', 'users.id')
+            ->join('availableTests', 'requested_tests.test_id', '=', 'availableTests.id')
+            ->select(
+                'report_paths.id as report_id',
+                'report_paths.file_path',
+                'users.name as patient_name',
+                'users.nic',
+                'patients.dob',
+                'requested_tests.test_date',
+                'availableTests.name as test_name'
+            )
+            ->orderBy('requested_tests.test_date', 'desc');
+
+        return DataTables::of($reports)
+            ->addColumn('dob_formatted', function ($row) {
+                return $row->dob ? date('Y-m-d', strtotime($row->dob)) : 'N/A';
+            })
+            ->addColumn('test_date_formatted', function ($row) {
+                return date('Y-m-d', strtotime($row->test_date));
+            })
+            ->addColumn('actions', function ($row) {
+                $downloadBtn = '<a href="' . route('reports.download', $row->report_id) . '" class="btn btn-sm btn-primary" title="Download Report"><i class="fas fa-download"></i></a>';
+                $previewBtn = '<a href="' . route('reports.preview', $row->report_id) . '" target="_blank" class="btn btn-sm btn-info ml-1" title="Preview Report"><i class="fas fa-eye"></i></a>';
+
+                return $downloadBtn . ' ' . $previewBtn;
+            })
+            ->rawColumns(['actions'])
+            ->make(true);
+    }
+    public function download($id)
+    {
+        $report = ReportPath::findOrFail($id);
+        $filePath = storage_path('app/public/reports/' . basename($report->file_path));
+
+        if (!file_exists($filePath)) {
+            return back()->with('error', 'File not found.');
+        }
+
+        return new StreamedResponse(function () use ($filePath) {
+            readfile($filePath);
+        }, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="' . basename($filePath) . '"',
+        ]);
+    }
+    public function preview($id)
+    {
+        $report = ReportPath::findOrFail($id);
+        $filePath = storage_path('app/public/' . $report->file_path);
+
+        if (file_exists($filePath)) {
+            return response()->file($filePath, [
+                'Content-Type' => 'application/pdf'
+            ]);
+        }
+
+        $alternativePath = public_path('storage/' . $report->file_path);
+        if (file_exists($alternativePath)) {
+            return response()->file($alternativePath, [
+                'Content-Type' => 'application/pdf'
+            ]);
+        }
+
+        return back()->with('error', 'File not found! Please check storage configuration and file path.');
+    }
 
 
 

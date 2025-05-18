@@ -5,105 +5,122 @@
     <!-- /.box-header -->
     <div class="box-body">
 
-        <table id="example1" class="table table-bordered table-striped">
+        <table id="reportsTable" class="table table-bordered table-striped" style="width:100%">
             <thead>
                 <tr>
-                    <th>Report ID</th>
                     <th>Patient Name</th>
+                    <th>NIC</th>
+                    <th>Date of Birth</th>
+                    <th>Test Date</th>
                     <th>Test Name</th>
-                    <th>Result</th>
-
-                    <th>Action</th>
-
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-
-                @foreach ($allReportData->unique('rid') as $data)
-                        <tr>
-                            <td>{{$data->rid}} </td>
-                            <td>{{$data->name}}</td>
-                            <td>{{$data->AvailableTestName}}</td>
-                            <td>
-                                @php
-                                    $resultArray = explode(',', $data->result);
-                                @endphp
-
-                                    {{-- @foreach ($allReportData->unique('AvailableTestID') as $data2)
-                                        {{1}}
-                                    @endforeach --}}
-
-                                @foreach ($allReportData->unique('sub_id') as $data2)
-                                    @if ($data->AvailableTestID == $data2->AvailableTestID)
-                                        {{$data2->SubCategoryName}} :-
-                                        @foreach($resultArray as $result)
-                                            {{$result}} ({{$data2->Units}}) -
-                                            @if ($result < $data2->SubCategoryRangeMin || $result > $data2->SubCategoryRangeMax)
-                                            <b>Abnormal</b>
-                                            @else
-                                            <b>Normal</b>
-                                            @endif
-                                            <br>
-                                            @php
-                                                array_shift($resultArray);
-                                            @endphp
-                                        @break
-                                        @endforeach
-                                    @endif
-                                @endforeach
-
-                            </td>
-
-
-
-
-                            <td>
-                                {{-- <a class="btn btn-warning" type="button" data-toggle="modal" data-target="#branchEditModal-{{$data->rid}}" >
-                                    <i class="fa fa-pencil" aria-hidden="true"></i>
-                                </a> --}}
-                                <a class="btn btn-danger" type="button" data-toggle="modal" data-target="#branchDeleteModal-{{$data->rid}}"  >
-                                    <i class="fa fa-trash-o" aria-hidden="true"></i>
-                                </a>
-
-                                <a class="btn btn-success" type="button" href="report/view/{{$data->rid}}" target="_blank">
-                                    <i class="fa fa-cloud-download" aria-hidden="true"></i> Download
-                                </a>
-                            </td>
-                        </tr>
-
-                                {{-- update modal and delete modal --}}
-                                {{-- @include('Users.Admin.Reports.components.updateReport') --}}
-                                @include('Users.Admin.Reports.components.deleteReport')
-                                {{-- @include('Users.Admin.Reports.components.invoice-print')  --}}
-                @endforeach
-
+                <!-- Data will be populated via AJAX -->
             </tbody>
             <tfoot>
                 <tr>
-                    <th>Report ID</th>
                     <th>Patient Name</th>
+                    <th>NIC</th>
+                    <th>Date of Birth</th>
+                    <th>Test Date</th>
                     <th>Test Name</th>
-                    <th>Result</th>
-
-                    <th>Action</th>
+                    <th>Actions</th>
                 </tr>
             </tfoot>
         </table>
+
     </div>
     <!-- /.box-body -->
 </div>
   <!-- /.box -->
 
 
-@push('specificJs')
-{{-- toastr msg --}}
+  @push('specificJs')
+  <script>
+      $(document).ready(function() {
+          $('#reportsTable').DataTable({
+              processing: true,
+              serverSide: true,
+              responsive: true,
+              scrollX: true,
+              autoWidth: false,
+              lengthChange: true,
+              ajax: '{{ route("reports.data") }}',
+              columns: [
+                  { data: 'patient_name' },
+                  { data: 'nic', defaultContent: 'N/A' },
+                  { data: 'dob_formatted' },
+                  { data: 'test_date_formatted' },
+                  { data: 'test_name' },
+                  { data: 'actions', orderable: false, searchable: false }
+              ],
+              order: [[3, 'desc']],
+              dom: 'flBrtip',
+              buttons: [
+                  {
+                      extend: 'pdf',
+                      text: 'PDF',
+                      orientation: 'portrait',
+                      pageSize: 'A4',
+                      exportOptions: {
+                          columns: ':not(:last-child)'
+                      }
+                  },
+                  {
+                      extend: 'csv',
+                      text: 'CSV',
+                      exportOptions: {
+                          columns: ':not(:last-child)'
+                      }
+                  },
+                  {
+                      extend: 'excel',
+                      text: 'Excel',
+                      exportOptions: {
+                          columns: ':not(:last-child)'
+                      }
+                  },
+                  {
+                      extend: 'print',
+                      text: 'Print',
+                      exportOptions: {
+                          columns: ':not(:last-child)'
+                      }
+                  }
+              ]
+          });
+      });
 
-<script>
-    $(function () {
-    $('#example1').DataTable()
-    })
-</script>
+      // Adjust table on window resize
+      $(window).on('resize', function() {
+          $('#reportsTable').DataTable().columns.adjust().draw();
+      });
 
+      // Adjust table when sidebar is toggled
+      $('a[data-widget="pushmenu"]').on('click', function() {
+          setTimeout(function() {
+              $('#reportsTable').DataTable().columns.adjust().draw();
+          }, 300);
+      });
 
+      // Initialize toastr
+      toastr.options = {
+          "closeButton": true,
+          "progressBar": true,
+          "positionClass": "toast-top-right",
+          "timeOut": "8000"
+      };
 
-@endpush
+      // Display success message if present in session
+      @if(session('success'))
+          toastr.success('{{ session('success') }}');
+      @endif
+
+      // Display error message if present in session
+      @if(session('error'))
+          toastr.error('{{ session('error') }}');
+      @endif
+  </script>
+  @endpush
