@@ -145,40 +145,55 @@ class admin_ReportsCtr extends Controller
 
 
     //new
-    public function getReports()
-    {
-        $reports = DB::table('report_paths')
-            ->join('requested_tests', 'report_paths.requested_test_id', '=', 'requested_tests.id')
-            ->join('patients', 'requested_tests.patient_id', '=', 'patients.pid')
-            ->join('users', 'patients.userID', '=', 'users.id')
-            ->join('availableTests', 'requested_tests.test_id', '=', 'availableTests.id')
-            ->select(
-                'report_paths.id as report_id',
-                'report_paths.file_path',
-                'users.name as patient_name',
-                'users.nic',
-                'patients.dob',
-                'requested_tests.test_date',
-                'availableTests.name as test_name'
-            )
-            ->orderBy('requested_tests.test_date', 'desc');
+public function getReports()
+{
+    $reports = DB::table('report_paths')
+        ->join('requested_tests', 'report_paths.requested_test_id', '=', 'requested_tests.id')
+        ->join('patients', 'requested_tests.patient_id', '=', 'patients.pid')
+        ->join('users', 'patients.userID', '=', 'users.id')
+        ->join('availableTests', 'requested_tests.test_id', '=', 'availableTests.id')
+        ->select(
+            'report_paths.id as report_id',
+            'report_paths.file_path',
+            'users.name as patient_name',
+            'users.nic',
+            'patients.dob',
+            'requested_tests.test_date',
+            'availableTests.name as test_name'
+        )
+        ->orderBy('requested_tests.test_date', 'desc');
 
-        return DataTables::of($reports)
-            ->addColumn('dob_formatted', function ($row) {
-                return $row->dob ? date('Y-m-d', strtotime($row->dob)) : 'N/A';
-            })
-            ->addColumn('test_date_formatted', function ($row) {
-                return date('Y-m-d', strtotime($row->test_date));
-            })
-            ->addColumn('actions', function ($row) {
-                $downloadBtn = '<a href="' . route('reports.download', $row->report_id) . '" class="btn btn-sm btn-primary" title="Download Report"><i class="fas fa-download"></i></a>';
-                $previewBtn = '<a href="' . route('reports.preview', $row->report_id) . '" target="_blank" class="btn btn-sm btn-info ml-1" title="Preview Report"><i class="fas fa-eye"></i></a>';
+    return DataTables::of($reports)
+        ->addColumn('dob_formatted', function ($row) {
+            return $row->dob ? date('Y-m-d', strtotime($row->dob)) : 'N/A';
+        })
+        ->addColumn('test_date_formatted', function ($row) {
+            return date('Y-m-d', strtotime($row->test_date));
+        })
+        ->addColumn('actions', function ($row) {
+            $downloadBtn = '<a href="' . route('reports.download', $row->report_id) . '" class="btn btn-sm btn-primary" title="Download Report"><i class="fas fa-download"></i></a>';
+            $previewBtn = '<a href="' . route('reports.preview', $row->report_id) . '" target="_blank" class="btn btn-sm btn-info ml-1" title="Preview Report"><i class="fas fa-eye"></i></a>';
 
-                return $downloadBtn . ' ' . $previewBtn;
-            })
-            ->rawColumns(['actions'])
-            ->make(true);
-    }
+            return $downloadBtn . ' ' . $previewBtn;
+        })
+        ->filterColumn('patient_name', function($query, $keyword) {
+            $query->whereRaw("users.name like ?", ["%{$keyword}%"]);
+        })
+        ->filterColumn('nic', function($query, $keyword) {
+            $query->whereRaw("users.nic like ?", ["%{$keyword}%"]);
+        })
+        ->filterColumn('dob_formatted', function($query, $keyword) {
+            $query->whereRaw("DATE_FORMAT(patients.dob, '%Y-%m-%d') like ?", ["%{$keyword}%"]);
+        })
+        ->filterColumn('test_date_formatted', function($query, $keyword) {
+            $query->whereRaw("DATE_FORMAT(requested_tests.test_date, '%Y-%m-%d') like ?", ["%{$keyword}%"]);
+        })
+        ->filterColumn('test_name', function($query, $keyword) {
+            $query->whereRaw("availableTests.name like ?", ["%{$keyword}%"]);
+        })
+        ->rawColumns(['actions'])
+        ->make(true);
+}
     public function download($id)
     {
         $report = ReportPath::findOrFail($id);
