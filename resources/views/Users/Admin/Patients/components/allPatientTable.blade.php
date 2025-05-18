@@ -1,56 +1,48 @@
-<div class="box">
-  <div class="box-header">
-    {{-- <h3 class="box-title">List of Patients</h3> --}}
-  </div>
-  <!-- /.box-header -->
-  <div class="box-body">
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <table id="patientsTable" class="table table-bordered table-striped" style="width:100%">
 
-        @include('Users.Admin.messages.addMsg')
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>NIC</th>
+                            <th>Date of Birth</th>
+                            <th>Gender</th>
+                            <th>Mobile</th>
+                            <th>Email</th>
+                            <th>Address</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data will be populated here via AJAX -->
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>NIC</th>
+                            <th>Date of Birth</th>
+                            <th>Gender</th>
+                            <th>Mobile</th>
+                            <th>Email</th>
+                            <th>Address</th>
+                            <th>Actions</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
 
-
-
-            <table id="patientsTable" class="table table-bordered table-striped" style="width:100%">
-
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>NIC</th>
-                    <th>Date of Birth</th>
-                    <th>Gender</th>
-                    <th>Mobile</th>
-                    <th>Email</th>
-                    <th>Address</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Data will be populated here via AJAX -->
-            </tbody>
-            <tfoot>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>NIC</th>
-                    <th>Date of Birth</th>
-                    <th>Gender</th>
-                    <th>Mobile</th>
-                    <th>Email</th>
-                    <th>Address</th>
-                    <th>Actions</th>
-                </tr>
-            </tfoot>
-        </table>
-
-  </div>
-  <!-- /.box-body -->
-</div>
-<!-- /.box -->
 
 @include('Users.Admin.Patients.components.updatePatient')
 @include('Users.Admin.Patients.components.deletePatient')
 @include('Users.Admin.Patients.components.requestTest')
-
 
 
 
@@ -197,10 +189,6 @@
         }, 300); // Delay to ensure sidebar transition finishes
     });
 
-
-    // $(function () {
-    //   $('#patientsTable').DataTable()
-    // })
 </script>
 
 

@@ -11,15 +11,15 @@
                 @csrf
                 <div class="modal-body">
                     <input type="hidden" name="patient_id" id="patientId">
-<div class="form-group">
-    <label for="testName">Select Test</label>
-    <small class="form-text text-muted" style="font-size: 1.0rem;">
-        Note: <span style="color: red;">Red</span> indicate <span style="color: red;">Send-Out</span> tests, <span style="color: blue;">Blue</span> represent <span style="color: blue;">On-Site</span> tests.
-    </small>
-    <select class="form-control" id="testName" name="test_id" required>
-        <!-- Options will be populated dynamically -->
-    </select>
-</div>
+                    <div class="form-group">
+                        <label for="testName">Select Test</label>
+                        <small class="form-text text-muted" style="font-size: 1.0rem;">
+                            Note: <span style="color: red;">Red</span> indicate <span style="color: red;">Send-Out</span> tests, <span style="color: blue;">Blue</span> represent <span style="color: blue;">On-Site</span> tests.
+                        </small>
+                        <select class="form-control" id="testName" name="test_id" required>
+                            <!-- Options will be populated dynamically -->
+                        </select>
+                    </div>
                     <div class="form-group">
                         <label for="testDate">Test Date (M/D/Y)</label>
                         <div class="input-group">
@@ -40,7 +40,7 @@
 </div>
 
 
-@push('specificJs').
+@push('specificJs')
 <script>
     $(document).on('click', '.requestTestBtn', function () {
         const patientId = $(this).data('id');
