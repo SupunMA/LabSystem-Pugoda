@@ -178,8 +178,11 @@ public function getReports()
             return date('Y-m-d', strtotime($row->test_date));
         })
         ->addColumn('actions', function ($row) {
-            $downloadBtn = '<a href="' . route('reports.download', $row->report_id) . '" class="btn btn-sm btn-primary" title="Download Report"><i class="fas fa-download"></i></a>';
-            $previewBtn = '<a href="' . route('reports.preview', $row->report_id) . '" target="_blank" class="btn btn-sm btn-info ml-1" title="Preview Report"><i class="fas fa-eye"></i></a>';
+            $downloadBtn = '<a href="' . route('reports.download', $row->report_id) . '" class="btn btn-sm btn-primary download-btn" title="Download Report">
+                    <i class="fas fa-download"></i> Download
+                    <span class="spinner-border spinner-border-sm text-light d-none" role="status" aria-hidden="true"></span>
+                </a>';
+            $previewBtn = '<a href="' . route('reports.preview', $row->report_id) . '" target="_blank" class="btn btn-sm btn-info ml-1" title="Preview Report"><i class="fas fa-eye"></i> View</a>';
 
             return $downloadBtn . ' ' . $previewBtn;
         })

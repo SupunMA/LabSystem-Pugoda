@@ -37,7 +37,26 @@
     <!-- /.box-body -->
 </div>
 <!-- /.box -->
+@push('specificCSS')
+<style>
+    .spinner-border {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    vertical-align: text-bottom;
+    border: 0.15em solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spinner-border 0.75s linear infinite;
+}
 
+@keyframes spinner-border {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+</style>
+@endpush
 
   @push('specificJs')
   <script>
@@ -155,6 +174,25 @@ $(document).ready(function() {
     @if(session('error'))
         toastr.error('{{ session('error') }}');
     @endif
+});
+
+
+//download animation in the button
+$(document).on('click', '.download-btn', function (e) {
+    e.preventDefault(); // Prevent default action to handle animation
+    var $button = $(this);
+    var href = $button.attr('href'); // Get the download URL
+
+    // Show spinner
+    $button.find('.spinner-border').removeClass('d-none');
+
+    // Start the download
+    window.location.href = href;
+
+    // Hide spinner after a delay (optional, based on your use case)
+    setTimeout(function () {
+        $button.find('.spinner-border').addClass('d-none');
+    }, 3000); // Adjust the delay as needed
 });
   </script>
   @endpush
