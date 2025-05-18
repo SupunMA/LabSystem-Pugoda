@@ -146,6 +146,7 @@ class admin_ReportsCtr extends Controller
 
     //new
 
+
 public function getReports()
 {
     $reports = DB::table('report_paths')
@@ -156,6 +157,7 @@ public function getReports()
         ->select(
             'report_paths.id as report_id',
             'report_paths.file_path',
+            'requested_tests.id as requestedTest_ID',
             'users.name as patient_name',
             'users.nic',
             'patients.dob',
@@ -163,9 +165,12 @@ public function getReports()
             'availableTests.name as test_name'
         );
 
-    // We'll let DataTables handle the ordering
-
     return DataTables::of($reports)
+        ->addColumn('custom_report_id', function ($row) {
+            // Format: YYYYMMDD-ID (e.g., 20250518-123)
+            $dateFormatted = date('Ymd', strtotime($row->test_date));
+            return $dateFormatted . '-' . $row->requestedTest_ID . '-SO';
+        })
         ->addColumn('dob_formatted', function ($row) {
             return $row->dob ? date('Y-m-d', strtotime($row->dob)) : 'N/A';
         })
@@ -177,6 +182,10 @@ public function getReports()
             $previewBtn = '<a href="' . route('reports.preview', $row->report_id) . '" target="_blank" class="btn btn-sm btn-info ml-1" title="Preview Report"><i class="fas fa-eye"></i></a>';
 
             return $downloadBtn . ' ' . $previewBtn;
+        })
+        ->filterColumn('custom_report_id', function($query, $keyword) {
+            // Allow searching for either the date part or the ID part or both
+            $query->whereRaw("CONCAT(DATE_FORMAT(requested_tests.test_date, '%Y%m%d'), '-', requested_tests.id,'-SO') like ?", ["%{$keyword}%"]);
         })
         ->filterColumn('patient_name', function($query, $keyword) {
             $query->whereRaw("users.name like ?", ["%{$keyword}%"]);
@@ -194,6 +203,7 @@ public function getReports()
             $query->whereRaw("availableTests.name like ?", ["%{$keyword}%"]);
         })
         // Adding proper order handlers for each column
+        ->orderColumn('custom_report_id', 'requested_tests.test_date $1, requested_tests.id $1')
         ->orderColumn('patient_name', 'users.name $1')
         ->orderColumn('nic', 'users.nic $1')
         ->orderColumn('dob_formatted', 'patients.dob $1')

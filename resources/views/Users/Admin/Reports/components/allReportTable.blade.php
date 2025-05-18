@@ -1,10 +1,14 @@
 <div class="box">
+    <div class="box-header">
+      <h3 class="box-title">List of Reports</h3>
+    </div>
     <!-- /.box-header -->
     <div class="box-body">
 
         <table id="reportsTable" class="table table-bordered table-striped" style="width:100%">
             <thead>
                 <tr>
+                    <th>Report ID</th>
                     <th>Patient Name</th>
                     <th>NIC</th>
                     <th>Date of Birth</th>
@@ -18,6 +22,7 @@
             </tbody>
             <tfoot>
                 <tr>
+                    <th>Report ID</th>
                     <th>Patient Name</th>
                     <th>NIC</th>
                     <th>Date of Birth</th>
@@ -31,12 +36,12 @@
     </div>
     <!-- /.box-body -->
 </div>
-  <!-- /.box -->
+<!-- /.box -->
 
 
   @push('specificJs')
   <script>
-      $(document).ready(function() {
+$(document).ready(function() {
     $('#reportsTable').DataTable({
         processing: true,
         serverSide: true,
@@ -46,6 +51,12 @@
         lengthChange: true,
         ajax: '{{ route("reports.data") }}',
         columns: [
+            {
+                data: 'custom_report_id',
+                name: 'custom_report_id',
+                orderable: true,
+                title: 'Report ID'
+            },
             {
                 data: 'patient_name',
                 name: 'patient_name',
@@ -79,7 +90,7 @@
                 searchable: false
             }
         ],
-        order: [[3, 'desc']],
+        order: [[4, 'desc']], // Sort by test date by default
         dom: 'flBrtip',
         buttons: [
             {
