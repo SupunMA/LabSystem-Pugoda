@@ -16,17 +16,17 @@
 
             {{-- Client Details form --}}
             @include('Users.Admin.Reports.components.allReportTable')
-           
+
             {{-- Client Password form --}}
 
         {{-- </div>  --}}
-            
-            
-            
+
+
+
 
 </div>
 @endsection
 
 @section('header')
-All Reports
+All SendOut Reports (Pdf)
 @endsection

@@ -145,6 +145,7 @@ class admin_ReportsCtr extends Controller
 
 
     //new
+
 public function getReports()
 {
     $reports = DB::table('report_paths')
@@ -160,8 +161,9 @@ public function getReports()
             'patients.dob',
             'requested_tests.test_date',
             'availableTests.name as test_name'
-        )
-        ->orderBy('requested_tests.test_date', 'desc');
+        );
+
+    // We'll let DataTables handle the ordering
 
     return DataTables::of($reports)
         ->addColumn('dob_formatted', function ($row) {
@@ -191,6 +193,12 @@ public function getReports()
         ->filterColumn('test_name', function($query, $keyword) {
             $query->whereRaw("availableTests.name like ?", ["%{$keyword}%"]);
         })
+        // Adding proper order handlers for each column
+        ->orderColumn('patient_name', 'users.name $1')
+        ->orderColumn('nic', 'users.nic $1')
+        ->orderColumn('dob_formatted', 'patients.dob $1')
+        ->orderColumn('test_date_formatted', 'requested_tests.test_date $1')
+        ->orderColumn('test_name', 'availableTests.name $1')
         ->rawColumns(['actions'])
         ->make(true);
 }
