@@ -75,7 +75,7 @@
                     </div>
                     <div class="col col-lg-4">
                     <label class="form-label">Specimen</label>
-                    <select name="tests[0][specimen]" class="form-select form-control">
+                    <select name="tests[0][specimen]" class="form-control select2">
                         <option value="">--Select Specimen Type--</option>
                         <option value="Blood">Blood</option>
                         <option value="Urine">Urine</option>
@@ -135,6 +135,8 @@
 
 
     @push('specificCSS')
+    {{-- select 2 --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
     <style>
         .test-block, .category-block {
           border: 2px solid #dee2e6;
@@ -148,6 +150,8 @@
     @endpush
 
     @push('specificJs')
+    {{-- select 2 --}}
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
 // Modified JavaScript for Medical Test Form
 
@@ -162,7 +166,7 @@ function getUnitToggleAndDropdown(name, unitNameBase) {
       </div>
       <div class="unit-dropdown" style="display: none;">
         <label class="form-label">Unit</label>
-        <select name="${name}" class="form-select form-control">
+        <select name="${name}" class="form-control select2">
           <option value="">--Select Unit--</option>
             <option value="%">%</option>
             <option value="Femtolitres">Femtolitres</option>
@@ -470,7 +474,7 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
             <div class="col col-lg-4">
                 <label class="form-label">Specimen</label>
-                <select name="tests[${testIndex}][specimen]" class="form-select form-control">
+                <select name="tests[${testIndex}][specimen]" class="form-control select2">
                     <option value="">--Select Specimen Type--</option>
                     <option value="Blood">Blood</option>
                     <option value="Urine">Urine</option>
@@ -670,7 +674,7 @@ toastr.options = {
                     <div class="col-lg-4 col-12">
                     <div class="form-group">
                         <label>Units</label>
-                        <select name="Units[]" class="form-control">
+                        <select name="Units[]" class="form-control select2">
           <option value="">--Select Unit--</option>
             <option value="%">%</option>
             <option value="Femtolitres">Femtolitres</option>

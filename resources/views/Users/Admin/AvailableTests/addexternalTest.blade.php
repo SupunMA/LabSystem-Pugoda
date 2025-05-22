@@ -81,20 +81,14 @@ Add SendOut Available Test
 @endsection
 
 @push('specificCSS')
-<!-- Include Select2 CSS -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
 @endpush
 
 @push('specificJs')
-<!-- Include Select2 JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     $(function () {
-        // Initialize Select2 Elements
-        $('.select2').select2({
-            dropdownParent: $('#addTestForm') // Attach dropdown to the form
-        });
-
         // Handle Form Submission with AJAX
         $('#addTestForm').on('submit', function (e) {
             e.preventDefault(); // Prevent default form submission
