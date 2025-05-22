@@ -1,115 +1,198 @@
-@include('Users.Admin.messages.addMsg')
-
-<div class="col-lg-10">
-    <div class="box box-primary">
-        <div class="box-header with-border">
-            <h3 class="box-title">Report's Details</h3>
-        </div>
-        <!-- /.box-header -->
-        <!-- form start -->
-        <div class="box-body">
-<form action="{{ route('admin.addingReport') }}" method="post">
-                @csrf
-            <div class="row">
-
-            {{-- Gender --}}
-                <div class="col-lg-6 col-12">
-                    <div class="form-group">
-                        <label>Select Requested Test</label>
-
-                        <select class="form-control select2" style="width: 100%;" name="tid" id="selectOption" onchange="updateUI(this)">
-                            @php
-                                $uniqueTids = [];
-                            @endphp
-
-                            @foreach ($allTestData as $Data)
-                                @if (!in_array($Data->tid, $uniqueTids))
-                                    <option value="{{$Data->tid}}">{{$Data->id}} - {{$Data->name}} - {{$Data->AvailableTestName}}</option>
-                                    @php
-                                        $uniqueTids[] = $Data->tid;
-                                    @endphp
-                                @endif
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="row">
-                <div class="col-lg-4 col-12">
-                    <div class="form-group" id="updateInfo">
-
-                    </div>
-                </div>
-
-
-                    <!-- Display updated information here -->
-
-                {{-- <div class="col-lg-6 col-12">
-                    <div class="form-group">
-                        <label>Select Status</label>
-
-                        <select class="form-control select2" style="width: 100%;" name="status">
-
-                            <option selected="selected" value="Normal">Normal</option>
-                            <option value="Abnormal">Abnormal</option>
-
-                        </select>
-                    </div>
-                </div> --}}
-            </div>
-
-
-            <div class="box-footer">
-                <div class="form-group pull-right">
-                    <small class="form-text text-muted text-right">Please check details again.</small><br>
-                    <button type="submit" class="btn btn-danger  float-right"><b>&nbsp; Save All&nbsp;</b>
-                    </button>
-                </div>
-            </div>
-
- </form>
-        </div>
+<div class="box">
+    <div class="box-header">
+      <h3 class="box-title">List of Reports</h3>
     </div>
-    <!-- /.box -->
+    <!-- /.box-header -->
+    <div class="box-body">
+
+        <table id="reportsTable" class="table table-bordered table-striped" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Report ID</th>
+                    <th>Patient Name</th>
+                    <th>NIC</th>
+                    <th>Date of Birth</th>
+                    <th>Test Date</th>
+                    <th>Test Name</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data will be populated via AJAX -->
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>Report ID</th>
+                    <th>Patient Name</th>
+                    <th>NIC</th>
+                    <th>Date of Birth</th>
+                    <th>Test Date</th>
+                    <th>Test Name</th>
+                    <th>Actions</th>
+                </tr>
+            </tfoot>
+        </table>
+
+    </div>
+    <!-- /.box-body -->
 </div>
-
-
-
-
-@push('specificJs')
-<script>
-
-function updateUI(selectElement) {
-    var selectedValue = selectElement.value;
-
-    // Find all selected data in the allTestData array for the given tid
-    var selectedDataArray = @json($allTestData->groupBy('tid')->map(function($items) { return $items->toArray(); })->toArray())[selectedValue];
-
-    // Update the UI with the selected data
-    if (selectedDataArray && selectedDataArray.length > 0) {
-        var htmlContent = '';
-// console.log(selectedDataArray);
-        selectedDataArray.forEach(function(selectedData) {
-            htmlContent += '<label>'+selectedData.SubCategoryName+' ('+selectedData.Units+')</label><input type="number" step="any"  name="result[]" class="form-control" placeholder="Enter Result" required>';
-        });
-        // selectedData.id + ' - ' + selectedData.name + ' - ' + selectedData.AvailableTestName + '<br>'
-        document.getElementById('updateInfo').innerHTML = htmlContent;
-    } else {
-        // Handle the case where no data is found for the selectedValue
-        document.getElementById('updateInfo').innerHTML = 'No data found for ' + selectedValue;
-    }
+<!-- /.box -->
+@push('specificCSS')
+<style>
+    .spinner-border {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    vertical-align: text-bottom;
+    border: 0.15em solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spinner-border 0.75s linear infinite;
 }
 
-// Execute code when the document is ready
-$(document).ready(function () {
-    // Initialize Select2 Elements
-    $('.select2').select2();
+@keyframes spinner-border {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+</style>
+@endpush
 
-    updateUI(document.getElementById('selectOption'));
+  @push('specificJs')
+  <script>
+$(document).ready(function() {
+    $('#reportsTable').DataTable({
+        processing: true,
+        serverSide: true,
+        responsive: true,
+        scrollX: true,
+        autoWidth: false,
+        lengthChange: true,
+        ajax: '{{ route("reports.data") }}',
+        columns: [
+            {
+                data: 'custom_report_id',
+                name: 'custom_report_id',
+                orderable: true,
+                title: 'Report ID'
+            },
+            {
+                data: 'patient_name',
+                name: 'patient_name',
+                orderable: true
+            },
+            {
+                data: 'nic',
+                name: 'nic',
+                defaultContent: 'N/A',
+                orderable: true
+            },
+            {
+                data: 'dob_formatted',
+                name: 'dob_formatted',
+                orderable: true
+            },
+            {
+                data: 'test_date_formatted',
+                name: 'test_date_formatted',
+                orderable: true
+            },
+            {
+                data: 'test_name',
+                name: 'test_name',
+                orderable: true
+            },
+            {
+                data: 'actions',
+                name: 'actions',
+                orderable: false,
+                searchable: false
+            }
+        ],
+        order: [[4, 'desc']], // Sort by test date by default
+        dom: 'flBrtip',
+        buttons: [
+            {
+                extend: 'pdf',
+                text: 'PDF',
+                orientation: 'portrait',
+                pageSize: 'A4',
+                exportOptions: {
+                    columns: ':not(:last-child)'
+                }
+            },
+            {
+                extend: 'csv',
+                text: 'CSV',
+                exportOptions: {
+                    columns: ':not(:last-child)'
+                }
+            },
+            {
+                extend: 'excel',
+                text: 'Excel',
+                exportOptions: {
+                    columns: ':not(:last-child)'
+                }
+            },
+            {
+                extend: 'print',
+                text: 'Print',
+                exportOptions: {
+                    columns: ':not(:last-child)'
+                }
+            }
+        ]
+    });
+
+    // Adjust table on window resize
+    $(window).on('resize', function() {
+        $('#reportsTable').DataTable().columns.adjust().draw();
+    });
+
+    // Adjust table when sidebar is toggled
+    $('a[data-widget="pushmenu"]').on('click', function() {
+        setTimeout(function() {
+            $('#reportsTable').DataTable().columns.adjust().draw();
+        }, 300);
+    });
+
+    // Initialize toastr
+    toastr.options = {
+        "closeButton": true,
+        "progressBar": true,
+        "positionClass": "toast-top-right",
+        "timeOut": "8000"
+    };
+
+    // Display success message if present in session
+    @if(session('success'))
+        toastr.success('{{ session('success') }}');
+    @endif
+
+    // Display error message if present in session
+    @if(session('error'))
+        toastr.error('{{ session('error') }}');
+    @endif
 });
 
-    </script>
 
-@endpush
+//download animation in the button
+$(document).on('click', '.download-btn', function (e) {
+    e.preventDefault(); // Prevent default action to handle animation
+    var $button = $(this);
+    var href = $button.attr('href'); // Get the download URL
+
+    // Show spinner
+    $button.find('.spinner-border').removeClass('d-none');
+
+    // Start the download
+    window.location.href = href;
+
+    // Hide spinner after a delay (optional, based on your use case)
+    setTimeout(function () {
+        $button.find('.spinner-border').addClass('d-none');
+    }, 3000); // Adjust the delay as needed
+});
+  </script>
+  @endpush
