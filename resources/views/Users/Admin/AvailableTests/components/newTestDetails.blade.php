@@ -1,158 +1,95 @@
-{{--
-<div class="col-lg-10 ">
-    @include('Users.Admin.messages.addMsg')
-    <div class="box box-primary">
-        <div class="box-header with-border">
-            <h3 class="box-title">Available Test's Details</h3>
-        </div>
-        <div class="box-body">
-            <form action="{{ route('admin.addingAvailableTest') }}" method="post">
-                @csrf
-                <div class="row">
-                    <div class="col-lg-6 col-12">
-                        <div class="form-group">
-                            <label>Test Name</label>
-                            <input type="text" name="AvailableTestName" class="form-control" placeholder="Enter Name">
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-12">
-                        <div class="form-group">
-                            <label>Days</label>
-                            <input type="number" name="resultDays" class="form-control" placeholder="How Long Does It Take?">
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-12">
-                        <div class="form-group">
-                            <label>Cost</label>
-                            <input type="number" name="AvailableTestCost" class="form-control" placeholder="Cost for the test">
-                        </div>
-                    </div>
-                    <div class="col-lg-11">
-                        <div class="box box-success">
-                            <div class="box-header with-border">
-                                <h3 class="box-title">Sub Categories</h3>
-                            </div>
-                            <div class="box-body" id="input-container">
-                            </div>
-                            <button type="button" id="add-input" class="btn btn-success float-right">Add Sub-Category</button>
-                        </div>
-                    </div>
+
+<div class="container col-lg-12 col-sm-12">
+    <form action="{{ route('admin.storeNewTest') }}" method="POST">
+        <div id="tests-container">
+        <div class="test-block">
+
+            @csrf
+            <div class="row mb-3">
+                <div class="mb-3 col-lg-8">
+                <label class="form-label">Test Name</label>
+                <input type="text" name="tests[0][name]" class="form-control test-name" />
                 </div>
-                <div class="box-footer">
-                    <div class="form-group pull-right">
-                        <small class="form-text text-muted text-right">Please check details again.</small><br>
-                        <button type="submit" class="btn btn-danger float-right"><b>&nbsp; Save All&nbsp;</b></button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
---}}
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <div class="container col-lg-12 col-sm-12">
-        <form action="{{ route('admin.storeNewTest') }}" method="POST">
-            <div id="tests-container">
-            <div class="test-block">
-
-                @csrf
-                <div class="row mb-3">
-                    <div class="mb-3 col-lg-8">
-                    <label class="form-label">Test Name</label>
-                    <input type="text" name="tests[0][name]" class="form-control test-name" />
-                    </div>
-                    <div class="col col-lg-4">
-                    <label class="form-label">Specimen</label>
-                    <select name="tests[0][specimen]" class="form-control select2">
-                        <option value="">--Select Specimen Type--</option>
-                        <option value="Blood">Blood</option>
-                        <option value="Urine">Urine</option>
-                        <option value="Stool">Stool (Feces)</option>
-                        <option value="Sputum">Sputum</option>
-                        <option value="Saliva">Saliva</option>
-                        <option value="Swab">Swab (e.g., throat, nasal)</option>
-                        <option value="Tissue">Tissue (Biopsy)</option>
-                        <option value="CSF">Cerebrospinal Fluid (CSF)</option>
-                        <option value="Semen">Semen</option>
-                        <option value="Vaginal">Vaginal Secretion</option>
-                        <option value="Amniotic">Amniotic Fluid</option>
-                        <option value="Pleural">Pleural Fluid</option>
-                        <option value="Peritoneal">Peritoneal Fluid</option>
-                        <option value="Synovial">Synovial Fluid</option>
-                        <option value="Bone Marrow">Bone Marrow</option>
-                        <option value="Hair">Hair</option>
-                        <option value="Nail">Nail</option>
-                    </select>
-                    </div>
-                </div>
-                <div class="row mb-3">
                 <div class="col col-lg-4">
-                    <label class="form-label">Price</label>
-                    <input type="number" name="tests[0][price]" class="form-control" step="10.00" />
+                <label class="form-label">Specimen</label>
+                <select name="tests[0][specimen]" class="form-control select2">
+                    <option value="">--Select Specimen Type--</option>
+                    <option value="Blood">Blood</option>
+                    <option value="Urine">Urine</option>
+                    <option value="Stool">Stool (Feces)</option>
+                    <option value="Sputum">Sputum</option>
+                    <option value="Saliva">Saliva</option>
+                    <option value="Swab">Swab (e.g., throat, nasal)</option>
+                    <option value="Tissue">Tissue (Biopsy)</option>
+                    <option value="CSF">Cerebrospinal Fluid (CSF)</option>
+                    <option value="Semen">Semen</option>
+                    <option value="Vaginal">Vaginal Secretion</option>
+                    <option value="Amniotic">Amniotic Fluid</option>
+                    <option value="Pleural">Pleural Fluid</option>
+                    <option value="Peritoneal">Peritoneal Fluid</option>
+                    <option value="Synovial">Synovial Fluid</option>
+                    <option value="Bone Marrow">Bone Marrow</option>
+                    <option value="Hair">Hair</option>
+                    <option value="Nail">Nail</option>
+                </select>
                 </div>
-                </div>
-                <div class="categories-container"></div>
-                <div class="button-group mt-2">
-                    <button type="button" class="btn btn-primary add-category mb-1">
-                        <i class="fas fa-folder-plus me-1"></i> Add Category
-                    </button>
-
-                    <button type="button" class="btn btn-secondary add-space mb-1">
-                        <i class="fas fa-arrows-alt-v me-1"></i> Add Space
-                    </button>
-
-                    <button type="button" class="btn btn-secondary add-title mb-1">
-                        <i class="fas fa-heading me-1"></i> Add Title
-                    </button>
-
-                    <button type="button" class="btn btn-secondary add-paragraph mb-1">
-                        <i class="fas fa-align-left me-1"></i> Add Paragraph
-                    </button>
-                </div>
-
+            </div>
+            <div class="row mb-3">
+            <div class="col col-lg-4">
+                <label class="form-label">Price</label>
+                <input type="number" name="tests[0][price]" class="form-control" step="10.00" />
             </div>
             </div>
+            <div class="categories-container"></div>
+            <div class="button-group mt-2">
+                <button type="button" class="btn btn-primary add-category mb-1">
+                    <i class="fas fa-folder-plus me-1"></i> Add Category
+                </button>
 
-            <div class="d-flex justify-content-end mb-4">
-                <button type="submit" id="save-tests" class="btn btn-success">
-                    <i class="fas fa-save me-1"></i> Save Test Data
+                <button type="button" class="btn btn-secondary add-space mb-1">
+                    <i class="fas fa-arrows-alt-v me-1"></i> Add Space
+                </button>
+
+                <button type="button" class="btn btn-secondary add-title mb-1">
+                    <i class="fas fa-heading me-1"></i> Add Title
+                </button>
+
+                <button type="button" class="btn btn-secondary add-paragraph mb-1">
+                    <i class="fas fa-align-left me-1"></i> Add Paragraph
                 </button>
             </div>
-        </form>
-    </div>
+
+        </div>
+        </div>
+
+        <div class="d-flex justify-content-end mb-4">
+            <button type="submit" id="save-tests" class="btn btn-success">
+                <i class="fas fa-save me-1"></i> Save Test Data
+            </button>
+        </div>
+    </form>
+</div>
 
 
-    @push('specificCSS')
-    {{-- select 2 --}}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
-    <style>
-        .test-block, .category-block {
-          border: 2px solid #dee2e6;
-          padding: 20px;
-          margin-bottom: 20px;
-          border-radius: 10px;
-        }
-        .category-block { background-color: #f8f9fa; }
-        table input { width: 100%; }
-    </style>
-    @endpush
+@push('specificCSS')
+{{-- select 2 --}}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+<style>
+    .test-block, .category-block {
+        border: 2px solid #dee2e6;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 10px;
+    }
+    .category-block { background-color: #f8f9fa; }
+    table input { width: 100%; }
+</style>
+@endpush
 
-    @push('specificJs')
-    {{-- select 2 --}}
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script>
+@push('specificJs')
+{{-- select 2 --}}
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
 // Modified JavaScript for Medical Test Form
 
 let testIndex = 0;
