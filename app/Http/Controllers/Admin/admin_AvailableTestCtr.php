@@ -979,7 +979,7 @@ public function viewTestReport($id)
         ];
 
         // Return the view with the sample data
-        return view('Users.labReport', compact('sampleData'));
+        return view('Users.labReport', ['sampleData'=> $sampleData,'backRoute'=>'admin.allAvailableTest']);
 
     } catch (\Exception $e) {
         \Log::error('Report preview error: ' . $e->getMessage());

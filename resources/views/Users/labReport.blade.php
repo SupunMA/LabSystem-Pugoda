@@ -328,8 +328,8 @@
     <button onclick="window.print()" style="padding: 10px 20px; background-color: #2d5b84; color: white; border: none; border-radius: 4px; cursor: pointer; margin-right: 10px;">
         <i class="fas fa-print"></i> Print Preview
     </button>
-    <a href="{{ route('admin.allAvailableTest') }}" style="padding: 10px 20px; background-color: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer; text-decoration: none;">
-        <i class="fas fa-arrow-left"></i> Back to Tests
+    <a href="{{ route($backRoute) }}" style="padding: 10px 20px; background-color: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer; text-decoration: none;">
+        <i class="fas fa-arrow-left"></i> Back to Reports
     </a>
 
     <!-- Toggle switches -->

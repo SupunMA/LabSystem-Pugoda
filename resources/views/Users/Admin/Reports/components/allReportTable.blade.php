@@ -14,6 +14,7 @@
                     <th>Date of Birth</th>
                     <th>Test Date</th>
                     <th>Test Name</th>
+                    <th>Price</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -28,6 +29,7 @@
                     <th>Date of Birth</th>
                     <th>Test Date</th>
                     <th>Test Name</th>
+                    <th>Price</th>
                     <th>Actions</th>
                 </tr>
             </tfoot>
@@ -103,13 +105,18 @@ $(document).ready(function() {
                 orderable: true
             },
             {
+                data: 'test_price',
+                name: 'test_price',
+                orderable: true
+            },
+            {
                 data: 'actions',
                 name: 'actions',
                 orderable: false,
                 searchable: false
             }
         ],
-        order: [[4, 'desc']], // Sort by test date by default
+        order: [[0, 'desc']], // Sort by test date by default
         dom: 'flBrtip',
         buttons: [
             {

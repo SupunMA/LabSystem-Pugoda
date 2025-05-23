@@ -162,7 +162,8 @@ public function getReports()
             'users.nic',
             'patients.dob',
             'requested_tests.test_date',
-            'availableTests.name as test_name'
+            'availableTests.name as test_name',
+            'requested_tests.price as test_price'
         );
 
     return DataTables::of($reports)
@@ -205,6 +206,9 @@ public function getReports()
         ->filterColumn('test_name', function($query, $keyword) {
             $query->whereRaw("availableTests.name like ?", ["%{$keyword}%"]);
         })
+        ->filterColumn('test_price', function($query, $keyword) {
+            $query->whereRaw("requested_tests.price like ?", ["%{$keyword}%"]);
+        })
         // Adding proper order handlers for each column
         ->orderColumn('custom_report_id', 'requested_tests.test_date $1, requested_tests.id $1')
         ->orderColumn('patient_name', 'users.name $1')
@@ -212,6 +216,7 @@ public function getReports()
         ->orderColumn('dob_formatted', 'patients.dob $1')
         ->orderColumn('test_date_formatted', 'requested_tests.test_date $1')
         ->orderColumn('test_name', 'availableTests.name $1')
+        ->orderColumn('test_price', 'requested_tests.price $1')
         ->rawColumns(['actions'])
         ->make(true);
 }
@@ -253,5 +258,273 @@ public function getReports()
     }
 
 
+    //New Onsite Report
+    public function getOnSiteReports()
+    {
+        $reports = DB::table('test_results')
+            ->join('requested_tests', 'test_results.requested_test_id', '=', 'requested_tests.id')
+            ->join('patients', 'requested_tests.patient_id', '=', 'patients.pid')
+            ->join('users', 'patients.userID', '=', 'users.id')
+            ->join('availableTests', 'requested_tests.test_id', '=', 'availableTests.id')
+            ->whereIn('test_results.id', function($query) {
+                $query->select(DB::raw('MIN(id)'))
+                    ->from('test_results')
+                    ->groupBy('requested_test_id');
+            })
+            ->select(
+                'test_results.id as report_id',
+                'requested_tests.id as requestedTest_ID',
+                'users.name as patient_name',
+                'users.nic',
+                'patients.dob',
+                'requested_tests.test_date',
+                'availableTests.name as test_name',
+                'requested_tests.price as test_price'
+            );
+
+        return DataTables::of($reports)
+            ->addColumn('custom_report_id', function ($row) {
+                // Format: YYYYMMDD-ID (e.g., 20250518-123)
+                $dateFormatted = date('Ymd', strtotime($row->test_date));
+                return $dateFormatted . '-' . $row->requestedTest_ID . '-OS';
+            })
+            ->addColumn('dob_formatted', function ($row) {
+                return $row->dob ? date('Y-m-d', strtotime($row->dob)) : 'N/A';
+            })
+            ->addColumn('test_date_formatted', function ($row) {
+                return date('Y-m-d', strtotime($row->test_date));
+            })
+            ->addColumn('actions', function ($row) {
+                $downloadBtn = '<a href="' . route('reports.download', $row->report_id) . '" class="btn btn-sm btn-warning download-btn" title="Download Report">
+                        <i class="fas fa-download"></i> Download
+                        <span class="spinner-border spinner-border-sm text-light d-none" role="status" aria-hidden="true"></span>
+                    </a>';
+                $previewBtn = '<a href="' . route('reports.preview', $row->report_id) . '" target="_blank" class="btn btn-sm btn-danger ml-1" title="Preview Report"><i class="fas fa-eye"></i> View</a>';
+
+                return $downloadBtn . ' ' . $previewBtn;
+            })
+            ->filterColumn('custom_report_id', function($query, $keyword) {
+                // Allow searching for either the date part or the ID part or both
+                $query->whereRaw("CONCAT(DATE_FORMAT(requested_tests.test_date, '%Y%m%d'), '-', requested_tests.id,'-OS') like ?", ["%{$keyword}%"]);
+            })
+            ->filterColumn('patient_name', function($query, $keyword) {
+                $query->whereRaw("users.name like ?", ["%{$keyword}%"]);
+            })
+            ->filterColumn('nic', function($query, $keyword) {
+                $query->whereRaw("users.nic like ?", ["%{$keyword}%"]);
+            })
+            ->filterColumn('dob_formatted', function($query, $keyword) {
+                $query->whereRaw("DATE_FORMAT(patients.dob, '%Y-%m-%d') like ?", ["%{$keyword}%"]);
+            })
+            ->filterColumn('test_date_formatted', function($query, $keyword) {
+                $query->whereRaw("DATE_FORMAT(requested_tests.test_date, '%Y-%m-%d') like ?", ["%{$keyword}%"]);
+            })
+            ->filterColumn('test_name', function($query, $keyword) {
+                $query->whereRaw("availableTests.name like ?", ["%{$keyword}%"]);
+            })
+            ->filterColumn('test_price', function($query, $keyword) {
+                $query->whereRaw("requested_tests.price like ?", ["%{$keyword}%"]);
+            })
+            // Adding proper order handlers for each column
+            ->orderColumn('custom_report_id', 'requested_tests.test_date $1, requested_tests.id $1')
+            ->orderColumn('patient_name', 'users.name $1')
+            ->orderColumn('nic', 'users.nic $1')
+            ->orderColumn('dob_formatted', 'patients.dob $1')
+            ->orderColumn('test_date_formatted', 'requested_tests.test_date $1')
+            ->orderColumn('test_name', 'availableTests.name $1')
+            ->orderColumn('test_price', 'requested_tests.price $1')
+            ->rawColumns(['actions'])
+            ->make(true);
+    }
+
+
+public function previewReport($id)
+{
+    // Get the basic report information by joining multiple tables
+    $testResult = DB::table('test_results')
+        ->join('requested_tests', 'test_results.requested_test_id', '=', 'requested_tests.id')
+        ->join('patients', 'requested_tests.patient_id', '=', 'patients.pid')
+        ->join('users', 'patients.userID', '=', 'users.id')
+        ->join('availableTests', 'requested_tests.test_id', '=', 'availableTests.id')
+        ->where('test_results.id', $id)
+        ->select(
+            'test_results.id as report_id',
+            'test_results.requested_test_id',
+            'requested_tests.id as requestedTest_ID',
+            'users.name as patient_name',
+            'patients.gender',
+            'patients.dob',
+            'requested_tests.test_date',
+            'availableTests.id as test_id',
+            'availableTests.name as test_name',
+            'availableTests.specimen'
+        )
+        ->first();
+
+    if (!$testResult) {
+        return abort(404, 'Report not found');
+    }
+
+    // Calculate patient age from DOB
+    $age = Carbon::parse($testResult->dob)->age;
+
+    // Format report ID (YYYYMMDD-requestID-OS)
+    $reportId = date('Ymd', strtotime($testResult->test_date)) . '-' . $testResult->requestedTest_ID . '-OS';
+
+    // Get all test categories for this test
+    $testCategories = DB::table('test_categories')
+        ->where('test_categories.availableTests_id', $testResult->test_id)
+        ->orderBy('test_categories.display_order')
+        ->get();
+
+    // Get all test elements (titles, paragraphs, etc.)
+    $testElements = DB::table('availableTest_elements')
+        ->where('availableTest_elements.availableTests_id', $testResult->test_id)
+        ->orderBy('availableTest_elements.display_order')
+        ->get();
+
+    // Get results for the requested test
+    $results = DB::table('test_results')
+        ->where('requested_test_id', $testResult->requested_test_id)
+        ->get()
+        ->keyBy('category_id');
+
+    // Format test results (combine categories and elements in proper display order)
+    $formattedResults = [];
+
+    // Create a combined collection of categories and elements for sorting
+    $allItems = collect([]);
+
+    foreach ($testCategories as $category) {
+        $allItems->push([
+            'type' => 'category',
+            'display_order' => $category->display_order,
+            'data' => $category
+        ]);
+    }
+
+    foreach ($testElements as $element) {
+        $allItems->push([
+            'type' => $element->type, // 'space', 'title', or 'paragraph'
+            'display_order' => $element->display_order,
+            'data' => $element
+        ]);
+    }
+
+    // Sort by display_order
+    $allItems = $allItems->sortBy('display_order');
+
+    // Process all items to build the final results array
+    foreach ($allItems as $item) {
+        if ($item['type'] === 'category') {
+            $category = $item['data'];
+            // Find result for this category
+            $result = $results[$category->id] ?? null;
+            $resultValue = $result ? $result->result_value : 'Pending';
+
+            // Format reference range
+            $reference = '';
+            if ($category->reference_type === 'minmax' && !is_null($category->min_value) && !is_null($category->max_value)) {
+                $reference = $category->min_value . ' - ' . $category->max_value;
+                if ($category->unit_enabled && $category->unit) {
+                    $reference .= ' ' . $category->unit;
+                }
+            } elseif ($category->reference_type === 'table') {
+                // Get reference table data
+                $tableData = $this->getReferenceTableData($category->id);
+                $reference = [
+                    'isTable' => true,
+                    'data' => $tableData
+                ];
+            }
+
+            // Add unit to result if enabled
+            if ($result && $category->unit_enabled && $category->unit) {
+                $resultValue .= ' ' . $category->unit;
+            }
+
+            $formattedResults[] = [
+                'name' => $category->name,
+                'result' => $resultValue,
+                'reference' => $reference,
+                'isTitle' => false,
+                'isParagraph' => false,
+                'isSpace' => false,
+                'isCategory' => true
+            ];
+        } else {
+            // Handle other elements (title, paragraph, space)
+            $element = $item['data'];
+            $formattedResults[] = [
+                'name' => $element->content,
+                'result' => $element->content,
+                'reference' => '',
+                'isTitle' => ($item['type'] === 'title'),
+                'isParagraph' => ($item['type'] === 'paragraph'),
+                'isSpace' => ($item['type'] === 'space'),
+                'isCategory' => false
+            ];
+        }
+    }
+
+    // Prepare data for the view
+    $sampleData = [
+        'patientName' => $testResult->patient_name,
+        'age' => $age,
+        'gender' => ucfirst(strtolower($testResult->gender)),
+        'reportDate' => date('Y-m-d', strtotime($testResult->test_date)),
+        'reportId' => $reportId,
+        'testName' => $testResult->test_name,
+        'specimenType' => $testResult->specimen,
+        'testResults' => $formattedResults
+    ];
+
+    // Return the view with the prepared data
+       // Return the view with the prepared data and the correct back button route
+    return view('Users.labReport', [
+        'sampleData' => $sampleData,
+        'backRoute' => 'admin.allReport'  // Set the correct back button route for Admin area
+    ]);
+}
+
+/**
+ * Get reference table data for a test category
+ *
+ * @param int $categoryId The test category ID
+ * @return array The reference table data as a 2D array
+ */
+private function getReferenceTableData($categoryId)
+{
+    $tableEntries = DB::table('reference_range_tables')
+        ->where('test_categories_id', $categoryId)
+        ->select('row', 'column', 'value')
+        ->get();
+
+    if ($tableEntries->isEmpty()) {
+        return [];
+    }
+
+    // Group by row first
+    $rows = [];
+    foreach ($tableEntries as $entry) {
+        if (!isset($rows[$entry->row])) {
+            $rows[$entry->row] = [];
+        }
+        $rows[$entry->row][$entry->column] = $entry->value;
+    }
+
+    // Convert to indexed arrays
+    $tableData = [];
+    foreach ($rows as $rowIndex => $columns) {
+        $rowArray = [];
+        ksort($columns); // Sort by column index
+        foreach ($columns as $columnValue) {
+            $rowArray[] = $columnValue;
+        }
+        $tableData[] = $rowArray;
+    }
+
+    return $tableData;
+}
 
 }

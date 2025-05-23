@@ -135,7 +135,7 @@ $(document).ready(function () {
         columns: [
             { data: 'id', name: 'id', title: 'ID' },
             { data: 'patient_name', name: 'patient_name', title: 'Patient Name' },
-            { data: 'nic', name: 'nic', title: 'NIC' },
+            { data: 'nic', name: 'nic', title: 'NIC',defaultContent: 'N/A', },
             { data: 'dob', name: 'dob', title: 'DOB' },
             { data: 'test_name', name: 'test_name', title: 'Test Name' },
             {
