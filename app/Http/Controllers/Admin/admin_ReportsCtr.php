@@ -13,6 +13,7 @@ use App\Models\Report;
 use App\Models\ReportPath;
 use Yajra\DataTables\Facades\DataTables;
 use DB;
+use PDF;
 
 use Illuminate\Support\Facades\Storage;
 
@@ -365,8 +366,32 @@ public function previewReport($id)
         return abort(404, 'Report not found');
     }
 
-    // Calculate patient age from DOB
-    $age = Carbon::parse($testResult->dob)->age;
+    // Calculate patient age in years, months, and days
+    $birthDate = Carbon::parse($testResult->dob);
+    $today = Carbon::now();
+
+    // Create a diff instance that contains the full difference information
+    $diff = $today->diff($birthDate);
+
+    // Extract years, months and days directly from the diff object
+    $ageYears = $diff->y;
+    $ageMonths = $diff->m;
+    $ageDays = $diff->d;
+
+    // Format age as "X years, Y months, Z days" with proper handling
+    $age = "";
+
+    if ($ageYears > 0) {
+        $age = $ageYears . " year" . ($ageYears != 1 ? "s" : "");
+    }
+
+    if ($ageMonths > 0 || ($ageYears > 0 && $ageDays > 0)) {
+        $age .= ($age ? ", " : "") . $ageMonths . " month" . ($ageMonths != 1 ? "s" : "");
+    }
+
+    if ($ageDays > 0 || ($ageYears == 0 && $ageMonths == 0)) {
+        $age .= ($age ? ", " : "") . $ageDays . " day" . ($ageDays != 1 ? "s" : "");
+    }
 
     // Format report ID (YYYYMMDD-requestID-OS)
     $reportId = date('Ymd', strtotime($testResult->test_date)) . '-' . $testResult->requestedTest_ID . '-OS';
@@ -527,4 +552,199 @@ private function getReferenceTableData($categoryId)
     return $tableData;
 }
 
+
+
+    public function downloadReport($id)
+    {
+        // Get the basic report information by joining multiple tables
+        $testResult = DB::table('test_results')
+            ->join('requested_tests', 'test_results.requested_test_id', '=', 'requested_tests.id')
+            ->join('patients', 'requested_tests.patient_id', '=', 'patients.pid')
+            ->join('users', 'patients.userID', '=', 'users.id')
+            ->join('availableTests', 'requested_tests.test_id', '=', 'availableTests.id')
+            ->where('test_results.id', $id)
+            ->select(
+                'test_results.id as report_id',
+                'test_results.requested_test_id',
+                'requested_tests.id as requestedTest_ID',
+                'users.name as patient_name',
+                'patients.gender',
+                'patients.dob',
+                'requested_tests.test_date',
+                'availableTests.id as test_id',
+                'availableTests.name as test_name',
+                'availableTests.specimen'
+            )
+            ->first();
+
+        if (!$testResult) {
+            return abort(404, 'Report not found');
+        }
+
+        // Calculate patient age in years, months, and days
+        $birthDate = Carbon::parse($testResult->dob);
+        $today = Carbon::now();
+
+        // Use diff to get accurate years, months and days
+        $diff = $today->diff($birthDate);
+        $ageYears = $diff->y;
+        $ageMonths = $diff->m;
+        $ageDays = $diff->d;
+
+        // Format age as "X years, Y months, Z days"
+        $age = "";
+        if ($ageYears > 0) {
+            $age = $ageYears . " year" . ($ageYears != 1 ? "s" : "");
+        }
+        if ($ageMonths > 0 || ($ageYears > 0 && $ageDays > 0)) {
+            $age .= ($age ? ", " : "") . $ageMonths . " month" . ($ageMonths != 1 ? "s" : "");
+        }
+        if ($ageDays > 0 || ($ageYears == 0 && $ageMonths == 0)) {
+            $age .= ($age ? ", " : "") . $ageDays . " day" . ($ageDays != 1 ? "s" : "");
+        }
+
+        // Format report ID (YYYYMMDD-requestID-OS)
+        $reportId = date('Ymd', strtotime($testResult->test_date)) . '-' . $testResult->requestedTest_ID . '-OS';
+
+        // Prepare data for the PDF (same as preview)
+        $formattedResults = $this->getFormattedTestResults($testResult->test_id, $testResult->requested_test_id);
+
+        // Prepare data for the view
+        $sampleData = [
+            'patientName' => $testResult->patient_name,
+            'age' => $age,
+            'gender' => ucfirst(strtolower($testResult->gender)),
+            'reportDate' => date('Y-m-d', strtotime($testResult->test_date)),
+            'reportId' => $reportId,
+            'testName' => $testResult->test_name,
+            'specimenType' => $testResult->specimen,
+            'testResults' => $formattedResults
+        ];
+
+        // Create PDF filename
+        $filename = $reportId . '.pdf';
+
+        // Create the PDF using a dedicated download view
+        $pdf = \PDF::loadView('Users.labReportDownload', [
+            'sampleData' => $sampleData,
+            'isPdfDownload' => true
+        ]);
+
+        // Configure PDF settings
+        $pdf->setPaper('a4', 'portrait');
+        $pdf->setOptions([
+            'isPhpEnabled' => true,
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => true,
+            'defaultFont' => 'sans-serif',
+            'dpi' => 150,
+            'debugCss' => false
+        ]);
+
+        // Return PDF download
+        return $pdf->download($filename);
+    }
+
+    /**
+     * Helper method to get formatted test results for reports
+     *
+     * @param int $testId The available test ID
+     * @param int $requestedTestId The requested test ID
+     * @return array Formatted test results
+     */
+    private function getFormattedTestResults($testId, $requestedTestId)
+    {
+        // Get test categories and elements
+        $testCategories = DB::table('test_categories')
+            ->where('test_categories.availableTests_id', $testId)
+            ->orderBy('test_categories.display_order')
+            ->get();
+
+        $testElements = DB::table('availableTest_elements')
+            ->where('availableTest_elements.availableTests_id', $testId)
+            ->orderBy('availableTest_elements.display_order')
+            ->get();
+
+        // Get results for the requested test
+        $results = DB::table('test_results')
+            ->where('requested_test_id', $requestedTestId)
+            ->get()
+            ->keyBy('category_id');
+
+        // Combine categories and elements for display
+        $allItems = collect([]);
+
+        foreach ($testCategories as $category) {
+            $allItems->push([
+                'type' => 'category',
+                'display_order' => $category->display_order,
+                'data' => $category
+            ]);
+        }
+
+        foreach ($testElements as $element) {
+            $allItems->push([
+                'type' => $element->type,
+                'display_order' => $element->display_order,
+                'data' => $element
+            ]);
+        }
+
+        // Sort by display_order
+        $allItems = $allItems->sortBy('display_order');
+
+        // Format results
+        $formattedResults = [];
+        foreach ($allItems as $item) {
+            if ($item['type'] === 'category') {
+                $category = $item['data'];
+                $result = $results[$category->id] ?? null;
+                $resultValue = $result ? $result->result_value : 'Pending';
+
+                // Format reference range
+                $reference = '';
+                if ($category->reference_type === 'minmax' && !is_null($category->min_value) && !is_null($category->max_value)) {
+                    $reference = $category->min_value . ' - ' . $category->max_value;
+                    if ($category->unit_enabled && $category->unit) {
+                        $reference .= ' ' . $category->unit;
+                    }
+                } elseif ($category->reference_type === 'table') {
+                    $tableData = $this->getReferenceTableData($category->id);
+                    $reference = [
+                        'isTable' => true,
+                        'data' => $tableData
+                    ];
+                }
+
+                // Add unit to result if enabled
+                if ($result && $category->unit_enabled && $category->unit) {
+                    $resultValue .= ' ' . $category->unit;
+                }
+
+                $formattedResults[] = [
+                    'name' => $category->name,
+                    'result' => $resultValue,
+                    'reference' => $reference,
+                    'isTitle' => false,
+                    'isParagraph' => false,
+                    'isSpace' => false,
+                    'isCategory' => true
+                ];
+            } else {
+                // Handle other elements (title, paragraph, space)
+                $element = $item['data'];
+                $formattedResults[] = [
+                    'name' => $element->content,
+                    'result' => $element->content,
+                    'reference' => '',
+                    'isTitle' => ($item['type'] === 'title'),
+                    'isParagraph' => ($item['type'] === 'paragraph'),
+                    'isSpace' => ($item['type'] === 'space'),
+                    'isCategory' => false
+                ];
+            }
+        }
+
+        return $formattedResults;
+    }
 }

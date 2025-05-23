@@ -134,6 +134,7 @@ Route::group(['prefix'=>'Admin','middleware'=>['checkAdmin','auth','lockBack']],
     //onsite
     Route::get('/reports/onSiteData', [admin_ReportsCtr::class, 'getOnSiteReports'])->name('reports.donSiteDta');
     Route::get('/reports/preview/{id}', [admin_ReportsCtr::class, 'previewReport'])->name('reports.preview');
+    Route::get('/reports/download/{id}', [admin_ReportsCtr::class, 'downloadReport'])->name('reports.download');
 
     // Route::get('/reports/download/{id}', [admin_ReportsCtr::class, 'download'])->name('reports.download');
     // Route::get('/reports/preview/{id}', [admin_ReportsCtr::class, 'preview'])->name('reports.preview');
