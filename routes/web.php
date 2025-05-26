@@ -133,7 +133,7 @@ Route::group(['prefix'=>'Admin','middleware'=>['checkAdmin','auth','lockBack']],
     Route::get('/reports/data', [admin_ReportsCtr::class, 'getReports'])->name('reports.data');
     //onsite
     Route::get('/reports/onSiteData', [admin_ReportsCtr::class, 'getOnSiteReports'])->name('reports.donSiteDta');
-    Route::get('/reports/preview/{id}', [admin_ReportsCtr::class, 'previewReport'])->name('reports.preview');
+    Route::get('/reports/onSite/preview/{id}', [admin_ReportsCtr::class, 'previewReport'])->name('reportsOnSite.preview');
     Route::get('/reports/onsite/download/{id}', [admin_ReportsCtr::class, 'downloadReport'])->name('reportsOnSite.download');//generate pdf report onsite
 
     // Route::get('/reports/download/{id}', [admin_ReportsCtr::class, 'download'])->name('reports.download');

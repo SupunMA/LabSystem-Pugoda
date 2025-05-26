@@ -300,7 +300,7 @@ public function getReports()
                         <i class="fas fa-download"></i> Download
                         <span class="spinner-border spinner-border-sm text-light d-none" role="status" aria-hidden="true"></span>
                     </a>';
-                $previewBtn = '<a href="' . route('reports.preview', $row->report_id) . '" target="_blank" class="btn btn-sm btn-danger ml-1" title="Preview Report"><i class="fas fa-eye"></i> View</a>';
+                $previewBtn = '<a href="' . route('reportsOnSite.preview', $row->report_id) . '" target="_blank" class="btn btn-sm btn-danger ml-1" title="Preview Report"><i class="fas fa-eye"></i> View</a>';
 
                 return $downloadBtn . ' ' . $previewBtn;
             })
