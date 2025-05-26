@@ -296,7 +296,7 @@ public function getReports()
                 return date('Y-m-d', strtotime($row->test_date));
             })
             ->addColumn('actions', function ($row) {
-                $downloadBtn = '<a href="' . route('reports.download', $row->report_id) . '" class="btn btn-sm btn-warning download-btn" title="Download Report">
+                $downloadBtn = '<a href="' . route('reportsOnSite.download', $row->report_id) . '" class="btn btn-sm btn-warning download-btn" title="Download Report">
                         <i class="fas fa-download"></i> Download
                         <span class="spinner-border spinner-border-sm text-light d-none" role="status" aria-hidden="true"></span>
                     </a>';
