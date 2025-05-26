@@ -1,29 +1,16 @@
-{{-- Admin v2 --}}
+ <!-- Navbar -->
+ <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="{{ route('welcome') }}" class="nav-link">Home Page</a>
+        </li>
 
-<!-- Main Header -->
-<header class="main-header">
+    </ul>
 
-    <!-- Logo -->
-    <a href="index2.html" class="logo">
-      <!-- mini logo for sidebar mini 50x50 pixels -->
-      {{-- <span class="logo-mini"><b>A</b>LT</span> --}}
-      <!-- logo for regular state and mobile devices -->
-      <span class="logo-lg"><b>Patient</b> HORIZON</span>
-    </a>
 
-    <!-- Header Navbar -->
-    <nav class="navbar navbar-static-top" role="navigation">
-      <!-- Sidebar toggle button-->
-      <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
-        <span class="sr-only">Toggle navigation</span>
-      </a>
-      <!-- Navbar Right Menu -->
-      <div class="navbar-custom-menu">
-        <ul class="nav navbar-nav">
-          <li>
-            <a href="{{ route('welcome') }}" ><i class="fa fa-home" aria-hidden="true"></i></a>
-          </li>
-        </ul>
-      </div>
-    </nav>
-  </header>
+</nav>
+<!-- /.navbar -->

@@ -51,13 +51,13 @@ desired effect
       <h1>
 
         @yield('header')
-        <small>@yield('header')</small>
+        {{-- <small>@yield('header')</small> --}}
 
       </h1>
-      <ol class="breadcrumb">
+      {{-- <ol class="breadcrumb">
         <li><a href="{{ route('admin.home') }}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
         <li class="active">@yield('header')</li>
-      </ol>
+      </ol> --}}
     </section>
 
     <!-- Main content -->

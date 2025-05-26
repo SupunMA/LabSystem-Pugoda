@@ -40,14 +40,14 @@
                         <!-- ./col -->
                         <div class="col-lg-3 col-xs-6">
                         <!-- small box -->
-                            <div class="small-box bg-blue">
+                            <div class="small-box bg-green">
                                 <div class="inner">
                                 <h3>{{$reportCount}}</h3>
 
                                 <h4>Your Reports</h4>
                                 </div>
                                 <div class="icon">
-                                    <i class="fa fa-file-o" aria-hidden="true"></i>
+                                    <i class="fa-solid fa-file-pdf"></i>
                                 </div>
 
                             </div>
