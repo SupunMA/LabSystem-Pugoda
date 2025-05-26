@@ -439,8 +439,14 @@ function createReportPage(isFirstPage, pageNumber, totalPages) {
             <div class="patient-info">
                 <div class="patient-details">
                     <div class="info-row">
-                        <div class="info-label">PATIENT NAME:</div>
-                        <div class="info-value">${sampleData.patientName}</div>
+                    <div class="info-label">PATIENT NAME:</div>
+                    <div class="info-value">
+                        ${
+                            sampleData.gender === 'M' ? 'Mr. ' + sampleData.patientName :
+                            sampleData.gender === 'F' ? 'Ms. ' + sampleData.patientName :
+                            sampleData.patientName
+                        }
+                    </div>
                     </div>
                     <div class="info-row">
                         <div class="info-label">AGE:</div>
@@ -448,7 +454,14 @@ function createReportPage(isFirstPage, pageNumber, totalPages) {
                     </div>
                     <div class="info-row">
                         <div class="info-label">GENDER:</div>
-                        <div class="info-value">${sampleData.gender}</div>
+                        <div class="info-value">
+                            ${
+                                sampleData.gender === 'M' ? 'Male' :
+                                sampleData.gender === 'F' ? 'Female' :
+                                sampleData.gender === 'O' ? 'Other' :
+                                sampleData.gender
+                            }
+                        </div>
                     </div>
                 </div>
                 <div class="report-details">

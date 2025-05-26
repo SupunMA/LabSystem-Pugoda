@@ -196,7 +196,15 @@
             <table class="patient-details-table">
                 <tr>
                     <td class="label">PATIENT NAME:</td>
-                    <td class="value">{{ $sampleData['patientName'] }}</td>
+                    <td class="value">
+                        @if ($sampleData['gender'] == 'M')
+                            Mr. {{ $sampleData['patientName'] }}
+                        @elseif ($sampleData['gender'] == 'F')
+                            Ms. {{ $sampleData['patientName'] }}
+                        @else
+                            {{ $sampleData['patientName'] }}
+                        @endif
+                    </td>
                     <td class="right-label">DATE:</td>
                     <td class="value">{{ $sampleData['reportDate'] }}</td>
                 </tr>
@@ -208,8 +216,18 @@
                 </tr>
                 <tr>
                     <td class="label">GENDER:</td>
-                    <td class="value">{{ $sampleData['gender'] }}</td>
-                    <td class="right-label">PRINTED DATE:</td>
+                    <td class="value">
+                        @if ($sampleData['gender'] == 'M')
+                            Male
+                        @elseif ($sampleData['gender'] == 'F')
+                            Female
+                        @elseif ($sampleData['gender'] == 'O')
+                            Other
+                        @else
+                            {{ $sampleData['gender'] }}
+                        @endif
+                    </td>
+                    <td class="right-label">DOWNLOADED DATE:</td>
                     <td class="value">{{ date('M d, Y') }}</td>
                 </tr>
                 <tr>
