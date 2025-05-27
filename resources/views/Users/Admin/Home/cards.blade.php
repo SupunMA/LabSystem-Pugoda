@@ -1,362 +1,240 @@
-
- <!-- Small boxes (Stat box) -->
- <div class="row">
+<!-- Small boxes (Stat box) -->
+<div class="row">
     <div class="col-lg-3 col-xs-6">
-      <!-- small box -->
-      <div class="small-box bg-aqua">
-        <div class="inner">
-            <h3>{{$ClientsCount}}</h3>
-            <h4>Patients</h4>
-        </div>
-        <div class="icon">
-          <i class="fa fa-users" aria-hidden="true"></i>
-        </div>
-        <a href="{{route('admin.allPatient')}}" class="small-box-footer">
-          View Patients <i class="fa fa-arrow-circle-right"></i>
-        </a>
-      </div>
-    </div>
-    <!-- ./col -->
-    <div class="col-lg-3 col-xs-6">
-      <!-- small box -->
-      <div class="small-box bg-green">
-        <div class="inner">
-          <h3>Rs {{$total}}<sup style="font-size: 20px">.00</sup></h3>
-
-          <h4>Total Income</h4>
-        </div>
-        <div class="icon">
-          <i class="fa fa-money" aria-hidden="true"></i>
-        </div>
-        <a href="#" class="small-box-footer">
-          More info <i class="fa fa-arrow-circle-right"></i>
-        </a>
-      </div>
-    </div>
-    <!-- ./col -->
-    <div class="col-lg-3 col-xs-6">
-      <!-- small box -->
-      <div class="small-box bg-yellow">
-        <div class="inner">
-          <h3>{{$TestCount}}</h3>
-
-          <h4>Requested Tests</h4>
-        </div>
-        <div class="icon">
-          <i class="ion ion-person-add"></i>
-        </div>
-        <a href="{{route('admin.allTest')}}" class="small-box-footer">
-          View Requested Tests <i class="fa fa-arrow-circle-right"></i>
-        </a>
-      </div>
-    </div>
-    <!-- ./col -->
-    <div class="col-lg-3 col-xs-6">
-      <!-- small box -->
-      <div class="small-box bg-red">
-        <div class="inner">
-          <h3>{{$DoctorCount}}</h3>
-
-          <h4>Doctors</h4>
-        </div>
-        <div class="icon">
-          <i class="fa fa-user-md" aria-hidden="true"></i>
-        </div>
-        <a href="{{route('admin.allDoctor')}}" class="small-box-footer">
-          View Doctors <i class="fa fa-arrow-circle-right"></i>
-        </a>
-      </div>
-    </div>
-    <!-- ./col -->
-  </div>
-  <!-- /.row -->
-
-
-
-
-
-{{-- Charts --}}
-
-
-    <div class="row">
-      <div class="col-md-6">
-
-
-        <!-- DONUT CHART -->
-        <div class="box box-danger">
-          <div class="box-header with-border">
-            <h3 class="box-title">Gender of Patients</h3>
-
-            <div class="box-tools pull-right">
-              <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-              </button>
-              {{-- <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button> --}}
+        <!-- small box -->
+        <div class="small-box bg-aqua">
+            <div class="inner">
+                <h3>{{ $totalPatients }}</h3>
+                <h4>Total Patients</h4>
             </div>
-          </div>
-          <div class="box-body">
-            <canvas id="pieChart" ></canvas>
-
-          </div>
-          <!-- /.box-body -->
-        </div>
-        <!-- /.box -->
-
-      </div>
-      <!-- /.col (LEFT) -->
-      <div class="col-md-6">
-
-
-        <!-- BAR CHART -->
-        <div class="box box-success">
-          <div class="box-header with-border">
-            <h3 class="box-title">The Requested and Tested Tests</h3>
-
-            <div class="box-tools pull-right">
-              <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-              </button>
-              {{-- <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button> --}}
+            <div class="icon">
+                <i class="fa fa-users" aria-hidden="true"></i>
             </div>
-          </div>
-          <div class="box-body">
-            <div class="chart">
-              <canvas id="barChart" ></canvas>
+            <a href="{{ route('admin.allPatient') }}" class="small-box-footer">
+                View Patients <i class="fa fa-arrow-circle-right"></i>
+            </a>
+        </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-lg-3 col-xs-6">
+        <!-- small box -->
+        <div class="small-box bg-green">
+            <div class="inner">
+                <h3>{{$availableTests}}</h3>
+                <h4>Available Tests</h4>
             </div>
-          </div>
-          <!-- /.box-body -->
+            <div class="icon">
+                <i class="fa fa-flask" aria-hidden="true"></i>
+            </div>
+            <a href="#" class="small-box-footer">
+                Manage Tests <i class="fa fa-arrow-circle-right"></i>
+            </a>
         </div>
-        <!-- /.box -->
-
-      </div>
-      <!-- /.col (RIGHT) -->
     </div>
-    <!-- /.row -->
-
-
-    <div class="box">
-        <div class="box-header">
-          <h3 class="box-title">List of Reports</h3>
+    <!-- ./col -->
+    <div class="col-lg-3 col-xs-6">
+        <!-- small box -->
+        <div class="small-box bg-yellow">
+            <div class="inner">
+                <h3>{{$reportsGenerated}}</h3>
+                <h4>Reports Generated</h4>
+            </div>
+            <div class="icon">
+                <i class="fa fa-file-text" aria-hidden="true"></i>
+            </div>
+            <a href="#" class="small-box-footer">
+                View Reports <i class="fa fa-arrow-circle-right"></i>
+            </a>
         </div>
-        <!-- /.box-header -->
-        <div class="box-body">
-
-            <table id="example1" class="table table-bordered table-striped">
-                <thead>
-                    <tr>
-                        <th>Report ID</th>
-                        <th>Patient Name</th>
-                        <th>Test Name</th>
-                        <th>Result</th>
-
-
-
-                    </tr>
-                </thead>
-                <tbody>
-
-                    @foreach ($allReportData->unique('rid') as $data)
-                            <tr>
-                                <td>{{$data->rid}} </td>
-                                <td>{{$data->name}}</td>
-                                <td>{{$data->AvailableTestName}}</td>
-                                <td>
-                                    @php
-                                        $resultArray = explode(',', $data->result);
-                                    @endphp
-                                    @foreach ($allReportData->unique('sub_id') as $data2)
-                                        {{$data2->SubCategoryName}} :-
-                                        @foreach($resultArray as $result)
-                                            {{$result}} ({{$data2->Units}}) -
-                                            @if ($result < $data2->SubCategoryRangeMin || $result > $data2->SubCategoryRangeMax)
-                                            <b>Abnormal</b>
-                                            @else
-                                            <b>Normal</b>
-                                            @endif
-                                            <br>
-                                            @php
-                                                array_shift($resultArray);
-                                            @endphp
-                                            @break
-                                        @endforeach
-                                    @endforeach
-
-                                </td>
-
-
-
-
-
-                            </tr>
-
-
-                        @endforeach
-
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <th>Report ID</th>
-                        <th>Patient Name</th>
-                        <th>Test Name</th>
-                        <th>Result</th>
-
-                     
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
-        <!-- /.box-body -->
     </div>
-      <!-- /.box -->
+    <!-- ./col -->
+    <div class="col-lg-3 col-xs-6">
+        <!-- small box -->
+        <div class="small-box bg-red">
+            <div class="inner">
+                <h3>{{$requestedTests}}</h3>
+                <h4>Requested Tests</h4>
+            </div>
+            <div class="icon">
+                <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+            </div>
+            <a href="#" class="small-box-footer">
+                Review Tests <i class="fa fa-arrow-circle-right"></i>
+            </a>
+        </div>
+    </div>
+    <!-- ./col -->
+</div>
+<!-- /.row -->
 
-  @push('specificJs')
-          <script>
-            $(function () {
-              /* ChartJS
-               * -------
-               * Here we will create a few charts using ChartJS
-               */
+<!-- Gender distribution pie chart -->
+<!-- Gender Distribution Card -->
+<div class="row">
+    <!-- Gender Distribution Card -->
+    <div class="col-lg-6 col-xs-12">
+        <div class="small-box bg-white">
+            <div class="inner">
+                <h4>Patient Gender Distribution</h4>
+                <div class="chart-container" style="position: relative; height: 500px; width: 100%; max-width: 500px; margin: 0 auto;">
+                    <canvas id="genderChart" width="300" height="300"></canvas>
+                </div>
+            </div>
+            <div class="icon">
+                <i class="fa fa-pie-chart" aria-hidden="true"></i>
+            </div>
+            <div class="small-box-footer" style="background: rgba(66, 66, 66, 0.993); color: white; font-weight: 500;">
+                Patient Demographics <i class="fa fa-info-circle"></i>
+            </div>
+        </div>
+    </div>
 
-              var barChartList = @json($testList);
-              var notDoneTestsArray = @json($notDoneTestsArray);
-              var DoneTestsArray = @json($DoneTestsArray);
+    <!-- Most Requested Tests Card -->
+    <div class="col-lg-6 col-xs-12">
+        <div class="small-box bg-white">
+            <div class="inner">
+                <h4>Most Requested Tests</h4>
+                <div class="chart-container" style="position: relative; height: 500px; width: 100%; max-width: 500px; margin: 0 auto;">
+                    <canvas id="testsChart" width="300" height="300"></canvas>
+                </div>
+            </div>
+            <div class="icon">
+                <i class="fa fa-flask" aria-hidden="true"></i>
+            </div>
+            <div class="small-box-footer" style="background: rgba(66, 66, 66, 0.993); color: white; font-weight: 500;">
+                Test Popularity <i class="fa fa-info-circle"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+@push('specificCSS')
 
 
-              var areaChartData = {
-                  labels: barChartList,
-                  datasets: [
-                      {
-                          label: 'The Requested Test',
-                          fillColor: 'rgba(210, 214, 222, 1)',
-                          strokeColor: 'rgba(210, 214, 222, 1)',
-                          pointColor: 'rgba(210, 214, 222, 1)',
-                          pointStrokeColor: '#c1c7d1',
-                          pointHighlightFill: '#fff',
-                          pointHighlightStroke: 'rgba(220, 220, 220, 1)',
-                          data: notDoneTestsArray
-                      },
-                      {
-                          label: 'The Tested Test',
-                          fillColor: 'rgba(60, 141, 188, 0.9)',
-                          strokeColor: 'rgba(60, 141, 188, 0.8)',
-                          pointColor: '#3b8bba',
-                          pointStrokeColor: 'rgba(60, 141, 188, 1)',
-                          pointHighlightFill: '#fff',
-                          pointHighlightStroke: 'rgba(60, 141, 188, 1)',
-                          data: DoneTestsArray
-                      }
-                  ]
-              };
+@endpush
 
+@push('specificJs')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Gender distribution pie chart
+    const genderCtx = document.getElementById('genderChart').getContext('2d');
 
+    const genderData = {
+        labels: @json($genderData->pluck('gender')),
+        datasets: [{
+            data: @json($genderData->pluck('count')),
+            backgroundColor: [
+                'rgba(13, 110, 253, 1)',   // Blue for Male
+                'rgba(255, 193, 7, 1)',    // Pink for Female
+                'rgba(108, 117, 125, 1)'     // Green for Other
+            ],
+            borderColor: [
+                'rgba(13, 110, 253, 1)',
+                'rgba(255, 193, 7, 1)',
+                'rgba(108, 117, 125, 1)'
+            ],
+            borderWidth: 3
+        }]
+    };
 
-              //-------------
-              //- PIE CHART -
-              //-------------
-              // Get context with jQuery - using jQuery's .get() method.
-              var pieChartCanvas = $('#pieChart').get(0).getContext('2d')
-              var pieChart       = new Chart(pieChartCanvas)
-              var PieData        = [
-                {
-                  value    : {{$maleP}},
-                  color    : '#f56954',
-                  highlight: '#c2422f',
-                  label    : 'Male'
+    new Chart(genderCtx, {
+        type: 'pie',
+        data: genderData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
                 },
-                {
-                  value    : {{$femaleP}},
-                  color    : '#00a65a',
-                  highlight: '#188754',
-                  label    : 'Famale'
-                },
-                {
-                  value    : {{$otherP}},
-                  color    : '#08aabf',
-                  highlight: '#0f7c8a',
-                  label    : 'Other'
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.raw || 0;
+                            const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                            const percentage = Math.round((value / total) * 100);
+                            return `${label}: ${value} (${percentage}%)`;
+                        }
+                    }
                 }
+            }
+        }
+    });
+});
+</script>
 
-              ]
-              var pieOptions     = {
-                //Boolean - Whether we should show a stroke on each segment
-                segmentShowStroke    : false,
-                //String - The colour of each segment stroke
-                segmentStrokeColor   : '#fff',
-                //Number - The width of each segment stroke
-                segmentStrokeWidth   : 2,
-                //Number - The percentage of the chart that we cut out of the middle
-                percentageInnerCutout: 50, // This is 0 for Pie charts
-                //Number - Amount of animation steps
-                animationSteps       : 140,
-                //String - Animation easing effect
-                animationEasing      : 'easeInBounce',
-                //Boolean - Whether we animate the rotation of the Doughnut
-                animateRotate        : true,
-                //Boolean - Whether we animate scaling the Doughnut from the centre
-                animateScale         : false,
-                //Boolean - whether to make the chart responsive to window resizing
-                responsive           : true,
-                // Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
-                maintainAspectRatio  : true,
-                //String - A legend template
-                legendTemplate       : '<ul class="<%=name.toLowerCase()%>-legend"><% for (var i=0; i<segments.length; i++){%><li><span style="background-color:<%=segments[i].fillColor%>"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>'
-              }
-              //Create pie or douhnut chart
-              // You can switch between pie and douhnut using the method below.
-              pieChart.Doughnut(PieData, pieOptions)
+{{-- top test chart --}}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Make sure we have test data to display
+    if (document.getElementById('testsChart')) {
+        // Get the canvas element
+        const testsCtx = document.getElementById('testsChart').getContext('2d');
 
-              //-------------
-              //- BAR CHART -
-              //-------------
-              var barChartCanvas                   = $('#barChart').get(0).getContext('2d')
-              var barChart                         = new Chart(barChartCanvas)
-              var barChartData                     = areaChartData
-              barChartData.datasets[1].fillColor   = '#00a65a'
-              barChartData.datasets[1].strokeColor = '#00a65a'
-              barChartData.datasets[1].pointColor  = '#00a65a'
-              var barChartOptions                  = {
-                //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
-                scaleBeginAtZero        : true,
-                //Boolean - Whether grid lines are shown across the chart
-                scaleShowGridLines      : true,
-                //String - Colour of the grid lines
-                scaleGridLineColor      : 'rgba(0,0,0,1)',
-                //Number - Width of the grid lines
-                scaleGridLineWidth      : 1,
-                //Boolean - Whether to show horizontal lines (except X axis)
-                scaleShowHorizontalLines: true,
-                //Boolean - Whether to show vertical lines (except Y axis)
-                scaleShowVerticalLines  : true,
-                //Boolean - If there is a stroke on each bar
-                barShowStroke           : true,
-                //Number - Pixel width of the bar stroke
-                barStrokeWidth          : 2,
-                //Number - Spacing between each of the X value sets
-                barValueSpacing         : 5,
-                //Number - Spacing between data sets within X values
-                barDatasetSpacing       : 1,
-                //String - A legend template
-                legendTemplate          : '<ul class="<%=name.toLowerCase()%>-legend"><% for (var i=0; i<datasets.length; i++){%><li><span style="background-color:<%=datasets[i].fillColor%>"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>',
-                //Boolean - whether to make the chart responsive
-                responsive              : true,
-                maintainAspectRatio     : true
-              }
+        // Generate random colors for the chart segments
+        function generateColors(count) {
+            const colors = [];
+            const backgroundColors = [];
 
-              barChartOptions.datasetFill = false
-              barChart.Bar(barChartData, barChartOptions)
-            })
-          </script>
+            for (let i = 0; i < count; i++) {
+                // Generate pastel colors
+                const hue = i * (360 / count);
+                const color = `hsla(${hue}, 70%, 60%, 0.8)`;
+                const borderColor = `hsla(${hue}, 70%, 50%, 1)`;
 
+                backgroundColors.push(color);
+                colors.push(borderColor);
+            }
 
-          <script>
-            $(function () {
-              $('#example1').DataTable()
-              $('#example2').DataTable({
-                'paging'      : true,
-                'lengthChange': false,
-                'searching'   : true,
-                'ordering'    : true,
-                'info'        : true,
-                'autoWidth'   : false
-              })
-            })
-          </script>
-  @endpush
+            return { backgroundColor: backgroundColors, borderColor: colors };
+        }
+
+        // Prepare the data
+        const testLabels = @json($mostRequestedTests->pluck('name'));
+        const testCounts = @json($mostRequestedTests->pluck('count'));
+        const colorSet = generateColors(testLabels.length);
+
+        // Create the chart data
+        const testData = {
+            labels: testLabels,
+            datasets: [{
+                data: testCounts,
+                backgroundColor: colorSet.backgroundColor,
+                borderColor: colorSet.borderColor,
+                borderWidth: 1
+            }]
+        };
+
+        // Create the donut chart
+        new Chart(testsCtx, {
+            type: 'doughnut',
+            data: testData,
+            options: {
+                responsive: true,
+                cutout: '60%', // Controls the size of the hole
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            boxWidth: 12,
+                            padding: 10
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.raw || 0;
+                                const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                const percentage = Math.round((value / total) * 100);
+                                return `${label}: ${value} tests (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+@endpush

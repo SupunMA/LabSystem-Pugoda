@@ -8,11 +8,11 @@ use Illuminate\Http\Request;
 
 use App\Models\User;
 use App\Models\Patient;
-use App\Models\Test;
-use App\Models\AvailableTest;
+use App\Models\RequestedTests;
+use App\Models\AvailableTest_New;
 
 use Auth;
-
+use DB;
 class admin_HomeCtr extends Controller
 {
    //protected $task;
@@ -30,79 +30,86 @@ class admin_HomeCtr extends Controller
     public function checkAdmin()
     {
 
-        //Cards
-        $ClientsCount   =   User::where('users.role',0)->count();
-        $TestCount     =   Test::where('tests.done',0)->count();
-        $DoctorCount     =   User::where('users.role',2)->count();
+        // Get total patients count
+        $totalPatients = Patient::count();
+
+        // Get available tests count from database
+        $availableTests = AvailableTest_New::count();
+
+        $reportsGenerated = RequestedTestS::where(function($query) {
+            $query->whereExists(function ($subquery) {
+                    $subquery->select(DB::raw(1))
+                        ->from('test_results')
+                        ->whereRaw('test_results.requested_test_id = requested_tests.id');
+                })
+                ->orWhereExists(function ($subquery) {
+                    $subquery->select(DB::raw(1))
+                        ->from('report_paths')
+                        ->whereRaw('report_paths.requested_test_id = requested_tests.id');
+                });
+        })
+        ->count();
+
+                // Get tests needing review (tests that don't have results or reports)
+        $requestedTests = RequestedTests::whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                      ->from('test_results')
+                      ->whereRaw('test_results.requested_test_id = requested_tests.id');
+            })
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                      ->from('report_paths')
+                      ->whereRaw('report_paths.requested_test_id = requested_tests.id');
+            })
+            ->count();
+
+         // Get gender distribution for pie chart
+        $genderData = Patient::select('gender', DB::raw('count(*) as count'))
+            ->whereNotNull('gender')
+            ->groupBy('gender')
+            ->get()
+            ->map(function($item) {
+                // Convert M, F, O to readable labels
+                if ($item->gender == 'M') {
+                    $item->gender = 'Male';
+                } elseif ($item->gender == 'F') {
+                    $item->gender = 'Female';
+                } elseif ($item->gender == 'O') {
+                    $item->gender = 'Other';
+                }
+                return $item;
+            });
 
 
 
-
-        //Report table
-        $allReportData = User::join('patients', 'patients.userID', '=', 'users.id')
-        ->join('tests', 'tests.pid', '=', 'patients.pid')
-        ->join('available_tests', 'available_tests.tlid', '=', 'tests.tlid')
-        ->join('reports', 'reports.tid', '=', 'tests.tid')
-        ->join('subcategories', 'subcategories.AvailableTestID', '=', 'available_tests.tlid')
-        ->select('*')
-        ->where('tests.done','=', 1)
+                // Get most requested tests for donut chart
+    $mostRequestedTests = RequestedTests::select('availableTests.name', DB::raw('count(*) as count'))
+        ->join('availableTests', 'requested_tests.test_id', '=', 'availableTests.id')
+        ->groupBy('requested_tests.test_id', 'availableTests.name')
+        ->orderBy('count', 'desc')
+        ->limit(5) // Show top 5 most requested tests
         ->get();
 
+    // Get count of other tests (not in top 5)
+    $totalTestsCount = RequestedTests::count();
+    $topTestsCount = $mostRequestedTests->sum('count');
 
-        //Get data for pie chart
-        $maleP     =   Patient::where('patients.gender','M')->count();
-        $femaleP     =   Patient::where('patients.gender','F')->count();
-        $otherP     =   Patient::where('patients.gender','O')->count();
-
-        //Get data for Bar chart labels
-        $testList = AvailableTest::pluck('AvailableTestName')->toArray();
-
-        $notDoneTestsArray[]=[];
-        $DoneTestsArray[]=[];
-        //Get data for Bar chart values
-        foreach ($testList as $oneTest) {
-            $notDoneTest = Test::join('available_tests', 'available_tests.tlid', '=', 'tests.tlid')
-            ->select( 'tests.*', 'available_tests.*')
-            ->where('tests.done','=', 0)
-            ->where('available_tests.AvailableTestName','=', $oneTest)
-            ->count();
-
-            $notDoneTestsArray[] = $notDoneTest;
-
-            $DoneTest = Test::join('available_tests', 'available_tests.tlid', '=', 'tests.tlid')
-            ->select( 'tests.*', 'available_tests.*')
-            ->where('tests.done','=', 1)
-            ->where('available_tests.AvailableTestName','=', $oneTest)
-            ->count();
-
-            $DoneTestsArray[] = $DoneTest;
-
-
-        }
-
-        //Get total income
-        $total=0;
-        foreach ($testList as $oneTest) {
-            $allDoneList = Test::join('available_tests', 'available_tests.tlid', '=', 'tests.tlid')
-            ->select( 'tests.*', 'available_tests.*')
-            ->where('tests.done','=', 1)
-            ->where('available_tests.AvailableTestName','=', $oneTest)
-            ->get();
-
-
-
-
-            foreach ($allDoneList as $allDoneItem) {
-                $total = $total + $allDoneItem->AvailableTestCost;
-            }
-
-
-
-        }
-
-
-
-        return view('Users.Admin.home',compact('ClientsCount','DoctorCount','TestCount','allReportData','testList','maleP','femaleP','otherP','notDoneTestsArray','DoneTestsArray','total'));
+    // If there are more tests than the top 5, add an "Others" category
+    if ($totalTestsCount > $topTestsCount) {
+        $mostRequestedTests->push([
+            'name' => 'Others',
+            'count' => $totalTestsCount - $topTestsCount
+        ]);
     }
 
+        return view('Users.Admin.home', compact(
+            'totalPatients',
+            'availableTests',
+            'reportsGenerated',
+            'requestedTests',
+            'genderData',
+            'mostRequestedTests'
+        ));
+
+    }
 }
