@@ -31,50 +31,83 @@
             padding: 20px;
             padding-bottom: 80px; /* Space for footer */
         }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 15px;
-        }
-        .logo-container {
-            display: flex;
-            align-items: center;
-        }
-        .logo-text {
-            display: flex;
-            flex-direction: column;
-        }
-        .logo-text h1 {
-            color: #e45735;
-            margin: 0;
-            font-size: 35px;
-            font-weight: bold;
-            line-height: 1;
-        }
-        .logo-text h2 {
-            color: #2d5b84;
-            margin: 0;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        .contact-info {
-            text-align: right;
-            color: #2d5b84;
-            font-size: 13px;
-        }
-        .report-title {
-            color: #2d5b84;
-            text-align: center;
-            font-size: 18px;
-            margin: 5px 0;
-            font-weight: bold;
-        }
-        .divider {
-            height: 4px;
-            background-color: #2d5b84;
-            margin-bottom: 20px;
-        }
+        /* Header container */
+/* Header Table */
+.header-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+
+/* Logo Cell */
+.logo-cell {
+    width: 60%; /* Adjust width for logo and text */
+    vertical-align: middle;
+}
+
+/* Contact Info Cell */
+.contact-info-cell {
+    width: 60%; /* Adjust width for contact info */
+    text-align: right;
+    vertical-align: middle;
+}
+
+/* Logo Container */
+.logo-container {
+    display: flex;
+    align-items: center; /* Vertically align logo and text */
+    gap: 10px; /* Space between logo and text */
+}
+
+/* Logo Styling */
+.logo {
+    width: 60px; /* Adjust logo size */
+    height: auto; /* Maintain aspect ratio */
+}
+
+/* Logo Text Styling */
+.logo-text h1 {
+    color: #e45735; /* Orange color for "HORIZON" */
+    margin: 0;
+    font-size: 32px; /* Adjust font size */
+    font-weight: bold;
+    line-height: 1;
+}
+
+.logo-text h2 {
+    color: #2d5b84; /* Blue color for "LABORATORY" */
+    margin: 0;
+    font-size: 22px; /* Adjust font size */
+    font-weight: bold;
+    line-height: 1;
+}
+
+/* Contact Info Styling */
+.contact-info {
+    color: #2d5b84; /* Blue color for text */
+    font-size: 20px;
+}
+
+.contact-info div {
+    margin: 2px 0; /* Add spacing between lines */
+}
+
+/* Report Title Styling */
+.report-title {
+    color: #2d5b84; /* Blue color for the title */
+    text-align: center; /* Center the title */
+    font-size: 18px; /* Adjust font size */
+    margin: 5px 0; /* Add spacing above and below */
+    font-weight: bold;
+}
+
+/* Divider Line */
+.divider {
+    height: 4px;
+    background-color: #2d5b84; /* Blue color for the line */
+    margin-bottom: 20px;
+}
+
 
         /* Patient details table matching the photo exactly */
         .patient-details-table {
@@ -167,6 +200,10 @@
             font-size: 16px;
             color: #2d5b84;
         }
+        .footer-logo {
+        width: 75%;
+        margin-right: 5px;
+        }
     </style>
 </head>
 <body>
@@ -174,23 +211,34 @@
         <div class="container">
             <!-- Header -->
             <div class="header">
+    <table class="header-table">
+        <tr>
+            <!-- Logo and Text -->
+            <td class="logo-cell">
                 <div class="logo-container">
+                    <img src="{{ asset('img/report-logo.png') }}" alt="Logo" class="logo">
                     <div class="logo-text">
-                        <h1><b>HORIZON</b></h1>
+                        <h1>HORIZON</h1>
                         <h2>LABORATORY</h2>
                     </div>
                 </div>
-                <div class="contact-info" style="font-weight: bold; font-size: 15px">
+            </td>
+            <!-- Contact Information -->
+            <td class="contact-info-cell">
+                <div class="contact-info">
                     <div>No. 148/A4, Infront of Hospital, Bangalawaththa, Pugoda.</div>
-                    <div style="font-weight: bold; color: red; font-size: 20px;">0776 267 627</div>
+                    <div style="font-weight: bold; color: red; font-size: 23px;">0776 267 627</div>
                     <div>horizonpugoda@gmail.com</div>
+                    <div style="font-weight: bold; color: rgb(255, 0, 0); font-size: 20px;">horizonlab.lk</div>
                     <div>SLMC No. 2102</div>
                 </div>
-            </div>
-
-            <!-- Report Title -->
-            <div class="report-title">Confidential Laboratory Report</div>
-            <div class="divider"></div>
+            </td>
+        </tr>
+    </table>
+    <!-- Report Title -->
+    <div class="report-title">Confidential Laboratory Report</div>
+    <div class="divider"></div>
+</div>
 
             <!-- Patient Information Table - Exactly matching the photo -->
             <table class="patient-details-table">
@@ -300,16 +348,18 @@
             <!-- Footer as a table row -->
             <div class="footer">
                 <table class="footer-table">
-                    <tr><td width="25%">
+                    <tr><td width="15%" align="center">
+                            <img src="https://bootflare.com/wp-content/uploads/2024/01/Mindray-Logo-1536x864.png" class="footer-logo">
                         </td>
-                        <td width="25%">
+                        <td width="35%">
                             <strong>Equipment Used:</strong><br>
                             BC - 10 Fully Automated Hematology Analyzer<br>
                             BA - 88A Biochemistry Analyzer
                         </td>
-                        <td width="25%">
+                        <td width="15%" align="center">
+                            <img src="https://th.bing.com/th/id/R.528ea67c70a8b88e4f07b6567175c74b?rik=RDLPE98IbpDh0Q&riu=http%3a%2f%2fasfgestion.com%2fimages%2flabomed%2fLabomed_Logo_min.png&ehk=sxPj6Y0OXXeHpX7lqL%2fNLOANJg%2fbvRvL6asrK5Qy4y4%3d&risl=&pid=ImgRaw&r=0" class="footer-logo">
                         </td>
-                        <td width="25%">
+                        <td width="35%">
                             <strong>Quality Control by:</strong><br>
                             Biolabo Extrol - P / Biolabo Extrol - N
                         </td>

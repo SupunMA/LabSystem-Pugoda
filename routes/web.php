@@ -136,9 +136,6 @@ Route::group(['prefix'=>'Admin','middleware'=>['checkAdmin','auth','lockBack']],
     Route::get('/reports/onSite/preview/{id}', [admin_ReportsCtr::class, 'previewReport'])->name('reportsOnSite.preview');
     Route::get('/reports/onsite/download/{id}', [admin_ReportsCtr::class, 'downloadReport'])->name('reportsOnSite.download');//generate pdf report onsite
 
-    // Route::get('/reports/download/{id}', [admin_ReportsCtr::class, 'download'])->name('reports.download');
-    // Route::get('/reports/preview/{id}', [admin_ReportsCtr::class, 'preview'])->name('reports.preview');
-
     //Profile
     Route::get('/myProfile', [admin_ProfileCtr::class, 'AdminViewUpdateProfile'])->name('AdminViewUpdateProfile');
     Route::POST('updateAdmin', [admin_ProfileCtr::class, 'updateAdmin'])->name('admin.updateAdmin');
