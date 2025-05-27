@@ -41,13 +41,13 @@
 
 /* Logo Cell */
 .logo-cell {
-    width: 60%; /* Adjust width for logo and text */
+    width: 30%; /* Adjust width for logo and text */
     vertical-align: middle;
 }
 
 /* Contact Info Cell */
 .contact-info-cell {
-    width: 60%; /* Adjust width for contact info */
+    width: 70%; /* Adjust width for contact info */
     text-align: right;
     vertical-align: middle;
 }
@@ -69,7 +69,7 @@
 .logo-text h1 {
     color: #e45735; /* Orange color for "HORIZON" */
     margin: 0;
-    font-size: 32px; /* Adjust font size */
+    font-size: 42px; /* Adjust font size */
     font-weight: bold;
     line-height: 1;
 }
@@ -77,7 +77,7 @@
 .logo-text h2 {
     color: #2d5b84; /* Blue color for "LABORATORY" */
     margin: 0;
-    font-size: 22px; /* Adjust font size */
+    font-size: 32px; /* Adjust font size */
     font-weight: bold;
     line-height: 1;
 }
@@ -85,7 +85,7 @@
 /* Contact Info Styling */
 .contact-info {
     color: #2d5b84; /* Blue color for text */
-    font-size: 20px;
+    font-size: 24px;
 }
 
 .contact-info div {
@@ -96,7 +96,7 @@
 .report-title {
     color: #2d5b84; /* Blue color for the title */
     text-align: center; /* Center the title */
-    font-size: 18px; /* Adjust font size */
+    font-size: 22px; /* Adjust font size */
     margin: 5px 0; /* Add spacing above and below */
     font-weight: bold;
 }
@@ -226,11 +226,13 @@
             <!-- Contact Information -->
             <td class="contact-info-cell">
                 <div class="contact-info">
+                    <b>
                     <div>No. 148/A4, Infront of Hospital, Bangalawaththa, Pugoda.</div>
-                    <div style="font-weight: bold; color: red; font-size: 23px;">0776 267 627</div>
+                    <div style="font-weight: bold; color: red; font-size: 28px;">0776 267 627</div>
                     <div>horizonpugoda@gmail.com</div>
-                    <div style="font-weight: bold; color: rgb(255, 0, 0); font-size: 20px;">horizonlab.lk</div>
+                    <div style="font-weight: bold; color: rgb(255, 0, 0); font-size: 28px;">horizonlab.lk</div>
                     <div>SLMC No. 2102</div>
+                    </b>
                 </div>
             </td>
         </tr>
@@ -286,7 +288,7 @@
                 </tr>
                 <tr>
                     <td class="label">TEST NAME:</td>
-                    <td class="value" colspan="3">{{ $sampleData['testName'] }}</td>
+                    <td class="value" colspan="3"><b>{{ $sampleData['testName'] }}</b></td>
                 </tr>
             </table>
 
@@ -317,7 +319,7 @@
                             @else
                                 <tr>
                                     <td>{{ $test['name'] }}</td>
-                                    <td>{{ $test['result'] }}</td>
+                                    <td style="font-weight: bold;">{{ $test['result'] }}</td>
                                     <td>
                                         @if(is_array($test['reference']) && isset($test['reference']['isTable']) && $test['reference']['isTable'])
                                             <table class="reference-table">
