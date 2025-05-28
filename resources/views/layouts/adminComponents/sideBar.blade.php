@@ -52,7 +52,7 @@
                     <a href="{{ route('admin.addPatient') }}" class="nav-link {{ Route::currentRouteNamed('admin.addPatient') ? 'active' : ' ' }}">
                     <i class="fa fa-plus" aria-hidden="true"></i>
                         <p>Add Patient
-                            <span class="right badge badge-danger">+</span>
+                            <span class="right badge badge-success">New</span>
                         </p>
                     </a>
                 </li>
