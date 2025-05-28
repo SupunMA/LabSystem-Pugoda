@@ -102,14 +102,54 @@ class admin_HomeCtr extends Controller
         ]);
     }
 
-        return view('Users.Admin.home', compact(
-            'totalPatients',
-            'availableTests',
-            'reportsGenerated',
-            'requestedTests',
-            'genderData',
-            'mostRequestedTests'
-        ));
+    // Get income data for last 6 months
+    $incomeData = RequestedTests::select(
+        DB::raw('YEAR(test_date) as year'),
+        DB::raw('MONTH(test_date) as month'),
+        DB::raw('SUM(price) as total')
+    )
+    ->where('test_date', '>=', now()->subMonths(6)->startOfMonth())
+    ->groupBy('year', 'month')
+    ->orderBy('year', 'asc')
+    ->orderBy('month', 'asc')
+    ->get()
+    ->map(function($item) {
+        $item->month_name = date('F', mktime(0, 0, 0, $item->month, 1));
+        return $item;
+    });
 
-    }
+    return view('Users.Admin.home', compact(
+        'totalPatients',
+        'availableTests',
+        'reportsGenerated',
+        'requestedTests',
+        'genderData',
+        'mostRequestedTests',
+        'incomeData'
+    ));
+}
+
+
+public function getIncomeData(Request $request)
+{
+    $startDate = $request->input('start_date');
+    $endDate = $request->input('end_date');
+
+    $query = RequestedTests::select(
+        DB::raw('YEAR(test_date) as year'),
+        DB::raw('MONTH(test_date) as month'),
+        DB::raw('SUM(price) as total')
+    )
+    ->whereBetween('test_date', [$startDate, $endDate])
+    ->groupBy('year', 'month')
+    ->orderBy('year', 'asc')
+    ->orderBy('month', 'asc');
+
+    $data = $query->get()->map(function($item) {
+        $item->month_name = date('F', mktime(0, 0, 0, $item->month, 1));
+        return $item;
+    });
+
+    return response()->json($data);
+}
 }
