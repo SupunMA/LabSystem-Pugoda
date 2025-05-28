@@ -138,8 +138,8 @@
                         <button id="apply-filter" class="btn btn-primary mt-4">Apply</button>
                     </div>
                 </div>
-                <div class="chart">
-                    <canvas id="incomeChart" height="100"></canvas>
+                <div class="chart-container" style="height: 450px; position: relative;">
+                    <canvas id="incomeChart"></canvas>
                 </div>
             </div>
         </div>
