@@ -106,70 +106,97 @@ class RegisterController extends Controller
 
 
 
-    function addingPatient(Request $request)
-    {
-
-        // Clean the phone number by removing non-digit characters
-        $cleanedMobile = preg_replace('/[^0-9]/', '', $request->mobile);
-
-        // Replace the formatted number with the cleaned version
-        $request->merge(['mobile' => $cleanedMobile]);
-
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'gender' => ['required', 'string', 'in:M,F,O'],
-            'dob' => ['required', 'string', 'date'],
-            'email' => ['nullable', 'email', 'max:255', 'unique:users'],
-            'nic' => ['required_without:mobile', 'nullable', 'regex:/^(\d{9}[Vv]|\d{12})$/', 'unique:users', 'max:15'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'mobile' => ['required_without:nic', 'nullable', 'string', 'unique:patients'],
-            'address' => ['string', 'nullable']
-        ]);
-
-
-
-        $user = new User();
-
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->nic = $request->nic;
-
-        $user->password = \Hash::make($request->password);
-        $user->role = $request->role;
-
-        $patient = new Patient();
-
-
-
-        $patient->mobile = $request->mobile;
-       //change the date format
-        $formattedDate = Carbon::parse($request->dob)->format('Y-m-d');
-        $patient->dob =  $formattedDate;
-        $patient->gender = $request->gender;
-        $patient->address = $request->address;
-
-
-
-            //Getting next Users table ID
-            $tableName = 'users';
-            $nextId = DB::select("SHOW TABLE STATUS LIKE '$tableName'")[0]->Auto_increment;
-
-            if ($nextId) {
-                $patient->userID = $nextId;
-            } else {
-                return "No users found.";
-            }
-
-
-
-
-        if( $user->save() &&  $patient->save()){
-            return response()->json(['success' => true, 'message' => 'Patient added successfully']);
-        }else{
-            //return redirect()->back()->with('message','Failed');
+function addingPatient(Request $request)
+{
+    try {
+        // Clean the phone number if mobile exists
+        if ($request->filled('mobile')) {
+            $cleanedMobile = preg_replace('/[^0-9]/', '', $request->mobile);
+            $request->merge(['mobile' => $cleanedMobile]);
         }
 
+        // Custom validation for either NIC or mobile
+        $validator = Validator::make($request->all(), [
+            'name' => ['required', 'string', 'max:255'],
+            'gender' => ['required', 'string', 'in:M,F,O'],
+            'dob' => ['required', 'date'],
+            'email' => ['nullable', 'email', 'max:255', 'unique:users'],
+            'nic' => [
+                'required_without:mobile',
+                'nullable',
+                'regex:/^(\d{9}[Vv]|\d{12})$/',
+                'unique:users',
+                'max:15'
+            ],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'mobile' => [
+                'required_without:nic',
+                'nullable',
+                'string',
+                'unique:patients',
+                'max:15'
+            ],
+            'address' => ['nullable', 'string'],
+            'role' => ['required', 'string']
+        ], [
+            'nic.required_without' => 'Either NIC or Mobile number must be provided',
+            'nic.regex' => 'NIC format is invalid (9 digits with V or 12 digits)',
+        ]);
+
+        // Manually check that at least one field is present
+        if (!$request->filled('nic') && !$request->filled('mobile')) {
+            $validator->errors()->add('nic', 'Either NIC or Mobile number must be provided');
+            throw new \Illuminate\Validation\ValidationException($validator);
+        }
+
+        $validatedData = $validator->validate();
+
+        DB::beginTransaction();
+
+        // Create user
+        $user = User::create([
+            'name' => $validatedData['name'],
+            'email' => $validatedData['email'] ?? null,
+            'nic' => $validatedData['nic'] ?? null,
+            'password' => Hash::make($validatedData['password']),
+            'role' => $validatedData['role']
+        ]);
+
+        // Create patient
+        $patient = Patient::create([
+            'userID' => $user->id,
+            'mobile' => $validatedData['mobile'] ?? null,
+            'dob' => Carbon::parse($validatedData['dob'])->format('Y-m-d'),
+            'gender' => $validatedData['gender'],
+            'address' => $validatedData['address'] ?? null
+        ]);
+
+        DB::commit();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Patient added successfully',
+            'data' => [
+                'user' => $user,
+                'patient' => $patient
+            ]
+        ]);
+
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Validation error',
+            'errors' => $e->errors()
+        ], 422);
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to add patient',
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
 
 
 
