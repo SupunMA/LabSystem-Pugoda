@@ -26,7 +26,7 @@
             <div class="icon">
                 <i class="fa fa-flask" aria-hidden="true"></i>
             </div>
-            <a href="#" class="small-box-footer">
+            <a href="{{ route('admin.allAvailableTest') }}" class="small-box-footer">
                 Manage Tests <i class="fa fa-arrow-circle-right"></i>
             </a>
         </div>
@@ -42,7 +42,7 @@
             <div class="icon">
                 <i class="fa fa-file-text" aria-hidden="true"></i>
             </div>
-            <a href="#" class="small-box-footer">
+            <a href="{{ route('admin.addReport') }}" class="small-box-footer">
                 View Reports <i class="fa fa-arrow-circle-right"></i>
             </a>
         </div>
@@ -58,7 +58,7 @@
             <div class="icon">
                 <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
             </div>
-            <a href="#" class="small-box-footer">
+            <a href="{{ route('admin.addTest') }}" class="small-box-footer">
                 Review Tests <i class="fa fa-arrow-circle-right"></i>
             </a>
         </div>
