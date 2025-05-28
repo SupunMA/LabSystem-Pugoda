@@ -49,10 +49,10 @@
                 </li>
 
                 <li class="nav-item">
-                    <a href="{{ route('admin.allPatient') }}" class="nav-link {{ Route::currentRouteNamed('admin.allPatient') ? 'active' : ' ' }}">
-                    <i class="nav-icon fas fa-tachometer-alt"></i>
-                        <p>Request Test
-                            <span class="right badge badge-danger">Live</span>
+                    <a href="{{ route('admin.addPatient') }}" class="nav-link {{ Route::currentRouteNamed('admin.addPatient') ? 'active' : ' ' }}">
+                    <i class="fa fa-plus" aria-hidden="true"></i>
+                        <p>Add Patient
+                            <span class="right badge badge-danger">+</span>
                         </p>
                     </a>
                 </li>
@@ -69,13 +69,13 @@
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="{{ route('admin.addPatient') }}" class="nav-link {{ Route::currentRouteNamed('admin.addPatient') ? 'active' : '' }} ">
-                                <i class="far fa-circle nav-icon"></i>
+                                <i class="fa fa-plus" aria-hidden="true"></i>
                                 <p>Register Patient</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('admin.allPatient') }}" class="nav-link {{ Route::currentRouteNamed('admin.allPatient') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
+                                <i class="fa fa-list-ol" aria-hidden="true"></i>
                                 <p>All Patients</p>
                             </a>
                         </li>
@@ -118,13 +118,13 @@
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="{{ route('admin.addTest') }}" class="nav-link {{ Route::currentRouteNamed('admin.addTest') ? 'active' : '' }} ">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>OnSite Tests</p>
+                                <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
+                                <p> OnSite Tests</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('admin.allTest') }}" class="nav-link {{ Route::currentRouteNamed('admin.allTest') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
+                                <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
                                 <p>SendOut Tests</p>
                             </a>
                         </li>
@@ -143,13 +143,13 @@
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="{{ route('admin.addReport') }}" class="nav-link {{ Route::currentRouteNamed('admin.addReport') ? 'active' : '' }} ">
-                                <i class="far fa-circle nav-icon"></i>
+                                <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
                                 <p>OnSite Reports</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('admin.allReport') }}" class="nav-link {{ Route::currentRouteNamed('admin.allReport') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
+                                <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
                                 <p>SendOut Reports</p>
                             </a>
                         </li>
@@ -168,13 +168,13 @@
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="{{ route('admin.addAvailableTest') }}" class="nav-link {{ Route::currentRouteNamed('admin.addAvailableTest') ? 'active' : '' }} ">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Add OnSite Test</p>
+                                <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
+                                <p>OnSite Add Test</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('admin.allAvailableTest') }}" class="nav-link {{ Route::currentRouteNamed('admin.allAvailableTest') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
+                                <i class="fa fa-list-ul" aria-hidden="true"></i>
                                 <p>All OnSite Tests</p>
                             </a>
                         </li>
@@ -182,13 +182,13 @@
 
                         <li class="nav-item">
                             <a href="{{ route('admin.addExternalAvailableTest') }}" class="nav-link {{ Route::currentRouteNamed('admin.addExternalAvailableTest') ? 'active' : '' }} ">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Add SendOut Test</p>
+                                <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
+                                <p>SendOut Add Test</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('admin.allExternalAvailableTest') }}" class="nav-link {{ Route::currentRouteNamed('admin.allExternalAvailableTest') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
+                                <i class="fa fa-list-ul" aria-hidden="true"></i>
                                 <p>All SendOut Tests</p>
                             </a>
                         </li>
