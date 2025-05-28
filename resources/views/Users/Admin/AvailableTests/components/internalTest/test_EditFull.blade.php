@@ -32,23 +32,23 @@
                                             <option value="">--Select Specimen Type--</option>
                                             @php
                                                 $specimens = [
-                                                    'blood' => 'Blood',
-                                                    'urine' => 'Urine',
-                                                    'stool' => 'Stool (Feces)',
-                                                    'sputum' => 'Sputum',
-                                                    'saliva' => 'Saliva',
-                                                    'swab' => 'Swab (e.g., throat, nasal)',
-                                                    'tissue' => 'Tissue (Biopsy)',
-                                                    'csf' => 'Cerebrospinal Fluid (CSF)',
-                                                    'semen' => 'Semen',
-                                                    'vaginal' => 'Vaginal Secretion',
-                                                    'amniotic' => 'Amniotic Fluid',
-                                                    'pleural' => 'Pleural Fluid',
-                                                    'peritoneal' => 'Peritoneal Fluid',
-                                                    'synovial' => 'Synovial Fluid',
-                                                    'bone_marrow' => 'Bone Marrow',
-                                                    'hair' => 'Hair',
-                                                    'nail' => 'Nail'
+                                                    'Blood' => 'Blood',
+                                                    'Urine' => 'Urine',
+                                                    'Stool' => 'Stool (Feces)',
+                                                    'Sputum' => 'Sputum',
+                                                    'Saliva' => 'Saliva',
+                                                    'Swab' => 'Swab (e.g., throat, nasal)',
+                                                    'Tissue' => 'Tissue (Biopsy)',
+                                                    'CSF' => 'Cerebrospinal Fluid (CSF)',
+                                                    'Semen' => 'Semen',
+                                                    'Vaginal' => 'Vaginal Secretion',
+                                                    'Amniotic' => 'Amniotic Fluid',
+                                                    'Pleural' => 'Pleural Fluid',
+                                                    'Peritoneal' => 'Peritoneal Fluid',
+                                                    'Synovial' => 'Synovial Fluid',
+                                                    'Bone_marrow' => 'Bone Marrow',
+                                                    'Hair' => 'Hair',
+                                                    'Nail' => 'Nail'
                                                 ];
                                             @endphp
                                             @foreach($specimens as $value => $label)
