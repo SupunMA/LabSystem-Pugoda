@@ -43,7 +43,7 @@
                             <div class="small-box bg-green">
                                 <div class="inner">
                                 <h3>{{$reportCount}}</h3>
-                                <h4>Total Reports</h4>
+                                <h4>Completed Reports</h4>
                                 </div>
                                 <div class="icon">
                                     <i class="fa-solid fa-file-pdf"></i>
@@ -68,7 +68,7 @@
                         <!-- /.box-header -->
                         <div class="box-body">
 
-                            <table id="example1" class="table table-bordered table-striped">
+                            <table id="reportsTable" class="table table-bordered table-striped">
                                 <thead>
                                     <tr>
                                         <th>Report ID</th>
@@ -84,7 +84,7 @@
                                     @if(isset($reportsData) && count($reportsData) > 0)
                                         @foreach($reportsData as $report)
                                         <tr>
-                                            <td>{{ $report['report_id'] }}</td>
+                                            <td><strong>{{ $report['formatted_report_id'] }}</strong></td>
                                             <td>{{ $report['test_date'] }}</td>
                                             <td>{{ $report['test_name'] }}</td>
                                             <td>Rs. {{ $report['price'] }}</td>
@@ -101,6 +101,12 @@
                                             </td>
                                             <td>
                                                 @if($report['action'] == 'Download' && $report['file_path'])
+                                                    <a href="{{ route('patient.view.report', $report['report_id']) }}"
+                                                    class="btn btn-info btn-sm"
+                                                    target="_blank"
+                                                    title="View Report in New Tab">
+                                                        <i class="fa fa-eye"></i> View PDF
+                                                    </a>
                                                     <a href="{{ route('patient.download.report', $report['report_id']) }}"
                                                     class="btn btn-primary btn-sm"
                                                     title="Download Report">
@@ -161,4 +167,25 @@ Patient Dashboard
 
 
 @push('specificJs')
+<script>
+$(function () {
+    $('#reportsTable').DataTable({
+        "paging": true,
+        "lengthChange": false,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false,
+        "responsive": true,
+        "order": [[0, 'desc']], // Default sort by Report ID descending
+        "columnDefs": [
+            {
+                "type": "string",
+                "targets": 0 // Ensure proper sorting of formatted report IDs
+            }
+        ]
+    });
+});
+</script>
+
 @endpush

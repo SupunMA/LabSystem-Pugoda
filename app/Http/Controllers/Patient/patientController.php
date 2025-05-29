@@ -16,7 +16,7 @@ use DB;
 
 class patientController extends Controller
 {
-    public function checkUser()
+public function checkUser()
     {
         $userId = Auth::id();
 
@@ -36,11 +36,13 @@ class patientController extends Controller
                 'requested_tests.id as report_id',
                 'requested_tests.test_date',
                 'availableTests.name as test_name',
+                'availableTests.is_internal',
                 'requested_tests.price',
                 'requested_tests.created_at',
                 'requested_tests.updated_at'
             )
             ->orderBy('requested_tests.test_date', 'desc')
+            ->orderBy('requested_tests.id', 'desc')
             ->get();
 
         // Check completion status for each test
@@ -63,6 +65,14 @@ class patientController extends Controller
             // Set completion status
             $test->is_completed = ($hasReportPath || $hasTestResults) ? 1 : 0;
             $test->file_path = $filePath;
+
+            // Format report ID: date + test_id + type (based on is_internal)
+            $formattedDate = \Carbon\Carbon::parse($test->test_date)->format('Ymd');
+            $paddedId = str_pad($test->report_id, 2, '0', STR_PAD_LEFT);
+
+            // If is_internal = 1, add "OS", else add "SO"
+            $suffix = $test->is_internal ? 'OS' : 'SO';
+            $test->formatted_report_id = $formattedDate . '-' . $paddedId . '-' . $suffix;
         }
 
         // Count pending results (tests that don't have results or report paths)
@@ -72,25 +82,28 @@ class patientController extends Controller
         $reportCount = $requestedTests->where('is_completed', 1)->count();
 
         // Prepare data for the table
+        // In your checkUser() function, replace the current map/sort with:
         $reportsData = $requestedTests->map(function($test) {
             $status = $test->is_completed ? 'Completed' : 'Pending';
             $action = $test->is_completed ? 'Download' : 'In Progress';
 
             return [
                 'report_id' => $test->report_id,
+                'formatted_report_id' => $test->formatted_report_id,
                 'test_date' => \Carbon\Carbon::parse($test->test_date)->format('Y-m-d'),
                 'test_name' => $test->test_name,
                 'price' => number_format($test->price, 2),
                 'status' => $status,
                 'action' => $action,
-                'file_path' => $test->file_path // Include file path for download functionality
+                'file_path' => $test->file_path,
+                // Add raw values for DataTables sorting
+                'raw_report_id' => $test->report_id,
+                'raw_test_date' => $test->test_date
             ];
-        });
+        })->sortByDesc('raw_report_id')->values();
 
         return view('Users.User.home', compact('pendingCount', 'reportCount', 'reportsData'));
     }
-
-
 
     public function downloadReport($requestedTestId)
     {
@@ -137,6 +150,48 @@ class patientController extends Controller
         return response()->download($filePath, $fileName);
     }
 
+    public function viewReport($requestedTestId)
+    {
+        $userId = Auth::id();
+
+        // Get the patient record for the current user
+        $patient = DB::table('patients')->where('userID', $userId)->first();
+
+        if (!$patient) {
+            abort(404, 'Patient record not found.');
+        }
+
+        // Verify the requested test belongs to this patient and has a report
+        $reportPath = DB::table('requested_tests')
+            ->join('report_paths', 'requested_tests.id', '=', 'report_paths.requested_test_id')
+            ->where('requested_tests.id', $requestedTestId)
+            ->where('requested_tests.patient_id', $patient->pid)
+            ->select('report_paths.file_path')
+            ->first();
+
+        if (!$reportPath) {
+            abort(404, 'Report not found or access denied.');
+        }
+
+        // Check if file exists - handle different path formats
+        $storedPath = $reportPath->file_path;
+
+        // If the stored path includes 'reports/', use it as is
+        if (strpos($storedPath, 'reports/') !== false) {
+            $filePath = storage_path('app/public/' . $storedPath);
+        } else {
+            // If it's just the filename, assume it's in reports folder
+            $filePath = storage_path('app/public/reports/' . basename($storedPath));
+        }
+
+        if (!file_exists($filePath)) {
+            abort(404, 'Report file not found on server.');
+        }
+
+        // Return file for inline viewing (opens in browser)
+        return response()->file($filePath);
+    }
+
     public function deleteUser($ID)
     {
 
@@ -151,29 +206,4 @@ class patientController extends Controller
         return redirect()->back()->with('message','successful');
     }
 
-    public function viewReport($ID)
-    {
-
-        //all done test with other tables
-        // $viewReportData = User::join('patients', 'patients.userID', '=', 'users.id')
-        // ->join('tests', 'tests.pid', '=', 'patients.pid')
-        // ->join('available_tests', 'available_tests.tlid', '=', 'tests.tlid')
-        // ->join('reports', 'reports.tid', '=', 'tests.tid')
-        // ->select('users.*', 'tests.*', 'available_tests.*','reports.*','patients.*')
-        // ->where('reports.rid','=', $ID)
-        // ->first();
-
-
-        $viewReportData = User::join('patients', 'patients.userID', '=', 'users.id')
-        ->join('tests', 'tests.pid', '=', 'patients.pid')
-        ->join('available_tests', 'available_tests.tlid', '=', 'tests.tlid')
-        ->join('reports', 'reports.tid', '=', 'tests.tid')
-        ->join('subcategories', 'subcategories.AvailableTestID', '=', 'available_tests.tlid')
-        ->select('*')
-        ->where('reports.rid','=', $ID)
-        ->get();
-
-        // dd($viewReportData);
-        return view('Users.user.invoice-print',compact('viewReportData'));
-    }
 }

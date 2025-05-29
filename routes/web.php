@@ -150,6 +150,7 @@ Route::group(['prefix'=>'Admin','middleware'=>['checkAdmin','auth','lockBack']],
 
 Route::group(['prefix'=>'Account/Client','middleware'=>['checkUser','auth']],function(){
     Route::get('/patient/download-report/{requestedTestId}', [patientController::class, 'downloadReport'])->name('patient.download.report');
+    Route::get('/patient/view-report/{requestedTestId}', [patientController::class, 'viewReport'])->name('patient.view.report');
 });
 //Patient
 Route::group(['prefix'=>'Account/Client','middleware'=>['checkUser','auth','lockBack']],function(){
