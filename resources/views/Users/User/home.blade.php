@@ -178,14 +178,18 @@ $(function () {
         "autoWidth": false,
         "responsive": true,
         "order": [[0, 'desc']], // Default sort by Report ID descending
+        "dom": '<"row"<"col-sm-6"f><"col-sm-6"l>>rt<"row"<"col-sm-5"i><"col-sm-7"p>><"clear">', // Custom DOM layout
         "columnDefs": [
             {
                 "type": "string",
                 "targets": 0 // Ensure proper sorting of formatted report IDs
             }
-        ]
+        ],
+        "language": {
+            "search": "_INPUT_",
+            "searchPlaceholder": "Search reports..."
+        }
     });
 });
 </script>
-
 @endpush
