@@ -145,9 +145,18 @@ Route::group(['prefix'=>'Admin','middleware'=>['checkAdmin','auth','lockBack']],
 
 });
 
+
+
+
+Route::group(['prefix'=>'Account/Client','middleware'=>['checkUser','auth']],function(){
+    Route::get('/patient/download-report/{requestedTestId}', [patientController::class, 'downloadReport'])->name('patient.download.report');
+});
 //Patient
 Route::group(['prefix'=>'Account/Client','middleware'=>['checkUser','auth','lockBack']],function(){
     Route::get('/', [patientController::class, 'checkUser'])->name('user.home');
+
+
+
 
     //update user profile
     Route::get('/myProfile', [UpdateProfile::class, 'CustomerViewUpdateProfile'])->name('PatientProfileUpdate');

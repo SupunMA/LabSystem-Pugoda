@@ -29,7 +29,7 @@
                             <div class="small-box bg-red">
                                 <div class="inner">
                                     <h3>{{$pendingCount}}</h3>
-                                    <h4>Pending Results</h4>
+                                    <h4>Pending Reports</h4>
                                 </div>
                                 <div class="icon">
                                     <i class="fa fa-medkit" aria-hidden="true"></i>
@@ -43,7 +43,7 @@
                             <div class="small-box bg-green">
                                 <div class="inner">
                                 <h3>{{$reportCount}}</h3>
-                                <h4>Completed Reports</h4>
+                                <h4>Total Reports</h4>
                                 </div>
                                 <div class="icon">
                                     <i class="fa-solid fa-file-pdf"></i>
@@ -81,7 +81,50 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-
+                                    @if(isset($reportsData) && count($reportsData) > 0)
+                                        @foreach($reportsData as $report)
+                                        <tr>
+                                            <td>{{ $report['report_id'] }}</td>
+                                            <td>{{ $report['test_date'] }}</td>
+                                            <td>{{ $report['test_name'] }}</td>
+                                            <td>Rs. {{ $report['price'] }}</td>
+                                            <td>
+                                                @if($report['status'] == 'Completed')
+                                                    <span class="badge bg-success">
+                                                        <i class="fa fa-check"></i> {{ $report['status'] }}
+                                                    </span>
+                                                @else
+                                                    <span class="badge bg-warning">
+                                                        <i class="fa fa-clock-o"></i> {{ $report['status'] }}
+                                                    </span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if($report['action'] == 'Download' && $report['file_path'])
+                                                    <a href="{{ route('patient.download.report', $report['report_id']) }}"
+                                                    class="btn btn-primary btn-sm"
+                                                    title="Download Report">
+                                                        <i class="fa fa-download"></i> Download PDF
+                                                    </a>
+                                                @elseif($report['action'] == 'Download')
+                                                    <button class="btn btn-info btn-sm"
+                                                            onclick="viewResults({{ $report['report_id'] }})"
+                                                            title="View Test Results">
+                                                        <i class="fa fa-eye"></i> View Results
+                                                    </button>
+                                                @else
+                                                    <span class="text-muted">
+                                                        <i class="fa fa-hourglass-half"></i> {{ $report['action'] }}
+                                                    </span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    @else
+                                        <tr>
+                                            <td colspan="6" class="text-center">No reports found</td>
+                                        </tr>
+                                    @endif
                                 </tbody>
                                 <tfoot>
                                     <tr>
