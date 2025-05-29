@@ -93,7 +93,7 @@ public function checkUser()
                 'formatted_report_id' => $test->formatted_report_id,
                 'test_date' => \Carbon\Carbon::parse($test->test_date)->format('Y-m-d'),
                 'test_name' => $test->test_name,
-                'price' => number_format($test->price, 2),
+                // 'price' => number_format($test->price, 2),
                 'status' => $status,
                 'action' => $action,
                 'file_path' => $test->file_path,

@@ -76,7 +76,7 @@
                                         <th>Test Name</th>
                                         <th>Action</th>
                                         <th>Status</th>
-                                        <th>Price</th>
+                                        {{-- <th>Price</th> --}}
 
                                     </tr>
                                 </thead>
@@ -132,7 +132,7 @@
                                                     </span>
                                                 @endif
                                             </td>
-                                            <td>Rs. {{ $report['price'] }}</td>
+                                            {{-- <td>Rs. {{ $report['price'] }}</td> --}}
                                         </tr>
                                         @endforeach
                                     @else
@@ -148,7 +148,7 @@
                                         <th>Test Name</th>
                                         <th>Action</th>
                                         <th>Status</th>
-                                        <th>Price</th>
+                                        {{-- <th>Price</th> --}}
                                     </tr>
                                 </tfoot>
                             </table>
