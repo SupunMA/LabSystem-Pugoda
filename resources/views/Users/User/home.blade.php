@@ -74,9 +74,9 @@
                                         <th>Report ID</th>
                                         <th>Test Date</th>
                                         <th>Test Name</th>
-                                        <th>Price</th>
-                                        <th>Status</th>
                                         <th>Action</th>
+                                        <th>Status</th>
+                                        <th>Price</th>
 
                                     </tr>
                                 </thead>
@@ -87,43 +87,43 @@
                                             <td><strong>{{ $report['formatted_report_id'] }}</strong></td>
                                             <td>{{ $report['test_date'] }}</td>
                                             <td>{{ $report['test_name'] }}</td>
-                                            <td>Rs. {{ $report['price'] }}</td>
-                                            <td>
-                                                @if($report['status'] == 'Completed')
-                                                    <span class="badge bg-success">
-                                                        <i class="fa fa-check"></i> {{ $report['status'] }}
-                                                    </span>
-                                                @else
-                                                    <span class="badge bg-warning">
-                                                        <i class="fa fa-clock-o"></i> {{ $report['status'] }}
-                                                    </span>
-                                                @endif
-                                            </td>
                                             <td>
                                                 @if($report['action'] == 'Download' && $report['file_path'])
-                                                    <a href="{{ route('patient.view.report', $report['report_id']) }}"
-                                                    class="btn btn-info btn-sm"
-                                                    target="_blank"
-                                                    title="View Report in New Tab">
+                                                <a href="{{ route('patient.view.report', $report['report_id']) }}"
+                                                class="btn btn-warning btn-sm"
+                                                target="_blank"
+                                                title="View Report in New Tab">
                                                         <i class="fa fa-eye"></i> View PDF
                                                     </a>
                                                     <a href="{{ route('patient.download.report', $report['report_id']) }}"
                                                     class="btn btn-primary btn-sm"
                                                     title="Download Report">
-                                                        <i class="fa fa-download"></i> Download PDF
+                                                        <i class="fa fa-download"></i> PDF
                                                     </a>
-                                                @elseif($report['action'] == 'Download')
+                                                    @elseif($report['action'] == 'Download')
                                                     <button class="btn btn-info btn-sm"
-                                                            onclick="viewResults({{ $report['report_id'] }})"
-                                                            title="View Test Results">
-                                                        <i class="fa fa-eye"></i> View Results
-                                                    </button>
+                                                    onclick="viewResults({{ $report['report_id'] }})"
+                                                    title="View Test Results">
+                                                    <i class="fa fa-eye"></i> View Results
+                                                </button>
                                                 @else
-                                                    <span class="text-muted">
-                                                        <i class="fa fa-hourglass-half"></i> {{ $report['action'] }}
-                                                    </span>
+                                                <span class="text-muted">
+                                                    <i class="fa fa-hourglass-half"></i> {{ $report['action'] }}
+                                                </span>
                                                 @endif
                                             </td>
+                                            <td>
+                                                @if($report['status'] == 'Completed')
+                                                <span class="badge bg-success">
+                                                    <i class="fa fa-check"></i> {{ $report['status'] }}
+                                                </span>
+                                                @else
+                                                <span class="badge bg-warning">
+                                                    <i class="fa fa-clock-o"></i> {{ $report['status'] }}
+                                                </span>
+                                                @endif
+                                            </td>
+                                            <td>Rs. {{ $report['price'] }}</td>
                                         </tr>
                                         @endforeach
                                     @else
@@ -137,9 +137,9 @@
                                         <th>Report ID</th>
                                         <th>Test Date</th>
                                         <th>Test Name</th>
-                                        <th>Price</th>
-                                        <th>Status</th>
                                         <th>Action</th>
+                                        <th>Status</th>
+                                        <th>Price</th>
                                     </tr>
                                 </tfoot>
                             </table>
