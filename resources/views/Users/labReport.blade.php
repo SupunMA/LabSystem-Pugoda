@@ -428,6 +428,7 @@ function createReportPage(isFirstPage, pageNumber, totalPages) {
                 <div class="contact-info"  style="font-weight: bold; font-size: 15px">
                     <div >No. 148/A4, Infront of Hospital, Bangalawaththa, Pugoda.</div>
                     <div style="font-weight: bold; color: red; font-size: 20px;">0776 267 627</div>
+                    <div style="font-weight: bold; color: red; font-size: 13px;">HorizonLab.lk</div>
                     <div>horizonpugoda@gamill.com</div>
                     <div>SLMC No. 2102</div>
                 </div>
