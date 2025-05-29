@@ -147,17 +147,18 @@ Route::group(['prefix'=>'Admin','middleware'=>['checkAdmin','auth','lockBack']],
 
 
 
-
+//Patient
 Route::group(['prefix'=>'Account/Client','middleware'=>['checkUser','auth']],function(){
     Route::get('/patient/download-report/{requestedTestId}', [patientController::class, 'downloadReport'])->name('patient.download.report');
     Route::get('/patient/view-report/{requestedTestId}', [patientController::class, 'viewReport'])->name('patient.view.report');
+
+    //onsite
+    Route::get('/reports/onsite/download/{id}', [patientController::class, 'generateDownloadReport'])->name('patientReportsOnSite.download');//generate pdf report onsite
+
 });
-//Patient
+
 Route::group(['prefix'=>'Account/Client','middleware'=>['checkUser','auth','lockBack']],function(){
     Route::get('/', [patientController::class, 'checkUser'])->name('user.home');
-
-
-
 
     //update user profile
     Route::get('/myProfile', [UpdateProfile::class, 'CustomerViewUpdateProfile'])->name('PatientProfileUpdate');

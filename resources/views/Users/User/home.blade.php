@@ -89,23 +89,32 @@
                                             <td>{{ $report['test_name'] }}</td>
                                             <td>
                                                 @if($report['action'] == 'Download' && $report['file_path'])
-                                                <a href="{{ route('patient.view.report', $report['report_id']) }}"
-                                                class="btn btn-warning btn-sm"
-                                                target="_blank"
-                                                title="View Report in New Tab">
-                                                        <i class="fa fa-eye"></i> View PDF
+                                                    <a href="{{ route('patient.view.report', $report['report_id']) }}" class="btn btn-warning btn-sm" target="_blank" title="View Report in New Tab">
+                                                            <i class="fa fa-eye"></i> View
                                                     </a>
                                                     <a href="{{ route('patient.download.report', $report['report_id']) }}"
-                                                    class="btn btn-primary btn-sm"
-                                                    title="Download Report">
-                                                        <i class="fa fa-download"></i> PDF
+                                                       class="btn btn-primary btn-sm download-btn"
+                                                       title="Download Report"
+                                                       data-report-id="{{ $report['report_id'] }}">
+                                                        <span class="btn-text">
+                                                            <i class="fa fa-download"></i> Download PDF
+                                                        </span>
+                                                        <span class="btn-loading" style="display: none;">
+                                                            <i class="fa fa-spinner fa-spin"></i> Downloading...
+                                                        </span>
                                                     </a>
-                                                    @elseif($report['action'] == 'Download')
-                                                    <button class="btn btn-info btn-sm"
-                                                    onclick="viewResults({{ $report['report_id'] }})"
-                                                    title="View Test Results">
-                                                    <i class="fa fa-eye"></i> View Results
-                                                </button>
+                                                @elseif($report['action'] == 'Download')
+                                                    <a href="{{ route('patientReportsOnSite.download', $report['report_id']) }}"
+                                                       class="btn btn-primary btn-sm download-btn"
+                                                       title="Download Report"
+                                                       data-report-id="{{ $report['report_id'] }}">
+                                                        <span class="btn-text">
+                                                            <i class="fa fa-download"></i> Download PDF
+                                                        </span>
+                                                        <span class="btn-loading" style="display: none;">
+                                                            <i class="fa fa-spinner fa-spin"></i> Downloading...
+                                                        </span>
+                                                    </a>
                                                 @else
                                                 <span class="text-muted">
                                                     <i class="fa fa-hourglass-half"></i> {{ $report['action'] }}
@@ -114,13 +123,13 @@
                                             </td>
                                             <td>
                                                 @if($report['status'] == 'Completed')
-                                                <span class="badge bg-success">
-                                                    <i class="fa fa-check"></i> {{ $report['status'] }}
-                                                </span>
+                                                    <span class="badge bg-success">
+                                                        <i class="fa fa-check"></i> {{ $report['status'] }}
+                                                    </span>
                                                 @else
-                                                <span class="badge bg-warning">
-                                                    <i class="fa fa-clock-o"></i> {{ $report['status'] }}
-                                                </span>
+                                                    <span class="badge bg-warning">
+                                                        <i class="fa fa-clock-o"></i> {{ $report['status'] }}
+                                                    </span>
                                                 @endif
                                             </td>
                                             <td>Rs. {{ $report['price'] }}</td>
@@ -162,9 +171,60 @@
 @endsection
 
 @section('header')
-Patient Dashboard
+Patient Dashboard - HorizonLab.lk
 @endsection
 
+@push('specificCss')
+<style>
+/* Download button loading animation styles */
+.download-btn {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.download-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-text, .btn-loading {
+    transition: opacity 0.3s ease;
+}
+
+.download-btn.loading {
+    pointer-events: none;
+}
+
+.download-btn.loading .btn-text {
+    opacity: 0;
+}
+
+.download-btn.loading .btn-loading {
+    opacity: 1;
+}
+
+/* Spinner animation */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.fa-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* Pulse effect for better visual feedback */
+.download-btn.loading {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+</style>
+@endpush
 
 @push('specificJs')
 <script>
@@ -189,6 +249,53 @@ $(function () {
             "search": "_INPUT_",
             "searchPlaceholder": "Search reports..."
         }
+    });
+
+    // Download button animation handler
+    $('.download-btn').on('click', function(e) {
+        const $btn = $(this);
+        const $btnText = $btn.find('.btn-text');
+        const $btnLoading = $btn.find('.btn-loading');
+
+        // Show loading state
+        $btn.addClass('loading');
+        $btn.prop('disabled', true);
+        $btnText.hide();
+        $btnLoading.show();
+
+        // Create a hidden iframe for download
+        const downloadUrl = $btn.attr('href');
+        const iframe = $('<iframe>').hide().appendTo('body');
+
+        // Handle download completion
+        iframe.on('load', function() {
+            // Reset button state after a short delay
+            setTimeout(function() {
+                $btn.removeClass('loading');
+                $btn.prop('disabled', false);
+                $btnText.show();
+                $btnLoading.hide();
+                iframe.remove();
+            }, 2000); // 2 seconds delay to show completion
+        });
+
+        // Start download
+        iframe.attr('src', downloadUrl);
+
+        // Fallback: Reset button after 5 seconds if no load event
+        setTimeout(function() {
+            if ($btn.hasClass('loading')) {
+                $btn.removeClass('loading');
+                $btn.prop('disabled', false);
+                $btnText.show();
+                $btnLoading.hide();
+                iframe.remove();
+            }
+        }, 5000);
+
+        // Prevent default link behavior
+        e.preventDefault();
+        return false;
     });
 });
 </script>
