@@ -43,8 +43,7 @@
                             <div class="small-box bg-green">
                                 <div class="inner">
                                 <h3>{{$reportCount}}</h3>
-
-                                <h4>Your Reports</h4>
+                                <h4>Completed Reports</h4>
                                 </div>
                                 <div class="icon">
                                     <i class="fa-solid fa-file-pdf"></i>
@@ -74,79 +73,23 @@
                                     <tr>
                                         <th>Report ID</th>
                                         <th>Test Date</th>
-                                        <th>Patient Name</th>
                                         <th>Test Name</th>
-                                        <th>Result</th>
-
+                                        <th>Price</th>
+                                        <th>Status</th>
                                         <th>Action</th>
 
                                     </tr>
                                 </thead>
                                 <tbody>
 
-                                    @foreach ($allReportData->unique('rid') as $data)
-                                        <tr>
-                                            <td>{{$data->rid}}</td>
-                                            <td>{{$data->date}}</td>
-                                            <td>{{$data->name}}</td>
-                                            <td>{{$data->AvailableTestName}}</td>
-                                            <td>
-                                                @php
-                                                    $resultArray = explode(',', $data->result);
-                                                @endphp
-
-                                                    {{-- @foreach ($allReportData->unique('AvailableTestID') as $data2)
-                                                        {{1}}
-                                                    @endforeach --}}
-
-                                                @foreach ($allReportData->unique('sub_id') as $data2)
-                                                    @if ($data->AvailableTestID == $data2->AvailableTestID)
-                                                        {{$data2->SubCategoryName}} :-
-                                                        @foreach($resultArray as $result)
-                                                            {{$result}} ({{$data2->Units}}) -
-                                                            @if ($result < $data2->SubCategoryRangeMin || $result > $data2->SubCategoryRangeMax)
-                                                            <b>Abnormal</b>
-                                                            @else
-                                                            <b>Normal</b>
-                                                            @endif
-                                                            <br>
-                                                            @php
-                                                                array_shift($resultArray);
-                                                            @endphp
-                                                        @break
-                                                        @endforeach
-                                                    @endif
-                                                @endforeach
-                                            </td>
-
-
-
-                                            <td>
-
-                                                @php
-                                                     $viewReportURL = route('user.viewReport', ['ID' => $data->rid]);
-                                                @endphp
-
-                                                    <a class="btn btn-success" type="button" href="{{ $viewReportURL }}"  target="_blank">
-                                                        <i class="fa fa-cloud-download" aria-hidden="true"></i> Download
-                                                    </a>
-
-
-                                            </td>
-                                        </tr>
-
-
-                                    @endforeach
-
                                 </tbody>
                                 <tfoot>
                                     <tr>
                                         <th>Report ID</th>
                                         <th>Test Date</th>
-                                        <th>Patient Name</th>
                                         <th>Test Name</th>
-                                        <th>Result</th>
-
+                                        <th>Price</th>
+                                        <th>Status</th>
                                         <th>Action</th>
                                     </tr>
                                 </tfoot>
@@ -175,11 +118,4 @@ Patient Dashboard
 
 
 @push('specificJs')
-
-<script>
-    $(function () {
-    $('#example1').DataTable()
-    })
-</script>
-
 @endpush
