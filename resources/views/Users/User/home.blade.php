@@ -170,7 +170,7 @@
 @endsection
 
 @section('header')
-Patient Dashboard - HorizonLab.lk
+Hi, {{ collect(explode(' ', Auth::user()->name))->last() }} - HorizonLab.lk
 @endsection
 
 @push('specificCss')

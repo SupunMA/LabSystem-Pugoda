@@ -17,7 +17,7 @@ use Carbon\Carbon;
 
 class patientController extends Controller
 {
-public function checkUser()
+    public function checkUser()
     {
         $userId = Auth::id();
 
