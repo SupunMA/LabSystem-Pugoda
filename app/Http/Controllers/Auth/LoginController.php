@@ -26,10 +26,6 @@ class LoginController extends Controller
             return route('admin.home');
         }elseif(Auth()->user()->role == 0){
             return route('user.home');
-        }elseif(Auth()->user()->role == 3){
-            return route('checker.home');
-        }elseif(Auth()->user()->role == 2){
-            return route('doctor.home');
         }
     }
 
@@ -104,10 +100,6 @@ class LoginController extends Controller
             return redirect()->route('admin.home');
         } elseif (auth()->user()->role == 0) {
             return redirect()->route('user.home');
-        } elseif (auth()->user()->role == 2) {
-            return redirect()->route('doctor.home');
-        } elseif (Auth()->user()->role == 3) {
-            return redirect()->route('checker.home');
         }
     }
 }

@@ -69,13 +69,6 @@ Route::group(['prefix'=>'Admin','middleware'=>['checkAdmin','auth','lockBack']],
     // Route::get('/patient/{id}', [admin_PatientCtr::class, 'update'])->name('admin.updatePatient');
 
 
-    //Doctors
-    Route::get('AddDoctor', [admin_DoctorCtr::class, 'addDoctor'])->name('admin.addDoctor');
-    Route::POST('addingDoctor', [RegisterController::class, 'addingDoctor'])->name('admin.addingDoctor');
-    Route::get('AllDoctor', [admin_DoctorCtr::class, 'allDoctor'])->name('admin.allDoctor');
-    Route::get('doctor/delete/{userID}', [admin_DoctorCtr::class, 'deleteDoctor'])->name('admin.deleteDoctor');
-    Route::post('doctor/update', [admin_DoctorCtr::class, 'updateDoctor'])->name('admin.updateDoctor');
-
     //Available Test
     Route::get('AddAvailableTest', [admin_AvailableTestCtr::class, 'addAvailableTest'])->name('admin.addAvailableTest');
     Route::POST('addingAvailableTest', [admin_AvailableTestCtr::class, 'addingAvailableTest'])->name('admin.addingAvailableTest');
@@ -171,26 +164,6 @@ Route::group(['prefix'=>'Account/Client','middleware'=>['checkUser','auth','lock
     Route::get('patientReport/view/{ID}', [patientController::class, 'viewReport'])->name('user.viewReport');
 
 });
-
-
-//Doctor
-Route::group(['prefix'=>'Account/Doctor','middleware'=>['checkDoctor','auth','lockBack']],function(){
-    Route::get('/', [doctorController::class, 'checkDoctor'])->name('doctor.home');
-
-    //update user profile
-    Route::get('/myProfile', [UpdateProfile::class, 'DoctorViewUpdateProfile'])->name('DoctorProfileUpdate');
-    Route::post('/doctor/updatingProfile', [UpdateProfile::class, 'DoctorUpdateProfile'])->name('DoctorProfileUpdating');
-
-    //Delete user profile
-    Route::get('user/delete/{ID}', [doctorController::class, 'deleteUser'])->name('doctor.deleteProfile');
-
-    //Download Report
-    Route::get('patientReport/view/{ID}', [doctorController::class, 'viewReport'])->name('doctor.viewReport');
-
-
-});
-
-
 
 
 
