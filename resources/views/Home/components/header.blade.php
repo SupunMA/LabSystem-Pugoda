@@ -21,8 +21,8 @@
   <!-- ======= Hero Section ======= -->
   <section id="hero" class="d-flex align-items-center">
     <div class="container">
-      <h1>Welcome to HORIZON</h1>
-      <h2>"Testing Today, Healthier Tomorrow"</h2>
+<h1>Welcome to HORIZON-LAB</h1>
+<h2><b>"Testing Today, Healthier Tomorrow"</b></h2>
       @if (Route::has('login'))
 
         @auth
