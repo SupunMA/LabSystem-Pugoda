@@ -96,9 +96,9 @@
 
         <div class="col-lg-4 col-md-6">
           <div class="count-box">
-            <i class="fas fa-user-md"></i>
-            <span data-purecounter-start="0" data-purecounter-end="{{$Dcount}}" data-purecounter-duration="1" class="purecounter"></span>
-            <p>Doctors</p>
+            <i class="fas fa-file"></i>
+            <span data-purecounter-start="0" data-purecounter-end="{{$reports}}" data-purecounter-duration="1" class="purecounter"></span>
+            <p>Reports</p>
           </div>
         </div>
 
@@ -134,19 +134,19 @@
           providing insights into various health aspects and aiding in accurate diagnosis and informed medical decisions.</p>
       </div>
 
-      <div class="row">
-        @foreach ($allAvialableTest as $oneAT)
-            <div class="col-lg-4 col-md-6 d-flex align-items-stretch">
-                <div class="icon-box">
-                    <div class="icon"><i class="fas fa-heartbeat"></i></div>
-                    <h4>{{$oneAT->AvailableTestName}}</h4>
-
+<div class="row" style="display: flex; flex-wrap: wrap; margin: -10px;">
+    @foreach ($allAvialableTest as $oneAT)
+        <div style="flex: 1 1 calc(33.333% - 20px); max-width: calc(33.333% - 20px); margin: 10px; display: flex; align-items: stretch;">
+            <div style="border: 1px solid #ddd; border-radius: 8px; padding: 20px; text-align: center; flex-grow: 1; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                <div style="font-size: 40px; color: #1977cc; margin-bottom: 15px;">
+                    <i class="fas fa-heartbeat"></i>
                 </div>
-                </div>
-        @endforeach
+                <h4 style="font-size: 18px; font-weight: bold; color: #333;">{{$oneAT->name}}</h4>
+            </div>
+        </div>
+    @endforeach
+</div>
 
-
-      </div>
     </div>
   </section><!-- End Services Section -->
 
