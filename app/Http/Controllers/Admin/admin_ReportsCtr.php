@@ -40,17 +40,8 @@ class admin_ReportsCtr extends Controller
 
     public function addReport()
     {
-        $allTestData = User::join('patients', 'patients.userID', '=', 'users.id')
-        ->join('tests', 'tests.pid', '=', 'patients.pid')
-        ->join('available_tests', 'available_tests.tlid', '=', 'tests.tlid')
-        ->join('subcategories', 'subcategories.AvailableTestID', '=', 'available_tests.tlid')
-        ->select('users.*', 'tests.*', 'available_tests.*', 'subcategories.*')
-        ->where('tests.done','=', 0)
-        ->get();
-
-
         // dd($allTestData);
-        return view('Users.Admin.Reports.AddNewReport',compact('allTestData'));
+        return view('Users.Admin.Reports.AddNewReport');
     }
 
     public function addingReport(Request $data)
