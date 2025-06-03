@@ -38,6 +38,7 @@ use Illuminate\Support\Facades\Auth;
 
 //Homepage
 Route::get('/', [homePageController::class, 'index'])->name('welcome');
+Route::get('/privacyPolicy', [homePageController::class, 'privacyView'])->name('privacy');
 
 //Register through HomePage
 // Route::get('signup', [homePageController::class, 'register2'])->name('register2');

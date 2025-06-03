@@ -34,5 +34,11 @@ class homePageController extends Controller
 
     }
 
+    public function privacyView(){
+
+        return view('Home.components.PrivacyPolicy');
+
+    }
+
 
 }
