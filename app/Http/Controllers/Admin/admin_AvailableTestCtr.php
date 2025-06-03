@@ -154,7 +154,7 @@ class admin_AvailableTestCtr extends Controller
             foreach ($testsData as $key => $test) {
                 $rules["tests.{$key}.name"] = [
                     'required',
-                    Rule::unique('availabletests', 'name')
+                    Rule::unique('availableTests', 'name')
                 ];
                 $messages["tests.{$key}.name.unique"] = "The test name '{$test['name']}' already exists.";
             }
@@ -518,7 +518,7 @@ public function updateTestFull(Request $request, $id)
         $validator = Validator::make($request->all(), [
             'name' => [
                 'required',
-                Rule::unique('availabletests', 'name')->ignore($id)
+                Rule::unique('availableTests', 'name')->ignore($id)
             ]
         ], [
             'name.unique' => "The test name '{$request->name}' already exists."
