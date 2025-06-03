@@ -9,12 +9,8 @@
   <meta content="medical laboratory, blood test, urine analysis, diabetes test, lab testing, health diagnostics, medical screening, pathology lab, clinical laboratory, health checkup, blood sugar test, cholesterol test, hormone testing, specimen analysis" name="keywords">
 
   <!-- Favicons -->
-  <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/fav.png">
+
   <link rel="manifest" href="/site.webmanifest">
   <meta name="msapplication-TileColor" content="#da532c">
   <meta name="theme-color" content="#ffffff">
@@ -31,8 +27,8 @@
   <meta property="og:title" content="HORIZON Lab - Medical Laboratory Testing Services">
   <meta property="og:description" content="Professional medical laboratory services offering comprehensive blood tests, urine analysis, diabetes screening, and diagnostic testing. Fast, accurate results for all your health monitoring needs.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://www.horizonlab.com">
-  <meta property="og:image" content="https://www.horizonlab.com/images/horizon-lab-og.jpg">
+  <meta property="og:url" content="https://www.horizonlab.lk">
+  <meta property="og:image" content="https://www.horizonlab.lk/img/report-logo.png">
   <meta property="og:site_name" content="HORIZON Lab">
   <meta property="og:locale" content="en_US">
 
@@ -40,7 +36,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="HORIZON Lab - Medical Laboratory Testing Services">
   <meta name="twitter:description" content="Professional medical laboratory services offering comprehensive blood tests, urine analysis, diabetes screening, and diagnostic testing.">
-  <meta name="twitter:image" content="https://www.horizonlab.com/images/horizon-lab-twitter.jpg">
+  <meta name="twitter:image" content="https://www.horizonlab.lk/img/report-logo.png">
 
   <!-- Schema.org Structured Data -->
   <script type="application/ld+json">
@@ -49,15 +45,18 @@
     "@type": "MedicalBusiness",
     "name": "HORIZON Lab",
     "description": "Professional medical laboratory services offering comprehensive blood tests, urine analysis, diabetes screening, and diagnostic testing.",
-    "url": "https://www.horizonlab.com",
-    "telephone": "+1-XXX-XXX-XXXX",
+    "url": "https://www.horizonlab.lk",
+    "telephone": "+94-0776-267-627",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "Your Street Address",
-      "addressLocality": "Your City",
-      "addressRegion": "Your State",
-      "postalCode": "Your ZIP Code",
-      "addressCountry": "Your Country"
+      "streetAddress": "HORIZON Lab.
+                        NO. 148/A4,
+                        Infront of Hospital,
+                        Bangalawaththa,",
+      "addressLocality": "Pugoda",
+      "addressRegion": "Gampaha",
+      "postalCode": "110",
+      "addressCountry": "Sri Lanka"
     },
     "openingHours": "Mo-Fr 08:00-18:00, Sa 08:00-14:00",
     "medicalSpecialty": ["Pathology", "Clinical Laboratory", "Diagnostic Testing"],
