@@ -14,7 +14,7 @@
 
 
     <!-- Fav Icon -->
-
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/fav.png">
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">

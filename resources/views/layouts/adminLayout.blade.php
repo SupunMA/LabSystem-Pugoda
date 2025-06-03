@@ -10,6 +10,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <title>HORIZON | Admin</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+  {{-- fav icon --}}
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/fav.png">
 
    <!-- Style -->
    @include('layouts.adminComponents.lib.Style')
