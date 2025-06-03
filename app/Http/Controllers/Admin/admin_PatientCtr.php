@@ -163,6 +163,12 @@ class admin_PatientCtr extends Controller
             'email' => ['nullable', 'email', 'max:255'],
         ]);
 
+        // Clean the phone number if mobile exists
+        if ($request->filled('mobile')) {
+            $cleanedMobile = preg_replace('/[^0-9]/', '', $request->mobile);
+            $request->merge(['mobile' => $cleanedMobile]);
+        }
+
         try {
             Patient::where('pid', $request->pid)
                 ->update([
