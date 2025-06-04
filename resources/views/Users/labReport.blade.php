@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Laboratory Report</title>
+      {{-- fav icon --}}
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/fav.png">
 <style>
     @page {
         size: A4;
@@ -58,7 +60,7 @@
         align-items: center;
     }
     .logo {
-        width: 50px;
+        width: 70px;
         margin-right: 10px;
     }
     .logo-text {
@@ -111,18 +113,29 @@
     }
     .info-value {
         font-size: 14px;
+        font-weight: bold;
     }
     .info-label {
         width: 110px;
         font-weight: bold;
-        font-size: 12px;
+        font-size: 14px;
     }
     .specimen-info {
-        margin-bottom: 5px;
+        margin-bottom: 15px;
         width: 100%;
     }
+
+    /* New horizontal line style */
+    .section-divider {
+        height: 2px;
+        background-color: #2d5b84;
+        margin: 20px 0;
+        width: 100%;
+    }
+
     .test-results {
         width: 100%;
+        margin-top: 30px; /* Added space above the table */
     }
     .test-results table {
         width: 100%;
@@ -137,14 +150,16 @@
     .test-results th {
         text-align: left;
         padding: 6px;
-        font-size: 12px;
+        font-size: 15px;
         font-weight: bold;
+        text-decoration: underline;
     }
 
     .test-results td {
         padding: 6px;
         border-bottom: 1px solid #ddd;
         font-size: 13px;
+        font-weight: bold;
         background-color: transparent;
     }
 
@@ -180,17 +195,19 @@
         display: flex;
         align-items: center;
         justify-content: flex-start;
-        width: 48%;
+        width: 50%;
     }
 
     .footer-logo {
-        width: 25%;
-        margin-right: 15px;
+        width: 30%;
+        margin-right: 10px;
+
     }
 
     .footer-text {
         color: #2d5b84;
-        font-size: 12px;
+        font-size: 11px;
+        font-weight: bold;
     }
 
     /* Specific styling for reference tables */
@@ -303,7 +320,8 @@
     .header.hidden,
     .continuation-header.hidden,
     .report-title.hidden,
-    .divider.hidden {
+    .divider.hidden,
+    .section-divider.hidden {
         visibility: hidden;
         opacity: 0;
         height: auto; /* Preserve the height */
@@ -362,39 +380,7 @@
 
     // Process test results to ensure they're properly formatted for display
     function generateSampleTestResults() {
-        // Use the test results directly from the controller
-        const testResults = sampleData.testResults || [];
-
-        // Process the results to match our expected format
-        const processedResults = testResults.map(item => {
-            // Handle reference tables that come from the controller
-            if (item.reference && typeof item.reference === 'object' && item.reference.isTable) {
-                // Ensure the table data is properly formatted
-                const referenceTable = item.reference;
-                // Make sure we have a consistent format even if the controller provides inconsistent data
-                if (!Array.isArray(referenceTable.data)) {
-                    // Convert object format to array if needed
-                    const tableArray = [];
-                    for (const rowIndex in referenceTable.data) {
-                        tableArray.push(referenceTable.data[rowIndex]);
-                    }
-                    referenceTable.data = tableArray;
-                }
-            }
-
-            // Map controller result keys to our format
-            return {
-                name: item.name || '',
-                result: item.result || '',
-                reference: item.reference || '',
-                isTitle: item.isTitle || false,
-                isParagraph: item.isParagraph || false,
-                isSpace: item.isSpace || false,
-                isCategory: item.isCategory || false
-            };
-        });
-
-        return processedResults;
+        return sampleData.testResults;
     }
 
     // Function to format the date
@@ -429,7 +415,7 @@ function createReportPage(isFirstPage, pageNumber, totalPages) {
                     <div >No. 148/A4, Infront of Hospital, Bangalawaththa, Pugoda.</div>
                     <div style="font-weight: bold; color: red; font-size: 20px;">0776 267 627</div>
                     <div style="font-weight: bold; color: red; font-size: 13px;">HorizonLab.lk</div>
-                    <div>horizonpugoda@gamill.com</div>
+                    <div>horizonpugoda@gmail.com</div>
                     <div>SLMC No. 2102</div>
                 </div>
             </div>
@@ -440,26 +426,26 @@ function createReportPage(isFirstPage, pageNumber, totalPages) {
             <div class="patient-info">
                 <div class="patient-details">
                     <div class="info-row">
-                    <div class="info-label">PATIENT NAME:</div>
+                    <div class="info-label">PATIENT NAME </div>
                     <div class="info-value">
                         ${
-                            sampleData.gender === 'M' ? 'Mr. ' + sampleData.patientName :
-                            sampleData.gender === 'F' ? 'Ms. ' + sampleData.patientName :
+                            sampleData.gender === 'M' ? ': Mr. ' + sampleData.patientName :
+                            sampleData.gender === 'F' ? ': Ms. ' + sampleData.patientName :
                             sampleData.patientName
                         }
                     </div>
                     </div>
                     <div class="info-row">
-                        <div class="info-label">AGE:</div>
-                        <div class="info-value">${sampleData.age}</div>
+                        <div class="info-label">AGE </div>
+                        <div class="info-value"> : ${sampleData.age}</div>
                     </div>
                     <div class="info-row">
-                        <div class="info-label">GENDER:</div>
+                        <div class="info-label">GENDER </div>
                         <div class="info-value">
                             ${
-                                sampleData.gender === 'M' ? 'Male' :
-                                sampleData.gender === 'F' ? 'Female' :
-                                sampleData.gender === 'O' ? 'Other' :
+                                sampleData.gender === 'M' ? ': Male' :
+                                sampleData.gender === 'F' ? ': Female' :
+                                sampleData.gender === 'O' ? ': Other' :
                                 sampleData.gender
                             }
                         </div>
@@ -467,38 +453,39 @@ function createReportPage(isFirstPage, pageNumber, totalPages) {
                 </div>
                 <div class="report-details">
                     <div class="info-row">
-                        <div class="info-label">DATE:</div>
-                        <div class="info-value">${sampleData.reportDate}</div>
+                        <div class="info-label">DATE </div>
+                        <div class="info-value">: ${sampleData.reportDate}</div>
                     </div>
                     <div class="info-row">
-                        <div class="info-label">REPORT ID:</div>
-                        <div class="info-value">${sampleData.reportId}</div>
+                        <div class="info-label">REPORT ID </div>
+                        <div class="info-value">: ${sampleData.reportId}</div>
                     </div>
                     <div class="info-row">
-                        <div class="info-label">PRINTED DATE:</div>
-                        <div class="info-value">${formatDate(new Date())}</div>
+                        <div class="info-label">PRINTED DATE </div>
+                        <div class="info-value">: ${formatDate(new Date())}</div>
                     </div>
                 </div>
             </div>
 
             <div class="specimen-info">
                 <div class="info-row">
-                    <div class="info-label">SPECIMEN:</div>
-                    <div class="info-value">${sampleData.specimenType || 'Not specified'}</div>
+                    <div class="info-label">SPECIMEN </div>
+                    <div class="info-value">: ${sampleData.specimenType || 'Not specified'}</div>
                 </div>
                 <div class="info-row">
                     <div class="info-label">TEST NAME:</div>
-                    <div class="info-value">${sampleData.testName || 'Not specified'}</div>
+                    <div class="info-value">: ${sampleData.testName || 'Not specified'}</div>
                 </div>
-
             </div>
+
+            <div class="section-divider"></div>
         `;
     } else {
         // Continuation pages have a simplified header
         container.innerHTML = `
             <div class="continuation-header">
-                <div class="patient-name">Patient: ${sampleData.patientName}</div>
-                <div class="report-id">Report ID: ${sampleData.reportId}</div>
+                <div class="patient-name">Patient : ${sampleData.patientName}</div>
+                <div class="report-id">Report ID : ${sampleData.reportId}</div>
             </div>
         `;
     }
@@ -507,12 +494,6 @@ function createReportPage(isFirstPage, pageNumber, totalPages) {
     const testResultsDiv = document.createElement('div');
     testResultsDiv.className = 'test-results';
     container.appendChild(testResultsDiv);
-
-    // Add a page number indicator
-    // const pageNumberDiv = document.createElement('div');
-    // pageNumberDiv.className = 'page-number';
-    // pageNumberDiv.textContent = `Page ${pageNumber} of ${totalPages}`;
-    // page.appendChild(pageNumberDiv);
 
     // Add the footer
 const footer = document.createElement('div');
@@ -535,7 +516,7 @@ page.appendChild(footer);
     // Function to distribute test results across pages
     function distributeTestResults(testResults) {
         sampleData.testResults = generateSampleTestResults();
-        const testResultsPerPage = isFirstPage => isFirstPage ? 17 : 35; // Fewer results on first page due to header
+        const testResultsPerPage = isFirstPage => isFirstPage ? 15 : 35; // Reduced capacity for first page due to added spacing
         let currentPage = 1;
         let resultsOnCurrentPage = 0;
         let isFirstPage = true;
@@ -696,59 +677,52 @@ page.appendChild(footer);
         return table;
     }
 
-        // Function to update the visibility of report elements based on toggle switches
-// Function to update the visibility of report elements based on toggle switches
-function updateReportElements() {
-    const showHeader = document.getElementById('headerToggle').checked;
-    const showFooter = document.getElementById('footerToggle').checked;
-    const showSignature = document.getElementById('signatureToggle').checked;
+    // Function to update the visibility of report elements based on toggle switches
+    function updateReportElements() {
+        const showHeader = document.getElementById('headerToggle').checked;
+        const showFooter = document.getElementById('footerToggle').checked;
+        const showSignature = document.getElementById('signatureToggle').checked;
 
-    // Update headers
-    document.querySelectorAll('.header, .continuation-header').forEach(el => {
-        el.classList.toggle('hidden', !showHeader);
-    });
+        // Update headers
+        document.querySelectorAll('.header, .continuation-header').forEach(el => {
+            el.classList.toggle('hidden', !showHeader);
+        });
 
-    // Update report title and divider (also part of header)
-    document.querySelectorAll('.report-title, .divider').forEach(el => {
-        el.classList.toggle('hidden', !showHeader);
-    });
+        // Update report title and divider (also part of header)
+        document.querySelectorAll('.report-title, .divider, .section-divider').forEach(el => {
+            el.classList.toggle('hidden', !showHeader);
+        });
 
-    // Update footers
-    document.querySelectorAll('.footer').forEach(el => {
-        el.classList.toggle('hidden', !showFooter);
-    });
+        // Update footers
+        document.querySelectorAll('.footer').forEach(el => {
+            el.classList.toggle('hidden', !showFooter);
+        });
 
-    // Update signatures
-    document.querySelectorAll('.technologist-signature').forEach(el => {
-        el.classList.toggle('hidden', !showSignature);
-    });
-}
+        // Update signatures
+        document.querySelectorAll('.technologist-signature').forEach(el => {
+            el.classList.toggle('hidden', !showSignature);
+        });
+    }
 
     // Function to generate the multi-page report
-function generateMultiPageReport() {
-    const reportContainer = document.getElementById('report-container');
-    reportContainer.innerHTML = ''; // Clear any existing content
+    function generateMultiPageReport() {
+        const reportContainer = document.getElementById('report-container');
+        reportContainer.innerHTML = ''; // Clear any existing content
 
-    // Generate and append pages
-    const pages = distributeTestResults(sampleData.testResults);
-    pages.forEach(page => {
-        reportContainer.appendChild(page);
+        // Generate and append pages
+        const pages = distributeTestResults(sampleData.testResults);
+        pages.forEach(page => {
+            reportContainer.appendChild(page);
+        });
+
+        // Apply current toggle states
+        updateReportElements();
+    }
+
+    // Initialize the report on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        generateMultiPageReport();
     });
-
-    // Apply current toggle states
-    updateReportElements();
-}
-
-
-
-// Initialize the report on page load
-document.addEventListener('DOMContentLoaded', function() {
-    generateMultiPageReport();
-});
-
-
-
-
 </script>
 </body>
 </html>
