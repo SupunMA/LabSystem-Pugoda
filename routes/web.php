@@ -19,7 +19,7 @@ use App\Http\Controllers\UpdateProfile;
 
 use App\Http\Controllers\Home\homePageController;
 use App\Http\Controllers\Patient\patientController;
-use App\Http\Controllers\Doctor\doctorController;
+
 
 
 use Illuminate\Support\Facades\Auth;
