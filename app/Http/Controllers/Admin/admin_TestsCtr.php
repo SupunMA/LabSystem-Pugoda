@@ -198,15 +198,35 @@ public function getAllInternalRequestedTests()
     {
         try {
             $request->validate([
-                'reportFile' => 'required|mimes:pdf|max:2048', // Validate PDF file
-                'testId' => 'required|exists:requested_tests,id', // Ensure test ID exists
+                'reportFile' => [
+                    'required',
+                    'file',
+                    'max:2048',
+                    function ($attribute, $value, $fail) {
+                        $allowedExtensions = ['pdf'];
+                        $extension = strtolower($value->getClientOriginalExtension());
+
+                        if (!in_array($extension, $allowedExtensions)) {
+                            $fail('The file must be a PDF.');
+                        }
+
+                        // Optional: Check file signature (first few bytes)
+                        $handle = fopen($value->getPathname(), 'r');
+                        $header = fread($handle, 4);
+                        fclose($handle);
+
+                        if ($header !== '%PDF') {
+                            $fail('The file does not appear to be a valid PDF.');
+                        }
+                    }
+                ],
+                'testId' => 'required|exists:requested_tests,id',
             ]);
 
             $file = $request->file('reportFile');
-            $fileName = 'report_' . $request->testId . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->storeAs('reports', $fileName, 'public'); // Save file to storage/app/public/reports
+            $fileName = 'report_' . $request->testId . '.pdf'; // Force .pdf extension
+            $filePath = $file->storeAs('reports', $fileName, 'public');
 
-            // Save the file path in the report_paths table
             ReportPath::create([
                 'requested_test_id' => $request->testId,
                 'file_path' => $filePath,
@@ -215,7 +235,7 @@ public function getAllInternalRequestedTests()
             return response()->json(['success' => 'Report uploaded successfully!']);
         } catch (\Exception $e) {
             \Log::error('Error uploading report: ' . $e->getMessage());
-            return response()->json(['error' => 'Failed to upload report.'], 500);
+            return response()->json(['error' => 'Failed to upload report: ' . $e->getMessage()], 500);
         }
     }
 
