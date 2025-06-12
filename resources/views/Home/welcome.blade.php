@@ -40,29 +40,51 @@
 
   <!-- Schema.org Structured Data -->
   <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "MedicalBusiness",
-    "name": "HORIZON Lab",
-    "description": "Professional medical laboratory services offering comprehensive blood tests, urine analysis, diabetes screening, and diagnostic testing.",
-    "url": "https://www.horizonlab.lk",
-    "telephone": "+94-0776-267-627",
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": "HORIZON Lab.
-                        NO. 148/A4,
-                        Infront of Hospital,
-                        Bangalawaththa,",
-      "addressLocality": "Pugoda",
-      "addressRegion": "Gampaha",
-      "postalCode": "110",
-      "addressCountry": "Sri Lanka"
-    },
-    "openingHours": "Mo-Fr 08:00-18:00, Sa 08:00-14:00",
-    "medicalSpecialty": ["Pathology", "Clinical Laboratory", "Diagnostic Testing"],
-    "serviceType": ["Blood Testing", "Urine Analysis", "Diabetes Screening", "Health Diagnostics"]
+{
+  "@context": "https://schema.org",
+  "@type": "MedicalBusiness",
+  "name": "HORIZON Lab",
+  "description": "Professional medical laboratory services offering comprehensive blood tests, urine analysis, diabetes screening, and diagnostic testing.",
+  "url": "{{ url('/') }}",
+  "telephone": "+94-0776-267-627",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "No. 148/A4, Infront of Hospital, Bangalawaththa",
+    "addressLocality": "Pugoda",
+    "addressRegion": "Gampaha",
+    "postalCode": "110",
+    "addressCountry": "Sri Lanka"
+  },
+  "openingHours": "Mo-Fr 08:00-18:00, Sa 08:00-14:00",
+  "medicalSpecialty": ["Pathology", "Clinical Laboratory", "Diagnostic Testing"],
+  "serviceType": ["Blood Testing", "Urine Analysis", "Diabetes Screening", "Health Diagnostics"],
+
+  // Add ItemList for categories
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Login",
+        "url": "{{ url('/Login') }}"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Home",
+        "url": "{{ url('/') }}"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Privacy Policy",
+        "url": "{{ url('/privacyPolicy') }}"
+      }
+    ]
   }
-  </script>
+}
+</script>
 
   @include('Home.components.cssJs.style')
   <style>
