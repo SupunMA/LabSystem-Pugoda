@@ -163,17 +163,17 @@
         background-color: transparent;
     }
 
-    .technologist-signature {
+    .scientist-signature {
         text-align: right;
         padding-top: 10px;
-        border-top: 1px dotted #000;
+        /* border-top: 1px dotted #000; */
         width: 200px;
         color: #2d5b84;
         font-weight: bold;
         font-size: 11px;
         position: absolute;
         right: 20px;
-        bottom: 120px;
+        bottom: 90px;
     }
 
     .footer {
@@ -187,7 +187,7 @@
         bottom: 0;
         left: 0;
         right: 0;
-        height: 80px;
+        height: 60px;
         background-color: white;
     }
 
@@ -333,7 +333,7 @@
         height: 60px; /* Ensure the footer height is preserved */
     }
 
-    .technologist-signature.hidden {
+    .scientist-signature.hidden {
         visibility: hidden;
         opacity: 0;
         height: auto; /* Preserve the height */
@@ -569,10 +569,10 @@ page.appendChild(footer);
             const { page, testResultsContainer } = createReportPage(isFirstPage, currentPage, totalPages);
             testResultsContainer.appendChild(createTestResultsTable(currentTestResults));
 
-            // Add technologist signature to the last page
+            // Add scientist signature to the last page
             const techSignature = document.createElement('div');
-            techSignature.className = 'technologist-signature';
-            techSignature.textContent = 'Medical Laboratory Technologist';
+            techSignature.className = 'scientist-signature';
+            techSignature.textContent = 'Medical Laboratory Scientist';
             page.querySelector('.container').appendChild(techSignature);
 
             pages.push(page);
@@ -699,7 +699,7 @@ page.appendChild(footer);
         });
 
         // Update signatures
-        document.querySelectorAll('.technologist-signature').forEach(el => {
+        document.querySelectorAll('.scientist-signature').forEach(el => {
             el.classList.toggle('hidden', !showSignature);
         });
     }
