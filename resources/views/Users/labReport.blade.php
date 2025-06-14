@@ -174,6 +174,10 @@
         position: absolute;
         right: 20px;
         bottom: 90px;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 
     .footer {
@@ -572,7 +576,10 @@ page.appendChild(footer);
             // Add scientist signature to the last page
             const techSignature = document.createElement('div');
             techSignature.className = 'scientist-signature';
-            techSignature.textContent = 'Medical Laboratory Scientist';
+            techSignature.innerHTML = `
+                <img src="/img/sign.png" alt="Signature" style="width: 270px; height: auto; margin-right: 40px;">
+                <div>Medical Laboratory Scientist</div>
+            `;
             page.querySelector('.container').appendChild(techSignature);
 
             pages.push(page);
