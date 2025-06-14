@@ -344,6 +344,7 @@ public function previewReport($id)
             'test_results.requested_test_id',
             'requested_tests.id as requestedTest_ID',
             'users.name as patient_name',
+            'users.nic as nic',
             'patients.gender',
             'patients.dob',
             'requested_tests.test_date',
@@ -486,6 +487,7 @@ public function previewReport($id)
     // Prepare data for the view
     $sampleData = [
         'patientName' => $testResult->patient_name,
+        'nic' => $testResult->nic,
         'age' => $age,
         'gender' => ucfirst(strtolower($testResult->gender)),
         'reportDate' => date('Y-m-d', strtotime($testResult->test_date)),

@@ -95,7 +95,7 @@
     .divider {
         height: 4px;
         background-color: #2d5b84;
-        margin-bottom: 35px;
+        margin-bottom: 30px;
         width: 100%;
     }
     .patient-info {
@@ -129,13 +129,13 @@
     .section-divider {
         height: 2px;
         background-color: #2d5b84;
-        margin: 20px 0;
+        margin: 0px 0;
         width: 100%;
     }
 
     .test-results {
         width: 100%;
-        margin-top: 30px; /* Added space above the table */
+        margin-top: 25px; /* Added space above the table */
     }
     .test-results table {
         width: 100%;
@@ -342,6 +342,18 @@
         opacity: 0;
         height: auto; /* Preserve the height */
     }
+
+    /* QR code */
+    .qr-code-inline {
+        display: inline-block;
+        vertical-align: middle;
+        margin-left: 10px;
+    }
+
+    .qr-code-inline canvas {
+        border: 1px solid #ddd;
+        vertical-align: middle;
+    }
 </style>
 </head>
 <body>
@@ -429,32 +441,40 @@ function createReportPage(isFirstPage, pageNumber, totalPages) {
 
             <div class="patient-info">
                 <div class="patient-details">
-                    <div class="info-row">
-                    <div class="info-label">PATIENT NAME </div>
-                    <div class="info-value">
-                        ${
-                            sampleData.gender === 'M' ? ': Mr. ' + sampleData.patientName :
-                            sampleData.gender === 'F' ? ': Ms. ' + sampleData.patientName :
-                            sampleData.patientName
-                        }
-                    </div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">AGE </div>
-                        <div class="info-value"> : ${sampleData.age}</div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">GENDER </div>
-                        <div class="info-value">
-                            ${
-                                sampleData.gender === 'M' ? ': Male' :
-                                sampleData.gender === 'F' ? ': Female' :
-                                sampleData.gender === 'O' ? ': Other' :
-                                sampleData.gender
-                            }
-                        </div>
-                    </div>
-                </div>
+        <div class="info-row">
+        <div class="info-label">PATIENT NAME </div>
+        <div class="info-value">
+            ${
+                sampleData.gender === 'M' ? ': Mr. ' + sampleData.patientName :
+                sampleData.gender === 'F' ? ': Ms. ' + sampleData.patientName :
+                sampleData.patientName
+            }
+        </div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">AGE </div>
+            <div class="info-value"> : ${sampleData.age}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">GENDER </div>
+            <div class="info-value">
+                ${
+                    sampleData.gender === 'M' ? ': Male' :
+                    sampleData.gender === 'F' ? ': Female' :
+                    sampleData.gender === 'O' ? ': Other' :
+                    sampleData.gender
+                }
+            </div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">SPECIMEN </div>
+            <div class="info-value">: ${sampleData.specimenType || 'Not specified'}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">TEST NAME</div>
+            <div class="info-value">: ${sampleData.testName || 'Not specified'}</div>
+        </div>
+    </div>
                 <div class="report-details">
                     <div class="info-row">
                         <div class="info-label">DATE </div>
@@ -465,22 +485,16 @@ function createReportPage(isFirstPage, pageNumber, totalPages) {
                         <div class="info-value">: ${sampleData.reportId}</div>
                     </div>
                     <div class="info-row">
+                        <div class="info-label">NIC </div>
+                        <div class="info-value">: <span id="qr-code-container" class="qr-code-inline"></span></div>
+                    </div>
+                    <div class="info-row">
                         <div class="info-label">PRINTED DATE </div>
                         <div class="info-value">: ${formatDate(new Date())}</div>
                     </div>
                 </div>
             </div>
 
-            <div class="specimen-info">
-                <div class="info-row">
-                    <div class="info-label">SPECIMEN </div>
-                    <div class="info-value">: ${sampleData.specimenType || 'Not specified'}</div>
-                </div>
-                <div class="info-row">
-                    <div class="info-label">TEST NAME:</div>
-                    <div class="info-value">: ${sampleData.testName || 'Not specified'}</div>
-                </div>
-            </div>
 
             <div class="section-divider"></div>
         `;
@@ -724,12 +738,51 @@ page.appendChild(footer);
 
         // Apply current toggle states
         updateReportElements();
+
+        // Generate QR code after pages are created
+        setTimeout(() => {
+            generateQRCode(sampleData.nic, 'qr-code-container');
+        }, 100);
     }
 
     // Initialize the report on page load
     document.addEventListener('DOMContentLoaded', function() {
         generateMultiPageReport();
     });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+
+<script>
+    function generateQRCode(text, containerId) {
+    const qr = qrcode(0, 'M');
+    qr.addData(text);
+    qr.make();
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const modules = qr.getModuleCount();
+    const cellSize = 3; // Increased from 2 to 3 for larger QR code
+
+    canvas.width = modules * cellSize;
+    canvas.height = modules * cellSize;
+
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#000000';
+
+    for (let row = 0; row < modules; row++) {
+        for (let col = 0; col < modules; col++) {
+            if (qr.isDark(row, col)) {
+                ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
+            }
+        }
+    }
+
+    const container = document.getElementById(containerId);
+    if (container) {
+        container.appendChild(canvas);
+    }
+}
 </script>
 </body>
 </html>
