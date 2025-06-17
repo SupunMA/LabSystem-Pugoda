@@ -113,6 +113,57 @@
       line-height: 1.5; /* Increase line height for better readability */
     }
   }
+
+
+
+
+/* Hide scrollbar for Webkit browsers */
+.scrollable-container::-webkit-scrollbar {
+    display: none;
+}
+
+/* Card hover effects */
+.card-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    border-color: #1977cc;
+}
+
+.card-item:hover div {
+    transform: scale(1.1);
+}
+
+/* Dot styles */
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #d0d0d0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    padding: 0;
+}
+
+.dot.active {
+    background-color: #1977cc;
+    transform: scale(1.2);
+}
+
+.dot:hover {
+    background-color: #1977cc;
+    opacity: 0.7;
+}
+
+/* Smooth scrolling animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.card-item {
+    animation: fadeIn 0.6s ease forwards;
+}
 </style>
 </head>
 <body>
@@ -135,3 +186,82 @@
   @include('Home.components.cssJs.js')
 </body>
 </html>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.getElementById('cardsContainer');
+    const dotsContainer = document.getElementById('dotsContainer');
+    const cards = document.querySelectorAll('.card-item');
+
+    if (!container || !dotsContainer || cards.length === 0) return;
+
+    // Calculate how many cards are visible at once
+    const containerWidth = container.clientWidth;
+    const cardWidth = 280 + 20; // card width + gap
+    const visibleCards = Math.floor(containerWidth / cardWidth);
+    const totalDots = Math.max(1, cards.length - visibleCards + 1);
+
+    // Create dots
+    for (let i = 0; i < totalDots; i++) {
+        const dot = document.createElement('button');
+        dot.className = 'dot';
+        dot.setAttribute('data-index', i);
+        if (i === 0) dot.classList.add('active');
+
+        dot.addEventListener('click', function() {
+            const index = parseInt(this.getAttribute('data-index'));
+            const scrollPosition = index * cardWidth;
+            container.scrollTo({
+                left: scrollPosition,
+                behavior: 'smooth'
+            });
+        });
+
+        dotsContainer.appendChild(dot);
+    }
+
+    // Update active dot on scroll
+    container.addEventListener('scroll', function() {
+        const scrollLeft = container.scrollLeft;
+        const activeIndex = Math.round(scrollLeft / cardWidth);
+
+        document.querySelectorAll('.dot').forEach((dot, index) => {
+            if (index === activeIndex) {
+                dot.classList.add('active');
+            } else {
+                dot.classList.remove('active');
+            }
+        });
+    });
+
+    // Touch/swipe support for mobile
+    let isDown = false;
+    let startX;
+    let scrollLeftStart;
+
+    container.addEventListener('mousedown', (e) => {
+        isDown = true;
+        startX = e.pageX - container.offsetLeft;
+        scrollLeftStart = container.scrollLeft;
+        container.style.cursor = 'grabbing';
+    });
+
+    container.addEventListener('mouseleave', () => {
+        isDown = false;
+        container.style.cursor = 'grab';
+    });
+
+    container.addEventListener('mouseup', () => {
+        isDown = false;
+        container.style.cursor = 'grab';
+    });
+
+    container.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - container.offsetLeft;
+        const walk = (x - startX) * 2;
+        container.scrollLeft = scrollLeftStart - walk;
+    });
+});
+</script>
