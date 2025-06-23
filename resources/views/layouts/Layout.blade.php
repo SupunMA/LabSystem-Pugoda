@@ -33,11 +33,11 @@
     <div id="app">
         <nav class="navbar navbar-expand-sm navbar-dark bg-primary shadow-lg">
             <div class="container">
-
-                <div class="navbar-brand">
-                    HORIZON Lab.
-                </div>
-
+                <a href="{{ route('welcome') }}">
+                    <div class="navbar-brand">
+                        HORIZON Lab.
+                    </div>
+                </a>
 
             </div>
         </nav>
