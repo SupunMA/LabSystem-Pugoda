@@ -143,210 +143,350 @@ class admin_AvailableTestCtr extends Controller
     /**
      * Store a newly created test in storage.
      */
-    public function store(Request $request)
-    {
-        try {
-            // Prepare validation rules for each test
-            $testsData = $request->input('tests', []);
-            $rules = [];
-            $messages = [];
 
-            foreach ($testsData as $key => $test) {
-                $rules["tests.{$key}.name"] = [
-                    'required',
-                    Rule::unique('availableTests', 'name')
-                ];
-                $messages["tests.{$key}.name.unique"] = "The test name '{$test['name']}' already exists.";
-            }
+public function store(Request $request)
+{
+    try {
+        // Prepare validation rules for each test
+        $testsData = $request->input('tests', []);
+        $rules = [];
+        $messages = [];
 
-            // Validate the request
-            $validator = Validator::make($request->all(), $rules, $messages);
+        // Enhanced validation with more comprehensive rules
+        foreach ($testsData as $key => $test) {
+            // Test name validation
+            $rules["tests.{$key}.name"] = [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('availableTests', 'name')
+            ];
+            $messages["tests.{$key}.name.required"] = "Test name is required for test " . ($key + 1) . ".";
+            $messages["tests.{$key}.name.unique"] = "The test name '{$test['name']}' already exists.";
+            $messages["tests.{$key}.name.max"] = "Test name cannot exceed 255 characters.";
 
-            // If validation fails, return the errors via AJAX
-            if ($validator->fails()) {
-                if ($request->ajax()) {
-                    return response()->json([
-                        'success' => false,
-                        'errors' => $validator->errors(),
-                        'message' => 'Validation failed. Please check the form.'
-                    ], 422);
+            // Price validation
+            $rules["tests.{$key}.price"] = ['nullable', 'numeric', 'min:0'];
+            $messages["tests.{$key}.price.numeric"] = "Price must be a valid number for test " . ($key + 1) . ".";
+            $messages["tests.{$key}.price.min"] = "Price cannot be negative for test " . ($key + 1) . ".";
+
+            // Category validation
+            if (isset($test['categories'])) {
+                foreach ($test['categories'] as $catKey => $category) {
+                    $rules["tests.{$key}.categories.{$catKey}.name"] = ['required', 'string', 'max:255'];
+                    $rules["tests.{$key}.categories.{$catKey}.value_type"] = [
+                        'required',
+                        Rule::in(['number', 'text', 'negpos', 'negpos_with_Value', 'getFromMindray', 'dropdown', 'formula'])
+                    ];
+                    $rules["tests.{$key}.categories.{$catKey}.reference_type"] = [
+                        'required',
+                        Rule::in(['none', 'minmax', 'table'])
+                    ];
+
+                    // Conditional validation for min/max values
+                    if (isset($category['reference_type']) && $category['reference_type'] === 'minmax') {
+                        $rules["tests.{$key}.categories.{$catKey}.min_value"] = ['nullable', 'numeric'];
+                        $rules["tests.{$key}.categories.{$catKey}.max_value"] = ['nullable', 'numeric'];
+                    }
+
+                    // Unit validation
+                    if (isset($category['unit']) && !empty($category['unit'])) {
+                        $rules["tests.{$key}.categories.{$catKey}.unit"] = ['string', 'max:50'];
+                    }
+
+                    // Validation for value_type specific fields
+                    $valueType = $category['value_type'] ?? '';
+                    if ($valueType === 'dropdown') {
+                        $rules["tests.{$key}.categories.{$catKey}.dropdown_options"] = ['nullable', 'string', 'max:1000'];
+                    } elseif ($valueType === 'formula') {
+                        $rules["tests.{$key}.categories.{$catKey}.formula_definition"] = ['nullable', 'string', 'max:1000'];
+                    } elseif ($valueType === 'getFromMindray') {
+                        $rules["tests.{$key}.categories.{$catKey}.mindray_field_name"] = ['nullable', 'string', 'max:255'];
+                    }
+
+                    $messages["tests.{$key}.categories.{$catKey}.name.required"] = "Category name is required.";
+                    $messages["tests.{$key}.categories.{$catKey}.value_type.required"] = "Value type is required for category.";
                 }
+            }
+        }
 
-                return redirect()->back()->withErrors($validator)->withInput();
+        // Validate the request
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        // If validation fails, return the errors via AJAX
+        if ($validator->fails()) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => $validator->errors(),
+                    'message' => 'Validation failed. Please check the form.'
+                ], 422);
             }
 
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
 
-            DB::beginTransaction();
+        DB::beginTransaction();
+
+        $createdTests = [];
 
         foreach ($testsData as $testData) {
-            // Create the test
+            // Create the test with improved data handling
             $test = AvailableTest_New::create([
-                'name' => $testData['name'] ?? '',
+                'name' => trim($testData['name'] ?? ''),
                 'specimen' => $testData['specimen'] ?? null,
-                'price' => $testData['price'] ?? null,
+                'price' => isset($testData['price']) && is_numeric($testData['price']) ? $testData['price'] : null,
             ]);
 
+            $createdTests[] = $test;
+
             // Get element order if available
-            $elementOrder = isset($testData['element_order']) ? $testData['element_order'] : [];
+            $elementOrder = $testData['element_order'] ?? [];
 
             // Create a list of all elements with their types and data
-            $allElements = [];
-
-            // Add categories to elements list
-            if (isset($testData['categories'])) {
-                foreach ($testData['categories'] as $index => $categoryData) {
-                    $orderKey = "category_{$index}";
-                    $order = isset($elementOrder[$orderKey]) ? (int)$elementOrder[$orderKey] : 999999;
-                    $allElements[] = [
-                        'type' => 'category',
-                        'data' => $categoryData,
-                        'order' => $order,
-                        'index' => $index
-                    ];
-                }
-            }
-
-            // Add spaces to elements list
-            if (isset($testData['custom_space'])) {
-                foreach ($testData['custom_space'] as $index => $space) {
-                    $orderKey = "space_{$index}";
-                    $order = isset($elementOrder[$orderKey]) ? (int)$elementOrder[$orderKey] : 999999;
-                    $allElements[] = [
-                        'type' => 'space',
-                        'data' => null,
-                        'order' => $order,
-                        'index' => $index
-                    ];
-                }
-            }
-
-            // Add titles to elements list
-            if (isset($testData['custom_title'])) {
-                foreach ($testData['custom_title'] as $index => $title) {
-                    if (!empty($title)) {
-                        $orderKey = "title_{$index}";
-                        $order = isset($elementOrder[$orderKey]) ? (int)$elementOrder[$orderKey] : 999999;
-                        $allElements[] = [
-                            'type' => 'title',
-                            'data' => $title,
-                            'order' => $order,
-                            'index' => $index
-                        ];
-                    }
-                }
-            }
-
-            // Add paragraphs to elements list
-            if (isset($testData['custom_paragraph'])) {
-                foreach ($testData['custom_paragraph'] as $index => $paragraph) {
-                    if (!empty($paragraph)) {
-                        $orderKey = "paragraph_{$index}";
-                        $order = isset($elementOrder[$orderKey]) ? (int)$elementOrder[$orderKey] : 999999;
-                        $allElements[] = [
-                            'type' => 'paragraph',
-                            'data' => $paragraph,
-                            'order' => $order,
-                            'index' => $index
-                        ];
-                    }
-                }
-            }
+            $allElements = $this->prepareTestElements($testData, $elementOrder);
 
             // Sort all elements by their order
             usort($allElements, function($a, $b) {
                 return $a['order'] - $b['order'];
             });
 
-            // Now create all elements in the correct order
-            $displayOrder = 1;
-
-            foreach ($allElements as $element) {
-                switch ($element['type']) {
-                    case 'category':
-                        $categoryData = $element['data'];
-                        $unitEnabled = isset($categoryData['unit']) && !empty($categoryData['unit']);
-
-                        $category = TestCategory_New::create([
-                            'availableTests_id' => $test->id,
-                            'name' => $categoryData['name'] ?? '',
-                            'value_type' => $categoryData['value_type'] ?? 'range',
-                            'unit_enabled' => $unitEnabled,
-                            'unit' => $unitEnabled ? $categoryData['unit'] : null,
-                            'reference_type' => $categoryData['reference_type'] ?? 'none',
-                            'min_value' => isset($categoryData['min_value']) ? $categoryData['min_value'] : null,
-                            'max_value' => isset($categoryData['max_value']) ? $categoryData['max_value'] : null,
-                            'display_order' => $displayOrder++,
-                        ]);
-
-                        // Process reference range table if applicable
-                        if (isset($categoryData['table'])) {
-                            foreach ($categoryData['table'] as $rowIndex => $rowData) {
-                                foreach ($rowData as $colIndex => $cellValue) {
-                                    ReferenceRangeTable::create([
-                                        'test_categories_id' => $category->id,
-                                        'row' => $rowIndex,
-                                        'column' => $colIndex,
-                                        'value' => $cellValue ?? '',
-                                    ]);
-                                }
-                            }
-                        }
-                        break;
-
-                    case 'space':
-                        TestElement_New::create([
-                            'availableTests_id' => $test->id,
-                            'type' => 'space',
-                            'content' => null,
-                            'display_order' => $displayOrder++,
-                        ]);
-                        break;
-
-                    case 'title':
-                        TestElement_New::create([
-                            'availableTests_id' => $test->id,
-                            'type' => 'title',
-                            'content' => $element['data'],
-                            'display_order' => $displayOrder++,
-                        ]);
-                        break;
-
-                    case 'paragraph':
-                        TestElement_New::create([
-                            'availableTests_id' => $test->id,
-                            'type' => 'paragraph',
-                            'content' => $element['data'],
-                            'display_order' => $displayOrder++,
-                        ]);
-                        break;
-                }
-            }
+            // Create all elements in the correct order
+            $this->createTestElements($test, $allElements);
         }
 
         DB::commit();
 
-            // Return success response
-            if ($request->ajax()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Test template created successfully!'
-                ]);
-            }
+        // Return success response
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => count($createdTests) === 1
+                    ? 'Test template created successfully!'
+                    : count($createdTests) . ' test templates created successfully!',
+                'data' => [
+                    'test_count' => count($createdTests),
+                    'test_ids' => collect($createdTests)->map(function($test) {
+                        return $test->id;
+                    })->toArray()
+                ]
+            ]);
+        }
 
-            return redirect()->back()->with('success', 'Test template created successfully!');
-        } catch (\Exception $e) {
-            DB::rollBack();
+        return redirect()->back()->with('success', 'Test template(s) created successfully!');
 
-            if ($request->ajax()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Error creating test template: ' . $e->getMessage()
-                ], 500);
-            }
+    } catch (\Exception $e) {
+        DB::rollBack();
 
-            return redirect()->back()->with('error', 'Error creating test template: ' . $e->getMessage())->withInput();
+        // Log the error for debugging
+        \Log::error('Error creating test template: ' . $e->getMessage(), [
+            'trace' => $e->getTraceAsString(),
+            'request_data' => $request->all()
+        ]);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error creating test template. Please try again.',
+                'debug' => config('app.debug') ? $e->getMessage() : null
+            ], 500);
+        }
+
+        return redirect()->back()
+            ->with('error', 'Error creating test template. Please try again.')
+            ->withInput();
+    }
+}
+
+/**
+ * Prepare all test elements (categories, spaces, titles, paragraphs) with their order
+ */
+private function prepareTestElements(array $testData, array $elementOrder): array
+{
+    $allElements = [];
+
+    // Add categories to elements list
+    if (isset($testData['categories'])) {
+        foreach ($testData['categories'] as $index => $categoryData) {
+            $orderKey = "category_{$index}";
+            $order = $elementOrder[$orderKey] ?? 999999;
+            $allElements[] = [
+                'type' => 'category',
+                'data' => $categoryData,
+                'order' => (int)$order,
+                'index' => $index
+            ];
         }
     }
+
+    // Add spaces to elements list
+    if (isset($testData['custom_space'])) {
+        foreach ($testData['custom_space'] as $index => $space) {
+            $orderKey = "space_{$index}";
+            $order = $elementOrder[$orderKey] ?? 999999;
+            $allElements[] = [
+                'type' => 'space',
+                'data' => null,
+                'order' => (int)$order,
+                'index' => $index
+            ];
+        }
+    }
+
+    // Add titles to elements list
+    if (isset($testData['custom_title'])) {
+        foreach ($testData['custom_title'] as $index => $title) {
+            if (!empty($title)) {
+                $orderKey = "title_{$index}";
+                $order = $elementOrder[$orderKey] ?? 999999;
+                $allElements[] = [
+                    'type' => 'title',
+                    'data' => trim($title),
+                    'order' => (int)$order,
+                    'index' => $index
+                ];
+            }
+        }
+    }
+
+    // Add paragraphs to elements list
+    if (isset($testData['custom_paragraph'])) {
+        foreach ($testData['custom_paragraph'] as $index => $paragraph) {
+            if (!empty($paragraph)) {
+                $orderKey = "paragraph_{$index}";
+                $order = $elementOrder[$orderKey] ?? 999999;
+                $allElements[] = [
+                    'type' => 'paragraph',
+                    'data' => trim($paragraph),
+                    'order' => (int)$order,
+                    'index' => $index
+                ];
+            }
+        }
+    }
+
+    return $allElements;
+}
+
+/**
+ * Create test elements in the database
+ */
+private function createTestElements($test, array $allElements): void
+{
+    $displayOrder = 1;
+
+    foreach ($allElements as $element) {
+        switch ($element['type']) {
+            case 'category':
+                $this->createTestCategory($test, $element['data'], $displayOrder++);
+                break;
+
+            case 'space':
+                TestElement_New::create([
+                    'availableTests_id' => $test->id,
+                    'type' => 'space',
+                    'content' => null,
+                    'display_order' => $displayOrder++,
+                ]);
+                break;
+
+            case 'title':
+                TestElement_New::create([
+                    'availableTests_id' => $test->id,
+                    'type' => 'title',
+                    'content' => $element['data'],
+                    'display_order' => $displayOrder++,
+                ]);
+                break;
+
+            case 'paragraph':
+                TestElement_New::create([
+                    'availableTests_id' => $test->id,
+                    'type' => 'paragraph',
+                    'content' => $element['data'],
+                    'display_order' => $displayOrder++,
+                ]);
+                break;
+        }
+    }
+}
+
+/**
+ * Create a test category with enhanced data handling
+ */
+private function createTestCategory($test, array $categoryData, int $displayOrder): void
+{
+    $unitEnabled = isset($categoryData['unit']) && !empty($categoryData['unit']);
+
+    // Create the category
+    $category = TestCategory_New::create([
+        'availableTests_id' => $test->id,
+        'name' => trim($categoryData['name'] ?? ''),
+        'value_type' => $categoryData['value_type'],
+        'unit_enabled' => $unitEnabled,
+        'unit' => $unitEnabled ? trim($categoryData['unit']) : null,
+        'value_type_Value' => $this->getValueTypeValue($categoryData),
+        'reference_type' => $categoryData['reference_type'] ?? 'none',
+        'min_value' => $this->getNumericValue($categoryData, 'min_value'),
+        'max_value' => $this->getNumericValue($categoryData, 'max_value'),
+        'display_order' => $displayOrder,
+    ]);
+
+    // Process reference range table if applicable
+    if (isset($categoryData['table']) && is_array($categoryData['table'])) {
+        $this->createReferenceRangeTable($category, $categoryData['table']);
+    }
+}
+
+/**
+ * Get value type specific value (for dropdown, formula, mindray)
+ */
+private function getValueTypeValue(array $categoryData): ?string
+{
+    $valueType = $categoryData['value_type'] ?? '';
+
+    switch ($valueType) {
+        case 'dropdown':
+            return isset($categoryData['dropdown_options']) ? trim($categoryData['dropdown_options']) : null;
+        case 'formula':
+            return isset($categoryData['formula_definition']) ? trim($categoryData['formula_definition']) : null;
+        case 'getFromMindray':
+            return isset($categoryData['mindray_field_name']) ? trim($categoryData['mindray_field_name']) : null;
+        default:
+            return null;
+    }
+}
+
+/**
+ * Safely get numeric value from array
+ */
+private function getNumericValue(array $data, string $key): ?float
+{
+    if (!isset($data[$key]) || $data[$key] === '' || $data[$key] === null) {
+        return null;
+    }
+
+    return is_numeric($data[$key]) ? (float)$data[$key] : null;
+}
+
+/**
+ * Create reference range table entries
+ */
+private function createReferenceRangeTable($category, array $tableData): void
+{
+    foreach ($tableData as $rowIndex => $rowData) {
+        if (is_array($rowData)) {
+            foreach ($rowData as $colIndex => $cellValue) {
+                ReferenceRangeTable::create([
+                    'test_categories_id' => $category->id,
+                    'row' => (int)$rowIndex,
+                    'column' => (int)$colIndex,
+                    'value' => $cellValue ?? '',
+                ]);
+            }
+        }
+    }
+}
 
     public function allTests()
 {

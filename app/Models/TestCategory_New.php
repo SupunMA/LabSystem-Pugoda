@@ -13,7 +13,7 @@ class TestCategory_New extends Model
     protected $table = 'test_categories';
 
     protected $fillable = [
-        'availableTests_id', 'name', 'value_type',
+        'availableTests_id', 'name', 'value_type', 'value_type_Value',
         'unit_enabled', 'unit',  // Added unit_enabled
         'reference_type', 'min_value', 'max_value', 'display_order' // Removed range_unit
     ];
