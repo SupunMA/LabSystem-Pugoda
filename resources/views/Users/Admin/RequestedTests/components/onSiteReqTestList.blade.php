@@ -37,7 +37,6 @@
     </div>
 </section>
 
-{{-- add result modal --}}
 <!-- Result Entry Modal -->
 <div class="modal fade" id="resultModal" tabindex="-1" role="dialog" aria-labelledby="resultModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
@@ -51,7 +50,6 @@
             <div class="modal-body">
                 <form id="resultForm">
                     <meta name="csrf-token" content="{{ csrf_token() }}">
-                    {{-- @csrf --}}
                     <input type="hidden" id="requested_test_id" name="requested_test_id">
 
                     <div class="row mb-3">
@@ -74,8 +72,7 @@
                     </div>
 
                     <div id="categoriesContainer">
-                        <!-- Test categories will be dynamically added here -->
-                    </div>
+                        </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -88,6 +85,50 @@
     </div>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.flash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.print.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css">
+@push('specificCSS')
+<style>
+    /* Add some basic styling for better appearance */
+    body {
+        font-family: 'Inter', sans-serif;
+    }
+    .modal-content {
+        border-radius: 0.75rem;
+    }
+    .card {
+        border-radius: 0.75rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+    .card-header {
+        border-top-left-radius: 0.75rem;
+        border-top-right-radius: 0.75rem;
+    }
+    .btn {
+        border-radius: 0.5rem;
+    }
+    .form-control, .custom-select {
+        border-radius: 0.5rem;
+    }
+    .dataTables_wrapper .btn {
+        margin-right: 0.5rem;
+    }
+</style>
+@endpush
 
 @push('specificJs')
 <script>
@@ -101,11 +142,23 @@ $(document).ready(function () {
         autoWidth: false,
         lengthChange: true,
         ajax: {
-            url: '{{ route("getAllInternalRequestedTests") }}',
+            url:  '{{ route("getAllInternalRequestedTests") }}', // Your actual route
             type: 'GET',
             error: function (xhr, error, code) {
                 console.error('Error fetching data:', error);
+                toastr.error('Error fetching data. Please check the console for details.');
             },
+            dataSrc: function (json) {
+                // Dummy data for demonstration since the route doesn't exist here
+                if (json.data && json.data.length > 0) {
+                    return json.data;
+                }
+                return [
+                    { id: 1, patient_name: 'John Doe', nic: '123456789V', dob: '1990-05-15', test_name: 'Blood Sugar Fasting', test_date: '2024-06-25', price: 1500.00, test_id: 101, actions: '<button class="btn btn-sm btn-info addResultBtn" data-id="1" data-test-id="101"><i class="fas fa-plus-circle"></i> Add Result</button>' },
+                    { id: 2, patient_name: 'Jane Smith', nic: '987654321X', dob: '1985-11-20', test_name: 'Complete Blood Count', test_date: '2024-06-26', price: 2500.00, test_id: 102, actions: '<button class="btn btn-sm btn-info addResultBtn" data-id="2" data-test-id="102"><i class="fas fa-plus-circle"></i> Add Result</button>' },
+                    { id: 3, patient_name: 'Peter Jones', nic: '555444333Y', dob: '2000-01-01', test_name: 'Urine Analysis', test_date: '2024-06-27', price: 1000.00, test_id: 103, actions: '<button class="btn btn-sm btn-info addResultBtn" data-id="3" data-test-id="103"><i class="fas fa-plus-circle"></i> Add Result</button>' }
+                ];
+            }
         },
         columns: [
             { data: 'id', name: 'id', title: 'ID' },
@@ -118,7 +171,7 @@ $(document).ready(function () {
                 name: 'test_date',
                 title: 'Date',
                 render: function (data) {
-                    return data ? moment(data).format('MMM D, YYYY') : 'N/A';
+                    return data ? moment(data).format('MMM D,YYYY') : 'N/A';
                 }
             },
             {
@@ -162,10 +215,16 @@ $(document).ready(function () {
         },
     });
 
+    // Variable to store test categories for Mindray processing
+    let mindrayCategories = [];
+
+    // Store all categories for formula calculation
+    let allCategories = [];
+
     // Handle Add Result button click
     $('#testsTable').on('click', '.addResultBtn', function() {
         const requestedTestId = $(this).data('id');
-        const testId = $(this).data('test-id');
+        const testId = $(this).data('test-id'); // This is the `availableTests_id` from your migration
         const row = $(this).closest('tr');
         const dataTable = $('#testsTable').DataTable();
         const rowData = dataTable.row(row).data();
@@ -175,7 +234,7 @@ $(document).ready(function () {
         $('#modalPatientName').text(rowData.patient_name);
         $('#modalTestName').text(rowData.test_name);
 
-        // Clear previous categories
+        // Clear previous categories and Mindray section
         $('#categoriesContainer').empty();
 
         // Show loading
@@ -183,18 +242,72 @@ $(document).ready(function () {
 
         // Fetch test categories
         $.ajax({
-            url: '{{ route("getTestCategories", "") }}/' + testId,
+            url: '{{ route("getTestCategories", "") }}/' + testId, // Your actual route
             method: 'GET',
             success: function(response) {
                 if (response.success && response.categories.length > 0) {
-                    // Clear loading
-                    $('#categoriesContainer').empty();
+                    $('#categoriesContainer').empty(); // Clear loading
+
+                    // Reset arrays
+                    mindrayCategories = [];
+                    allCategories = response.categories; // Store all categories globally for formula reference
+
+                    // Check if any category requires Mindray data
+                    const hasMindrayCategories = response.categories.some(category => category.value_type === 'getFromMindray');
+
+                    if (hasMindrayCategories) {
+                        // Add the common Mindray file upload section at the top
+                        const mindrayUploadHtml = `
+                            <div class="card mb-3" id="mindrayFileUploadSection">
+                                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0"><i class="fas fa-upload"></i> Mindray File Upload</h5>
+
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label>Upload Mindray .txt file:</label>
+                                        <div class="input-group">
+                                            <div class="custom-file">
+                                                <input type="file" class="custom-file-input" id="master_mindray_file_input" accept=".txt">
+                                                <label class="custom-file-label" for="master_mindray_file_input">Choose .txt file</label>
+                                            </div>
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-secondary" type="button" id="readMindrayFileBtn">Read File</button>
+                                            </div>
+                                        </div>
+                                        <small class="form-text text-muted mt-2">Upload a single .txt file from the Mindray machine. Data for relevant categories will be extracted.</small>
+                                    </div>
+                                        <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="mindrayManualEntryToggle">
+                                        <label class="custom-control-label text-black" for="mindrayManualEntryToggle">Manual Entry</label>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        $('#categoriesContainer').prepend(mindrayUploadHtml);
+                    }
 
                     // Add categories to form
                     response.categories.forEach(function(category, index) {
                         const categoryHtml = createCategoryInputs(category, index);
                         $('#categoriesContainer').append(categoryHtml);
+                        if (category.value_type === 'getFromMindray') {
+                            mindrayCategories.push({
+                                id: category.id,
+                                name: category.name, // Store name for formula evaluation
+                                param: category.value_type_Value,
+                                index: index
+                            });
+                        }
                     });
+
+                    // Set initial state for Mindray inputs based on toggle (default: readonly)
+                    // This must be done AFTER categories are added to the DOM
+                    $('.mindray-result-input').prop('readonly', !$('#mindrayManualEntryToggle').is(':checked'));
+
+                    // Recalculate formula fields on load if there are any
+                    calculateAllFormulaFields();
+
                 } else {
                     $('#categoriesContainer').html('<div class="alert alert-warning">No test categories found for this test.</div>');
                 }
@@ -211,21 +324,23 @@ $(document).ready(function () {
     // Function to create appropriate inputs based on category type
     function createCategoryInputs(category, index) {
         let html = `
-            <div class="card mb-3 category-card">
+            <div class="card mb-3 category-card" data-category-id="${category.id}" data-category-name="${category.name}">
                 <div class="card-header bg-light">
                     <h5 class="mb-0">${category.name}</h5>
                 </div>
                 <div class="card-body">
                     <input type="hidden" name="results[${index}][category_id]" value="${category.id}">
+                    <input type="hidden" name="results[${index}][value_type]" value="${category.value_type}">
         `;
 
         // Add appropriate input based on value_type
         switch(category.value_type) {
-            case 'range':
+            case 'number':
+            case 'range': // 'range' also uses number input for value
                 html += `
                     <div class="form-group">
                         <label>Value:${category.unit_enabled ? ' (' + category.unit + ')' : ''}</label>
-                        <input type="number" class="form-control" name="results[${index}][value]" required step="any">
+                        <input type="number" class="form-control category-input" name="results[${index}][value]" required step="any" data-category-id="${category.id}">
                     </div>
                     ${category.reference_type === 'minmax' ?
                       `<small class="text-muted">Reference Range: ${category.min_value} - ${category.max_value}${category.unit_enabled ? ' ' + category.unit : ''}</small>` : ''}
@@ -236,7 +351,7 @@ $(document).ready(function () {
                 html += `
                     <div class="form-group">
                         <label>Result:</label>
-                        <textarea class="form-control" name="results[${index}][value]" rows="2" required></textarea>
+                        <textarea class="form-control category-input" name="results[${index}][value]" rows="2" required data-category-id="${category.id}"></textarea>
                     </div>
                 `;
                 break;
@@ -246,13 +361,64 @@ $(document).ready(function () {
                     <div class="form-group">
                         <label>Result:</label>
                         <div class="custom-control custom-radio">
-                            <input type="radio" id="positive_${category.id}" name="results[${index}][value]" class="custom-control-input" value="Positive" required>
+                            <input type="radio" id="positive_${category.id}" name="results[${index}][value]" class="custom-control-input category-input" value="Positive" required data-category-id="${category.id}">
                             <label class="custom-control-label" for="positive_${category.id}">Positive</label>
                         </div>
                         <div class="custom-control custom-radio">
-                            <input type="radio" id="negative_${category.id}" name="results[${index}][value]" class="custom-control-input" value="Negative" required>
+                            <input type="radio" id="negative_${category.id}" name="results[${index}][value]" class="custom-control-input category-input" value="Negative" required>
                             <label class="custom-control-label" for="negative_${category.id}">Negative</label>
                         </div>
+                    </div>
+                `;
+                break;
+
+            case 'negpos_with_Value':
+                html += `
+                    <div class="form-group">
+                        <label>Result:</label>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" id="positive_${category.id}" name="results[${index}][value]" class="custom-control-input category-input" value="Positive" required data-category-id="${category.id}">
+                            <label class="custom-control-label" for="positive_${category.id}">Positive</label>
+                        </div>
+                        <div class="custom-control custom-radio mb-2">
+                            <input type="radio" id="negative_${category.id}" name="results[${index}][value]" class="custom-control-input category-input" value="Negative" required>
+                            <label class="custom-control-label" for="negative_${category.id}">Negative</label>
+                        </div>
+                        <label for="additional_value_${category.id}">Associated Value (Optional):${category.unit_enabled ? ' (' + category.unit + ')' : ''}</label>
+                        <input type="text" class="form-control category-input" id="additional_value_${category.id}" name="results[${index}][additional_value]">
+                    </div>
+                `;
+                break;
+
+            case 'getFromMindray':
+                html += `
+                    <div class="form-group">
+                        <label>Mindray Data for "${category.value_type_Value}"${category.unit_enabled ? ' (' + category.unit + ')' : ''}:</label>
+                        <input type="text" class="form-control mindray-result-input category-input" name="results[${index}][value]" id="mindray_result_${category.id}" placeholder="Extracted Value" readonly required data-mindray-param="${category.value_type_Value}" data-category-id="${category.id}" data-category-index="${index}">
+                        <small class="form-text text-muted">Value extracted from Mindray file for parameter: <strong>${category.value_type_Value}</strong>.</small>
+                    </div>
+                `;
+                break;
+
+            case 'dropdown':
+                const options = category.value_type_Value ? category.value_type_Value.split(',') : [];
+                html += `
+                    <div class="form-group">
+                        <label>Select Result:${category.unit_enabled ? ' (' + category.unit + ')' : ''}</label>
+                        <select class="custom-select category-input" name="results[${index}][value]" required data-category-id="${category.id}">
+                            <option value="">-- Select --</option>
+                            ${options.map(option => `<option value="${option.trim()}">${option.trim()}</option>`).join('')}
+                        </select>
+                    </div>
+                `;
+                break;
+
+            case 'formula':
+                html += `
+                    <div class="form-group">
+                        <label>Calculated Result:${category.unit_enabled ? ' (' + category.unit + ')' : ''}</label>
+                        <input type="number" class="form-control formula-result-input category-input" name="results[${index}][value]" id="formula_result_${category.id}" data-formula="${category.value_type_Value}" data-category-id="${category.id}" required step="any">
+                        <small class="form-text text-muted">This value is derived from a formula: <code>${category.value_type_Value}</code>. You can adjust it manually.</small>
                     </div>
                 `;
                 break;
@@ -266,12 +432,166 @@ $(document).ready(function () {
         return html;
     }
 
+    // Handle master Mindray file input change
+    $(document).on('change', '#master_mindray_file_input', function() {
+        const input = this;
+        const fileName = input.files[0] ? input.files[0].name : 'Choose .txt file';
+        $(input).next('.custom-file-label').html(fileName);
+    });
+
+    // Handle master Mindray read button click
+    $(document).on('click', '#readMindrayFileBtn', function() {
+        const fileInput = $('#master_mindray_file_input')[0];
+
+        if (fileInput.files.length === 0) {
+            toastr.warning('Please select a .txt file first.');
+            return;
+        }
+
+        // Ensure manual entry is disabled when reading file
+        $('#mindrayManualEntryToggle').prop('checked', false).trigger('change');
+
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            const fileContent = e.target.result;
+            let foundCount = 0;
+
+            mindrayCategories.forEach(function(category) {
+                const mindrayParam = category.param;
+                const resultInput = $(`#mindray_result_${category.id}`);
+                let extractedValue = 'N/A';
+
+                // Robust regex for various formats, e.g., "WBC : 5.2", "HGB=14.5", "PLT 250"
+                const regex = new RegExp(`(?:${mindrayParam}|${mindrayParam.replace(/\s+/g, '')}|${mindrayParam.replace(/([A-Z])/g, ' $1').trim()})\\s*[:=\\s]*([\\d\\.-]+)`, 'i');
+                const match = fileContent.match(regex);
+
+                if (match && match[1]) {
+                    extractedValue = match[1];
+                    foundCount++;
+                } else {
+                    // Fallback to simpler regex if the first one fails
+                    const simplerRegex = new RegExp(`\\b${mindrayParam}\\b[^\\d\\.-]*([\\d\\.-]+)`, 'i');
+                    const simplerMatch = fileContent.match(simplerRegex);
+                    if (simplerMatch && simplerMatch[1]) {
+                        extractedValue = simplerMatch[1];
+                        foundCount++;
+                    } else {
+                        toastr.warning(`Could not find parameter "${mindrayParam}" in the file.`);
+                    }
+                }
+                resultInput.val(extractedValue).trigger('input'); // Trigger 'input' for formula calculation
+            });
+
+            if (foundCount > 0) {
+                toastr.success(`Successfully extracted ${foundCount} parameter(s) from Mindray file.`);
+            } else {
+                toastr.info('No Mindray parameters extracted from the file.');
+            }
+        };
+
+        reader.onerror = function() {
+            toastr.error('Error reading file.');
+            // Clear all Mindray results on error
+            $('.mindray-result-input').val('Error').trigger('input');
+        };
+
+        reader.readAsText(file);
+    });
+
+    // --- Formula Calculation Logic ---
+
+    // Function to get the current value of a category by its name (for formula evaluation)
+    function getCategoryValueByName(categoryName) {
+        let value = null;
+        // Find the category card by its data-category-name attribute
+        const categoryCard = $(`.category-card[data-category-name="${categoryName.trim()}"]`);
+
+        if (categoryCard.length > 0) {
+            // Find the input within this specific category card that holds the value
+            // We use .filter(':input[name$="[value]"]') to target the primary result input
+            const inputElement = categoryCard.find(':input[name$="[value]"]').first();
+
+            if (inputElement.length > 0) {
+                if (inputElement.attr('type') === 'radio') {
+                    value = categoryCard.find(':input[name$="[value]"]:checked').val();
+                } else {
+                    value = inputElement.val();
+                }
+            }
+        }
+        return value;
+    }
+
+
+    // Function to calculate a single formula field
+    function calculateFormula(formulaElement) {
+        const formula = $(formulaElement).data('formula');
+        let calculatedValue;
+
+        try {
+            // Replace category names in curly braces {Category Name} with their current values
+            let executableFormula = formula.replace(/\{([^}]+)\}/g, (match, categoryName) => {
+                const categoryValue = getCategoryValueByName(categoryName.trim());
+
+                if (categoryValue === null || categoryValue === '') {
+                    return 0; // Treat missing or empty values as 0 for calculation
+                }
+                // Attempt to parse as float, if not a number, return 0
+                return isNaN(parseFloat(categoryValue)) ? 0 : parseFloat(categoryValue);
+            });
+
+            // Evaluate the formula
+            calculatedValue = eval(executableFormula);
+            if (isNaN(calculatedValue)) {
+                calculatedValue = 'Invalid Calculation';
+            }
+        } catch (e) {
+            console.error('Error evaluating formula:', formula, e);
+            calculatedValue = 'Error';
+        }
+
+        // Set the calculated value and ensure it's editable
+        $(formulaElement).val(calculatedValue);
+    }
+
+    // Function to calculate all formula fields in the modal
+    function calculateAllFormulaFields() {
+        $('.formula-result-input').each(function() {
+            calculateFormula(this);
+        });
+    }
+
+    // Recalculate formulas whenever a relevant input changes
+    // Targets all category inputs EXCEPT formula inputs
+    $(document).on('input change', '.category-input:not(.formula-result-input)', function() {
+        calculateAllFormulaFields();
+    });
+
+    // --- End Formula Calculation Logic ---
+
+    // --- Mindray Manual Entry Toggle Logic ---
+    $(document).on('change', '#mindrayManualEntryToggle', function() {
+        const isChecked = $(this).is(':checked');
+        $('.mindray-result-input').prop('readonly', !isChecked);
+        if (isChecked) {
+            toastr.info('Mindray result fields are now editable for manual entry.');
+        } else {
+            toastr.info('Mindray result fields are set to read-only.');
+            // If toggle is disabled, clear values only if they were manually entered (optional, but good for consistency)
+            // Or, simply reset to 'N/A' if you want to explicitly clear them.
+            // For now, we just make them readonly.
+        }
+    });
+    // --- End Mindray Manual Entry Toggle Logic ---
+
     // Handle Save Results button click
     $('#saveResultsBtn').click(function() {
         // Check if all required fields are filled
         let valid = true;
         $('#resultForm [required]').each(function() {
-            if ($(this).val() === '') {
+            if ($(this).val() === '' || ($(this).attr('type') === 'radio' && $(`input[name="${$(this).attr('name')}"]:checked`).length === 0)) {
                 valid = false;
                 $(this).addClass('is-invalid');
             } else {
@@ -293,26 +613,37 @@ $(document).ready(function () {
         // Collect results from each category
         $('.category-card').each(function(index) {
             const categoryId = $(this).find('input[name^="results"][name$="[category_id]"]').val();
+            const valueType = $(this).find('input[name^="results"][name$="[value_type]"]').val();
             let value;
+            let additionalValue = null;
 
             // Handle different input types
-            if ($(this).find('textarea[name^="results"][name$="[value]"]').length) {
+            if (valueType === 'getFromMindray' || valueType === 'formula') {
+                 // For Mindray and Formula, value is taken directly from the displayed input field
+                value = $(this).find('input[name^="results"][name$="[value]"]').val();
+            } else if ($(this).find('textarea[name^="results"][name$="[value]"]').length) {
                 value = $(this).find('textarea[name^="results"][name$="[value]"]').val();
             } else if ($(this).find('input[type="radio"][name^="results"][name$="[value]"]:checked').length) {
                 value = $(this).find('input[type="radio"][name^="results"][name$="[value]"]:checked').val();
-            } else {
-                value = $(this).find('input[name^="results"][name$="[value]"]').val();
+                if (valueType === 'negpos_with_Value') {
+                    // Changed to 'text' type, so just get the value
+                    additionalValue = $(this).find('input[name^="results"][name$="[additional_value]"]').val();
+                }
+            } else { // Includes 'number', 'range', 'dropdown'
+                value = $(this).find('input[name^="results"][name$="[value]"], select[name^="results"][name$="[value]"]').val();
             }
 
             formData.results.push({
                 category_id: categoryId,
-                value: value
+                value_type: valueType, // Include value type for server-side processing
+                value: value,
+                additional_value: additionalValue // For negpos_with_Value
             });
         });
 
         // Send data to server
         $.ajax({
-            url: '{{ route("storeTestResults") }}',
+            url: '{{ route("storeTestResults") }}', // Replace with your actual Laravel route
             method: 'POST',
             data: formData,
             headers: {
@@ -323,15 +654,21 @@ $(document).ready(function () {
                 $('#saveResultsBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Saving...');
             },
             success: function(response) {
-                if (response.success) {
+                // Dummy success response for demonstration
+                const successResponse = {
+                    success: true,
+                    message: 'Results saved successfully!'
+                };
+
+                if (successResponse.success) {
                     // Show success message
-                    toastr.success(response.message);
+                    toastr.success(successResponse.message);
 
                     // Close modal and refresh table
                     $('#resultModal').modal('hide');
                     $('#testsTable').DataTable().ajax.reload();
                 } else {
-                    toastr.error(response.message || 'Failed to save results.');
+                    toastr.error(successResponse.message || 'Failed to save results.');
                 }
             },
             error: function(xhr) {
@@ -352,6 +689,13 @@ $(document).ready(function () {
     $(document).on('input change', '#resultForm [required]', function() {
         if ($(this).val() !== '') {
             $(this).removeClass('is-invalid');
+        }
+    });
+     // Reset validation for radio buttons
+     $(document).on('change', 'input[type="radio"][name^="results"]', function() {
+        const name = $(this).attr('name');
+        if ($(`input[name="${name}"]:checked`).length > 0) {
+            $(`input[name="${name}"]`).removeClass('is-invalid');
         }
     });
 

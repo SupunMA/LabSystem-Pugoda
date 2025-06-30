@@ -278,45 +278,63 @@ public function getTestCategories($testId)
 }
 
 // Add this method to store test results
-public function storeTestResults(Request $request)
-{
-    try {
-        $validatedData = $request->validate([
-            'requested_test_id' => 'required|exists:requested_tests,id',
-            'results' => 'required|array',
-            'results.*.category_id' => 'required|exists:test_categories,id',
-            'results.*.value' => 'required'
-        ]);
-
-        // Check if results already exist for this test
-        $existingResults = TestResult::where('requested_test_id', $validatedData['requested_test_id'])->exists();
-
-        if ($existingResults) {
-            // Delete existing results if they exist (to update)
-            TestResult::where('requested_test_id', $validatedData['requested_test_id'])->delete();
-        }
-
-        // Store each result
-        foreach ($validatedData['results'] as $result) {
-            TestResult::create([
-                'requested_test_id' => $validatedData['requested_test_id'],
-                'category_id' => $result['category_id'],
-                'result_value' => $result['value'],
-                'added_by' => auth()->id() // Assuming you have authentication
+  public function storeTestResults(Request $request)
+    {
+        try {
+            $validatedData = $request->validate([
+                'requested_test_id' => 'required|exists:requested_tests,id',
+                'results' => 'required|array',
+                'results.*.category_id' => 'required|exists:test_categories,id',
+                'results.*.value' => 'required',
+                // 'additional_value' is optional, so it doesn't need to be required
+                'results.*.additional_value' => 'nullable|string', // Still validate if present
+                // Removed 'results.*.value_type' validation as it's no longer needed
             ]);
-        }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Test results saved successfully'
-        ]);
-    } catch (\Exception $e) {
-        \Log::error('Error saving test results: ' . $e->getMessage());
-        return response()->json([
-            'success' => false,
-            'message' => 'Failed to save test results'
-        ], 500);
+            // Check if results already exist for this test
+            $existingResults = TestResult::where('requested_test_id', $validatedData['requested_test_id'])->exists();
+
+            if ($existingResults) {
+                // Delete existing results if they exist (to update)
+                TestResult::where('requested_test_id', $validatedData['requested_test_id'])->delete();
+            }
+
+            // Store each result
+            foreach ($validatedData['results'] as $result) {
+                // Initialize combinedResultValue with the primary 'value'
+                $combinedResultValue = $result['value'];
+
+                // If 'additional_value' exists and is not empty, append it with a space
+                if (isset($result['additional_value']) && $result['additional_value'] !== null && $result['additional_value'] !== '') {
+                    $combinedResultValue .= ' ' . $result['additional_value'];
+                }
+
+                TestResult::create([
+                    'requested_test_id' => $validatedData['requested_test_id'],
+                    'category_id' => $result['category_id'],
+                    'result_value' => $combinedResultValue, // Use the combined value here
+                    'added_by' => auth()->id() // Assuming you have authentication
+                ]);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Test results saved successfully'
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Validation Error saving test results: ' . $e->getMessage(), ['errors' => $e->errors()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed: ' . $e->getMessage(),
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Error saving test results: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to save test results. An unexpected error occurred.'
+            ], 500);
+        }
     }
-}
 
 }
