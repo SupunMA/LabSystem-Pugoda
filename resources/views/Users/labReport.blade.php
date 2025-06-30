@@ -406,6 +406,7 @@
     }
 
     // Function to create a single page of the report
+// Function to create a single page of the report
 function createReportPage(isFirstPage, pageNumber, totalPages) {
     const page = document.createElement('div');
     page.className = 'page';
@@ -413,6 +414,16 @@ function createReportPage(isFirstPage, pageNumber, totalPages) {
     const container = document.createElement('div');
     container.className = 'container';
     page.appendChild(container);
+
+    let nicRowHtml = '';
+    if (sampleData.nic) {
+        nicRowHtml = `
+            <div class="info-row">
+                <div class="info-label">NIC </div>
+                <div class="info-value">: <span id="qr-code-container" class="qr-code-inline"></span></div>
+            </div>
+        `;
+    }
 
     if (isFirstPage) {
         // First page has the full header
@@ -484,10 +495,7 @@ function createReportPage(isFirstPage, pageNumber, totalPages) {
                         <div class="info-label">REPORT ID </div>
                         <div class="info-value">: ${sampleData.reportId}</div>
                     </div>
-                    <div class="info-row">
-                        <div class="info-label">NIC </div>
-                        <div class="info-value">: <span id="qr-code-container" class="qr-code-inline"></span></div>
-                    </div>
+                    ${nicRowHtml}
                     <div class="info-row">
                         <div class="info-label">PRINTED DATE </div>
                         <div class="info-value">: ${formatDate(new Date())}</div>
@@ -514,19 +522,19 @@ function createReportPage(isFirstPage, pageNumber, totalPages) {
     container.appendChild(testResultsDiv);
 
     // Add the footer
-const footer = document.createElement('div');
-footer.className = 'footer';
-footer.innerHTML = `
-    <div class="footer-item">
-        <img src="https://bootflare.com/wp-content/uploads/2024/01/Mindray-Logo-1536x864.png" class="footer-logo">
-        <span class="footer-text">BC - 10 Fully Automated Hematology Analyzer <br> BA - 88A Biochemistry Analyzer</span>
-    </div>
-    <div class="footer-item">
-        <img src="https://th.bing.com/th/id/R.528ea67c70a8b88e4f07b6567175c74b?rik=RDLPE98IbpDh0Q&riu=http%3a%2f%2fasfgestion.com%2fimages%2flabomed%2fLabomed_Logo_min.png&ehk=sxPj6Y0OXXeHpX7lqL%2fNLOANJg%2fbvRvL6asrK5Qy4y4%3d&risl=&pid=ImgRaw&r=0" class="footer-logo">
-        <span class="footer-text">Quality Control by:<br> Biolabo Extrol - P / Biolabo Extrol - N</span>
-    </div>
-`;
-page.appendChild(footer);
+    const footer = document.createElement('div');
+    footer.className = 'footer';
+    footer.innerHTML = `
+        <div class="footer-item">
+            <img src="https://bootflare.com/wp-content/uploads/2024/01/Mindray-Logo-1536x864.png" class="footer-logo">
+            <span class="footer-text">BC - 10 Fully Automated Hematology Analyzer <br> BA - 88A Biochemistry Analyzer</span>
+        </div>
+        <div class="footer-item">
+            <img src="https://th.bing.com/th/id/R.528ea67c70a8b88e4f07b6567175c74b?rik=RDLPE98IbpDh0Q&riu=http%3a%2f%2fasfgestion.com%2fimages%2flabomed%2fLabomed_Logo_min.png&ehk=sxPj6Y0OXXeHpX7lqL%2fNLOANJg%2fbvRvL6asrK5Qy4y4%3d&risl=&pid=ImgRaw&r=0" class="footer-logo">
+            <span class="footer-text">Quality Control by:<br> Biolabo Extrol - P / Biolabo Extrol - N</span>
+        </div>
+    `;
+    page.appendChild(footer);
 
     return { page, testResultsContainer: testResultsDiv };
 }
@@ -610,7 +618,7 @@ page.appendChild(footer);
         const thead = document.createElement('thead');
         thead.innerHTML = `
             <tr>
-                <th>Test Parameter</th>
+                <th>Test</th>
                 <th>Result</th>
                 <th>Reference Range</th>
             </tr>
