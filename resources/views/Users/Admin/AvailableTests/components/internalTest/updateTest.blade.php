@@ -48,10 +48,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="alert alert-info">
+                    {{-- <div class="alert alert-info">
                         <i class="fas fa-info-circle mr-1"></i> To edit categories and other elements, please use the full edit page.
                         <a href="#" id="full-edit-link" class="alert-link">Full Edit</a>
-                    </div>
+                    </div> --}}
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary">Save Changes</button>
