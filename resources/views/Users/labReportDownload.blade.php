@@ -26,9 +26,10 @@
             background: white;
             overflow: hidden;
             page-break-after: always;
+
         }
         .container {
-            padding: 20px;
+            padding: 20px 40px; /* Increased left and right padding */
             padding-bottom: 80px; /* Space for footer */
         }
         /* Header container */
@@ -56,29 +57,31 @@
 .logo-container {
     display: flex;
     align-items: center; /* Vertically align logo and text */
-    gap: 10px; /* Space between logo and text */
+    gap: 12px; /* Space between logo and text */
 }
 
 /* Logo Styling */
 .logo {
-    width: 60px; /* Adjust logo size */
+    width: 80px; /* Adjust logo size */
     height: auto; /* Maintain aspect ratio */
 }
 
 /* Logo Text Styling */
 .logo-text h1 {
-    color: #e45735; /* Orange color for "HORIZON" */
+    color: #E74C3C; /* Red color for "HORIZON" */
     margin: 0;
-    font-size: 42px; /* Adjust font size */
+    font-size: 50px; /* Adjust font size */
     font-weight: bold;
+    letter-spacing: 1px;
     line-height: 1;
 }
 
 .logo-text h2 {
-    color: #2d5b84; /* Blue color for "LABORATORY" */
+    color: #2d5b84; /* Gray color for "LABORATORY" */
     margin: 0;
-    font-size: 32px; /* Adjust font size */
-    font-weight: bold;
+    font-size: 35px; /* Adjust font size */
+    font-weight: 600;
+    letter-spacing: 2px;
     line-height: 1;
 }
 
@@ -121,14 +124,17 @@
             vertical-align: middle;
         }
         .patient-details-table .label {
+            font-size: 22px;
             font-weight: bold;
             width: 100px;
             padding-left: 8px;
         }
         .patient-details-table .value {
+            font-size: 24px;
             width: 150px;
         }
         .patient-details-table .right-label {
+            font-size: 22px;
             font-weight: bold;
             width: 110px;
             padding-left: 8px;
@@ -136,6 +142,7 @@
 
         /* Test Results Table */
         .test-results table {
+            margin-top: 20PX;
             width: 100%;
             border-collapse: collapse;
         }
@@ -151,12 +158,12 @@
         .test-results td {
             padding: 6px;
             border-bottom: 1px solid #ddd;
-            font-size: 21px;
+            font-size: 23px;
         }
         .title-row td {
             font-weight: bold;
             padding: 8px 6px;
-            font-size: 18px;
+            font-size: 20px;
         }
         .reference-table {
             border-collapse: collapse;
@@ -168,17 +175,38 @@
             padding: 2px 4px;
             text-align: center;
         }
+/* Signature positioning and overall container */
         .technologist-signature {
-            text-align: right;
+            text-align: right; /* Aligns content (image and text) to the right */
             padding-top: 10px;
-            border-top: 1px dotted #000;
-            width: 300px;
+            /* border-top: 1px dotted #000; Remove this if you want the border above the image, or adjust its position */
+            width: 300px; /* Adjust width as needed for your signature and text */
             color: #2d5b84;
             font-weight: bold;
-            font-size: 15px;
+            font-size: 18px;
             position: absolute;
-            right: 20px;
-            bottom: 160px;
+            right: 40px; /* Adjusted slightly to give more space from the right edge */
+            bottom: 160px; /* Adjust this value to move the signature up or down */
+            display: flex; /* Use flexbox to align image and text vertically */
+            flex-direction: column; /* Stack them vertically */
+            align-items: flex-end; /* Align items to the right within the flex container */
+        }
+
+        /* Styling for the signature image */
+        .signature-image {
+            max-width: 400px; /* Adjust as needed, makes the image responsive to the container */
+            height: auto; /* Maintain aspect ratio */
+            margin-bottom: -10px; /* Pull the text closer to the signature image if needed */
+            /* You might need to adjust this margin to position the signature exactly where you want it relative to the text */
+        }
+
+        /* Styling for the signature text */
+        .signature-text {
+            /* You can add specific styles here if you want to differentiate the text from the main .technologist-signature styles */
+            padding-top: 5px; /* Add a little padding above the text if the image is close */
+            border-top: 1px dotted #000; /* Move the dotted line here to be above just the text */
+            width: 100%; /* Ensure the border spans the width of the signature block */
+            text-align: right;
         }
         /* Footer with row layout */
         .footer {
@@ -297,7 +325,7 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Test Parameter</th>
+                            <th>Test</th>
                             <th>Result</th>
                             <th>Reference Range</th>
                         </tr>
@@ -344,24 +372,25 @@
 
             <!-- Signature -->
             <div class="technologist-signature">
-                Medical Laboratory Technologist
+                <img src="{{ asset('img/sign.png') }}" alt="Medical Laboratory Scientist Signature" class="signature-image">
+                <div class="signature-text">Medical Laboratory Scientist</div>
             </div>
 
             <!-- Footer as a table row -->
             <div class="footer">
                 <table class="footer-table">
-                    <tr><td width="15%" align="center">
+                    <tr><td width="20%" align="center">
                             <img src="https://bootflare.com/wp-content/uploads/2024/01/Mindray-Logo-1536x864.png" class="footer-logo">
                         </td>
-                        <td width="35%">
+                        <td width="30%">
                             <strong>Equipment Used:</strong><br>
                             BC - 10 Fully Automated Hematology Analyzer<br>
                             BA - 88A Biochemistry Analyzer
                         </td>
-                        <td width="15%" align="center">
+                        <td width="20%" align="center">
                             <img src="https://th.bing.com/th/id/R.528ea67c70a8b88e4f07b6567175c74b?rik=RDLPE98IbpDh0Q&riu=http%3a%2f%2fasfgestion.com%2fimages%2flabomed%2fLabomed_Logo_min.png&ehk=sxPj6Y0OXXeHpX7lqL%2fNLOANJg%2fbvRvL6asrK5Qy4y4%3d&risl=&pid=ImgRaw&r=0" class="footer-logo">
                         </td>
-                        <td width="35%">
+                        <td width="30%">
                             <strong>Quality Control by:</strong><br>
                             Biolabo Extrol - P / Biolabo Extrol - N
                         </td>
