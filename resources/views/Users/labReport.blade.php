@@ -542,7 +542,7 @@ function createReportPage(isFirstPage, pageNumber, totalPages) {
     // Function to distribute test results across pages
     function distributeTestResults(testResults) {
         sampleData.testResults = generateSampleTestResults();
-        const testResultsPerPage = isFirstPage => isFirstPage ? 15 : 35; // Reduced capacity for first page due to added spacing
+        const testResultsPerPage = isFirstPage => isFirstPage ? 18 : 35; // Reduced capacity for first page due to added spacing
         let currentPage = 1;
         let resultsOnCurrentPage = 0;
         let isFirstPage = true;
