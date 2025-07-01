@@ -104,29 +104,7 @@
 @push('specificCSS')
 <style>
     /* Add some basic styling for better appearance */
-    body {
-        font-family: 'Inter', sans-serif;
-    }
-    .modal-content {
-        border-radius: 0.75rem;
-    }
-    .card {
-        border-radius: 0.75rem;
-        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    }
-    .card-header {
-        border-top-left-radius: 0.75rem;
-        border-top-right-radius: 0.75rem;
-    }
-    .btn {
-        border-radius: 0.5rem;
-    }
-    .form-control, .custom-select {
-        border-radius: 0.5rem;
-    }
-    .dataTables_wrapper .btn {
-        margin-right: 0.5rem;
-    }
+
 
 
 
@@ -151,59 +129,10 @@
         margin-bottom: 10px;
     }
 
-    /* Stack form elements properly */
-    .input-group {
-        flex-wrap: wrap;
-    }
 
-    .input-group .custom-file {
-        flex: 1 1 100%;
-        margin-bottom: 10px;
-    }
-
-    .input-group-append {
-        width: 100%;
-    }
-
-    .input-group-append .btn {
-        width: 100%;
-    }
-
-    /* Improve button layout */
-    .modal-footer {
-        flex-direction: column;
-    }
-
-    .modal-footer .btn {
-        width: 100%;
-        margin-bottom: 10px;
-    }
-
-    .modal-footer .btn:last-child {
-        margin-bottom: 0;
-    }
 }
 
-/* Ensure DataTables responsive controls work properly */
-.dtr-details {
-    width: 100%;
-}
 
-.dtr-details .dtr-data {
-    word-break: break-word;
-}
-
-/* Fix for DataTables responsive child rows */
-table.dataTable.dtr-inline.collapsed > tbody > tr.child > td:first-child {
-    position: relative;
-    padding-left: 30px;
-}
-
-/* Improve action button visibility in child rows */
-table.dataTable.dtr-inline.collapsed > tbody > tr.child .addResultBtn {
-    font-size: 12px;
-    padding: 4px 8px;
-}
 </style>
 @endpush
 
@@ -235,38 +164,7 @@ $('#testsTable').DataTable({
             if (json.data && json.data.length > 0) {
                 return json.data;
             }
-            return [
-                {
-                    id: 1,
-                    patient_name: 'John Doe',
-                    nic: '123456789V',
-                    dob: '1990-05-15',
-                    test_name: 'Blood Sugar Fasting',
-                    test_date: '2024-06-25',
-                    price: 1500.00,
-                    test_id: 101
-                },
-                {
-                    id: 2,
-                    patient_name: 'Jane Smith',
-                    nic: '987654321X',
-                    dob: '1985-11-20',
-                    test_name: 'Complete Blood Count',
-                    test_date: '2024-06-26',
-                    price: 2500.00,
-                    test_id: 102
-                },
-                {
-                    id: 3,
-                    patient_name: 'Peter Jones',
-                    nic: '555444333Y',
-                    dob: '2000-01-01',
-                    test_name: 'Urine Analysis',
-                    test_date: '2024-06-27',
-                    price: 1000.00,
-                    test_id: 103
-                }
-            ];
+
         }
     },
     columnDefs: [
