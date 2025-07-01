@@ -127,6 +127,83 @@
     .dataTables_wrapper .btn {
         margin-right: 0.5rem;
     }
+
+
+
+
+
+
+
+    /* Add this to your CSS section */
+@media (max-width: 768px) {
+    /* Ensure modal is properly sized on small screens */
+    .modal-dialog {
+        margin: 10px;
+        max-width: calc(100% - 20px);
+    }
+
+    .modal-dialog.modal-lg {
+        max-width: calc(100% - 20px);
+    }
+
+    /* Improve form layout on small screens */
+    .modal-body .row .col-md-6 {
+        margin-bottom: 10px;
+    }
+
+    /* Stack form elements properly */
+    .input-group {
+        flex-wrap: wrap;
+    }
+
+    .input-group .custom-file {
+        flex: 1 1 100%;
+        margin-bottom: 10px;
+    }
+
+    .input-group-append {
+        width: 100%;
+    }
+
+    .input-group-append .btn {
+        width: 100%;
+    }
+
+    /* Improve button layout */
+    .modal-footer {
+        flex-direction: column;
+    }
+
+    .modal-footer .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .modal-footer .btn:last-child {
+        margin-bottom: 0;
+    }
+}
+
+/* Ensure DataTables responsive controls work properly */
+.dtr-details {
+    width: 100%;
+}
+
+.dtr-details .dtr-data {
+    word-break: break-word;
+}
+
+/* Fix for DataTables responsive child rows */
+table.dataTable.dtr-inline.collapsed > tbody > tr.child > td:first-child {
+    position: relative;
+    padding-left: 30px;
+}
+
+/* Improve action button visibility in child rows */
+table.dataTable.dtr-inline.collapsed > tbody > tr.child .addResultBtn {
+    font-size: 12px;
+    padding: 4px 8px;
+}
 </style>
 @endpush
 
@@ -134,86 +211,150 @@
 <script>
 $(document).ready(function () {
     // Initialize DataTable (existing code)
-    $('#testsTable').DataTable({
-        processing: true,
-        serverSide: true,
-        responsive: true,
-        scrollX: true,
-        autoWidth: false,
-        lengthChange: true,
-        ajax: {
-            url:  '{{ route("getAllInternalRequestedTests") }}', // Your actual route
-            type: 'GET',
-            error: function (xhr, error, code) {
-                console.error('Error fetching data:', error);
-                toastr.error('Error fetching data. Please check the console for details.');
-            },
-            dataSrc: function (json) {
-                // Dummy data for demonstration since the route doesn't exist here
-                if (json.data && json.data.length > 0) {
-                    return json.data;
+// Replace your DataTable initialization with this corrected version
+$('#testsTable').DataTable({
+    processing: true,
+    serverSide: true,
+    responsive: {
+        details: {
+            type: 'column',
+            target: 0  // Makes the first column (ID) the control column
+        }
+    },
+    scrollX: true,
+    autoWidth: false,
+    lengthChange: true,
+    ajax: {
+        url: '{{ route("getAllInternalRequestedTests") }}',
+        type: 'GET',
+        error: function (xhr, error, code) {
+            console.error('Error fetching data:', error);
+            toastr.error('Error fetching data. Please check the console for details.');
+        },
+        dataSrc: function (json) {
+            if (json.data && json.data.length > 0) {
+                return json.data;
+            }
+            return [
+                {
+                    id: 1,
+                    patient_name: 'John Doe',
+                    nic: '123456789V',
+                    dob: '1990-05-15',
+                    test_name: 'Blood Sugar Fasting',
+                    test_date: '2024-06-25',
+                    price: 1500.00,
+                    test_id: 101
+                },
+                {
+                    id: 2,
+                    patient_name: 'Jane Smith',
+                    nic: '987654321X',
+                    dob: '1985-11-20',
+                    test_name: 'Complete Blood Count',
+                    test_date: '2024-06-26',
+                    price: 2500.00,
+                    test_id: 102
+                },
+                {
+                    id: 3,
+                    patient_name: 'Peter Jones',
+                    nic: '555444333Y',
+                    dob: '2000-01-01',
+                    test_name: 'Urine Analysis',
+                    test_date: '2024-06-27',
+                    price: 1000.00,
+                    test_id: 103
                 }
-                return [
-                    { id: 1, patient_name: 'John Doe', nic: '123456789V', dob: '1990-05-15', test_name: 'Blood Sugar Fasting', test_date: '2024-06-25', price: 1500.00, test_id: 101, actions: '<button class="btn btn-sm btn-info addResultBtn" data-id="1" data-test-id="101"><i class="fas fa-plus-circle"></i> Add Result</button>' },
-                    { id: 2, patient_name: 'Jane Smith', nic: '987654321X', dob: '1985-11-20', test_name: 'Complete Blood Count', test_date: '2024-06-26', price: 2500.00, test_id: 102, actions: '<button class="btn btn-sm btn-info addResultBtn" data-id="2" data-test-id="102"><i class="fas fa-plus-circle"></i> Add Result</button>' },
-                    { id: 3, patient_name: 'Peter Jones', nic: '555444333Y', dob: '2000-01-01', test_name: 'Urine Analysis', test_date: '2024-06-27', price: 1000.00, test_id: 103, actions: '<button class="btn btn-sm btn-info addResultBtn" data-id="3" data-test-id="103"><i class="fas fa-plus-circle"></i> Add Result</button>' }
-                ];
+            ];
+        }
+    },
+    columnDefs: [
+        {
+            className: 'dtr-control',
+            orderable: false,
+            targets: 0  // First column becomes the control
+        },
+        {
+            targets: -1,  // Last column (Actions)
+            orderable: false,
+            searchable: false
+        }
+    ],
+    columns: [
+        {
+            data: 'id',
+            name: 'id',
+            title: 'ID',
+            className: 'dtr-control'  // This adds the responsive control
+        },
+        { data: 'patient_name', name: 'patient_name', title: 'Patient Name' },
+        { data: 'nic', name: 'nic', title: 'NIC', defaultContent: 'N/A' },
+        { data: 'dob', name: 'dob', title: 'DOB' },
+        { data: 'test_name', name: 'test_name', title: 'Test Name' },
+        {
+            data: 'test_date',
+            name: 'test_date',
+            title: 'Date',
+            render: function (data) {
+                return data ? moment(data).format('MMM D,YYYY') : 'N/A';
             }
         },
-        columns: [
-            { data: 'id', name: 'id', title: 'ID' },
-            { data: 'patient_name', name: 'patient_name', title: 'Patient Name' },
-            { data: 'nic', name: 'nic', title: 'NIC' ,defaultContent: 'N/A',},
-            { data: 'dob', name: 'dob', title: 'DOB' },
-            { data: 'test_name', name: 'test_name', title: 'Test Name' },
-            {
-                data: 'test_date',
-                name: 'test_date',
-                title: 'Date',
-                render: function (data) {
-                    return data ? moment(data).format('MMM D,YYYY') : 'N/A';
-                }
-            },
-            {
-                data: 'price',
-                name: 'price',
-                title: 'Price',
-                render: $.fn.dataTable.render.number(',', '.', 2, 'Rs. ')
-            },
-            { data: 'actions', name: 'actions', title: 'Actions', orderable: false, searchable: false }
-        ],
-        order: [[0, 'desc']],
-        dom: 'flBrtip',
-        buttons: [
-            {
-                extend: 'pdf',
-                text: 'PDF',
-                orientation: 'portrait',
-                pageSize: 'A4',
-                exportOptions: {
-                    columns: ':not(:last-child)',
-                },
-            },
-            {
-                extend: 'excel',
-                text: 'Excel',
-                exportOptions: {
-                    columns: ':not(:last-child)',
-                },
-            },
-            {
-                extend: 'print',
-                text: 'Print',
-                exportOptions: {
-                    columns: ':not(:last-child)',
-                },
-            },
-        ],
-        language: {
-            emptyTable: "No data available in the table",
-            processing: "Loading data, please wait...",
+        {
+            data: 'price',
+            name: 'price',
+            title: 'Price',
+            render: $.fn.dataTable.render.number(',', '.', 2, 'Rs. ')
         },
-    });
+        {
+            data: null,  // Changed to null since we're using render function
+            name: 'actions',
+            title: 'Actions',
+            orderable: false,
+            searchable: false,
+            render: function(data, type, row) {
+                return `<button class="btn btn-sm btn-info addResultBtn"
+                          data-id="${row.id}"
+                          data-test-id="${row.test_id || row.availableTests_id}"
+                          data-patient-name="${row.patient_name}"
+                          data-test-name="${row.test_name}">
+                          <i class="fas fa-plus-circle"></i> Add Result
+                        </button>`;
+            }
+        }
+    ],
+    order: [[0, 'desc']],
+    dom: 'flBrtip',
+    buttons: [
+        {
+            extend: 'pdf',
+            text: 'PDF',
+            orientation: 'portrait',
+            pageSize: 'A4',
+            exportOptions: {
+                columns: ':not(:last-child)',
+            },
+        },
+        {
+            extend: 'excel',
+            text: 'Excel',
+            exportOptions: {
+                columns: ':not(:last-child)',
+            },
+        },
+        {
+            extend: 'print',
+            text: 'Print',
+            exportOptions: {
+                columns: ':not(:last-child)',
+            },
+        },
+    ],
+    language: {
+        emptyTable: "No data available in the table",
+        processing: "Loading data, please wait...",
+    }
+});
 
     // Variable to store test categories for Mindray processing
     let mindrayCategories = [];
@@ -222,104 +363,123 @@ $(document).ready(function () {
     let allCategories = [];
 
     // Handle Add Result button click
-    $('#testsTable').on('click', '.addResultBtn', function() {
-        const requestedTestId = $(this).data('id');
-        const testId = $(this).data('test-id'); // This is the `availableTests_id` from your migration
-        const row = $(this).closest('tr');
-        const dataTable = $('#testsTable').DataTable();
-        const rowData = dataTable.row(row).data();
+// Replace the existing click handler with this improved version
+$('#testsTable').on('click', '.addResultBtn', function() {
+    const requestedTestId = $(this).data('id');
+    const testId = $(this).data('test-id');
+    const button = $(this);
+    const dataTable = $('#testsTable').DataTable();
 
-        // Set modal title and data
-        $('#requested_test_id').val(requestedTestId);
-        $('#modalPatientName').text(rowData.patient_name);
-        $('#modalTestName').text(rowData.test_name);
+    // Get row data - handle both regular and responsive modes
+    let rowData;
+    const row = button.closest('tr');
 
-        // Clear previous categories and Mindray section
-        $('#categoriesContainer').empty();
+    if (row.hasClass('child')) {
+        // This is a child row in responsive mode, get parent row
+        const parentRow = row.prev('tr');
+        rowData = dataTable.row(parentRow).data();
+    } else {
+        // Regular row or parent row in responsive mode
+        rowData = dataTable.row(row).data();
+    }
 
-        // Show loading
-        $('#categoriesContainer').html('<div class="text-center py-3"><i class="fas fa-spinner fa-spin fa-2x"></i><p class="mt-2">Loading test categories...</p></div>');
+    // Fallback: if rowData is still undefined, try to get it by button's data attributes
+    if (!rowData) {
+        // You can store additional data attributes on the button for fallback
+        rowData = {
+            patient_name: button.data('patient-name') || 'Unknown Patient',
+            test_name: button.data('test-name') || 'Unknown Test'
+        };
+    }
 
-        // Fetch test categories
-        $.ajax({
-            url: '{{ route("getTestCategories", "") }}/' + testId, // Your actual route
-            method: 'GET',
-            success: function(response) {
-                if (response.success && response.categories.length > 0) {
-                    $('#categoriesContainer').empty(); // Clear loading
+    // Validate that we have the necessary data
+    if (!rowData || !rowData.patient_name) {
+        toastr.error('Unable to retrieve patient data. Please refresh the page and try again.');
+        return;
+    }
 
-                    // Reset arrays
-                    mindrayCategories = [];
-                    allCategories = response.categories; // Store all categories globally for formula reference
+    // Set modal title and data
+    $('#requested_test_id').val(requestedTestId);
+    $('#modalPatientName').text(rowData.patient_name || 'Unknown Patient');
+    $('#modalTestName').text(rowData.test_name || 'Unknown Test');
 
-                    // Check if any category requires Mindray data
-                    const hasMindrayCategories = response.categories.some(category => category.value_type === 'getFromMindray');
+    // Clear previous categories and Mindray section
+    $('#categoriesContainer').empty();
 
-                    if (hasMindrayCategories) {
-                        // Add the common Mindray file upload section at the top
-                        const mindrayUploadHtml = `
-                            <div class="card mb-3" id="mindrayFileUploadSection">
-                                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                                    <h5 class="mb-0"><i class="fas fa-upload"></i> Mindray File Upload</h5>
+    // Show loading
+    $('#categoriesContainer').html('<div class="text-center py-3"><i class="fas fa-spinner fa-spin fa-2x"></i><p class="mt-2">Loading test categories...</p></div>');
 
-                                </div>
-                                <div class="card-body">
-                                    <div class="form-group">
-                                        <label>Upload Mindray .txt file:</label>
-                                        <div class="input-group">
-                                            <div class="custom-file">
-                                                <input type="file" class="custom-file-input" id="master_mindray_file_input" accept=".txt">
-                                                <label class="custom-file-label" for="master_mindray_file_input">Choose .txt file</label>
-                                            </div>
-                                            <div class="input-group-append">
-                                                <button class="btn btn-outline-secondary" type="button" id="readMindrayFileBtn">Read File</button>
-                                            </div>
+    // Rest of your existing code for fetching test categories...
+    $.ajax({
+        url: '{{ route("getTestCategories", "") }}/' + testId,
+        method: 'GET',
+        success: function(response) {
+            // Your existing success handler code remains the same
+            if (response.success && response.categories.length > 0) {
+                $('#categoriesContainer').empty();
+                mindrayCategories = [];
+                allCategories = response.categories;
+
+                const hasMindrayCategories = response.categories.some(category => category.value_type === 'getFromMindray');
+
+                if (hasMindrayCategories) {
+                    const mindrayUploadHtml = `
+                        <div class="card mb-3" id="mindrayFileUploadSection">
+                            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0"><i class="fas fa-upload"></i> Mindray File Upload</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label>Upload Mindray .txt file:</label>
+                                    <div class="input-group">
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="master_mindray_file_input" accept=".txt">
+                                            <label class="custom-file-label" for="master_mindray_file_input">Choose .txt file</label>
                                         </div>
-                                        <small class="form-text text-muted mt-2">Upload a single .txt file from the Mindray machine. Data for relevant categories will be extracted.</small>
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary" type="button" id="readMindrayFileBtn">Read File</button>
+                                        </div>
                                     </div>
-                                        <div class="custom-control custom-switch">
-                                        <input type="checkbox" class="custom-control-input" id="mindrayManualEntryToggle">
-                                        <label class="custom-control-label text-black" for="mindrayManualEntryToggle">Manual Entry</label>
-                                    </div>
+                                    <small class="form-text text-muted mt-2">Upload a single .txt file from the Mindray machine. Data for relevant categories will be extracted.</small>
+                                </div>
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" id="mindrayManualEntryToggle">
+                                    <label class="custom-control-label text-black" for="mindrayManualEntryToggle">Manual Entry</label>
                                 </div>
                             </div>
-                        `;
-                        $('#categoriesContainer').prepend(mindrayUploadHtml);
-                    }
-
-                    // Add categories to form
-                    response.categories.forEach(function(category, index) {
-                        const categoryHtml = createCategoryInputs(category, index);
-                        $('#categoriesContainer').append(categoryHtml);
-                        if (category.value_type === 'getFromMindray') {
-                            mindrayCategories.push({
-                                id: category.id,
-                                name: category.name, // Store name for formula evaluation
-                                param: category.value_type_Value,
-                                index: index
-                            });
-                        }
-                    });
-
-                    // Set initial state for Mindray inputs based on toggle (default: readonly)
-                    // This must be done AFTER categories are added to the DOM
-                    $('.mindray-result-input').prop('readonly', !$('#mindrayManualEntryToggle').is(':checked'));
-
-                    // Recalculate formula fields on load if there are any
-                    calculateAllFormulaFields();
-
-                } else {
-                    $('#categoriesContainer').html('<div class="alert alert-warning">No test categories found for this test.</div>');
+                        </div>
+                    `;
+                    $('#categoriesContainer').prepend(mindrayUploadHtml);
                 }
-            },
-            error: function() {
-                $('#categoriesContainer').html('<div class="alert alert-danger">Failed to load test categories. Please try again.</div>');
-            }
-        });
 
-        // Show modal
-        $('#resultModal').modal('show');
+                response.categories.forEach(function(category, index) {
+                    const categoryHtml = createCategoryInputs(category, index);
+                    $('#categoriesContainer').append(categoryHtml);
+                    if (category.value_type === 'getFromMindray') {
+                        mindrayCategories.push({
+                            id: category.id,
+                            name: category.name,
+                            param: category.value_type_Value,
+                            index: index
+                        });
+                    }
+                });
+
+                $('.mindray-result-input').prop('readonly', !$('#mindrayManualEntryToggle').is(':checked'));
+                calculateAllFormulaFields();
+
+            } else {
+                $('#categoriesContainer').html('<div class="alert alert-warning">No test categories found for this test.</div>');
+            }
+        },
+        error: function() {
+            $('#categoriesContainer').html('<div class="alert alert-danger">Failed to load test categories. Please try again.</div>');
+        }
     });
+
+    // Show modal
+    $('#resultModal').modal('show');
+});
 
     // Function to create appropriate inputs based on category type
     function createCategoryInputs(category, index) {
