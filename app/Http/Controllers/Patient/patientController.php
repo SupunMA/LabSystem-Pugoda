@@ -147,8 +147,10 @@ class patientController extends Controller
         // Get file name for download
         $fileName = 'Report_' . $requestedTestId . '_' . date('Y-m-d') . '.pdf';
 
-        // Return file download response
-        return response()->download($filePath, $fileName);
+        // Return file download response with explicit headers
+        return response()->download($filePath, $fileName, [
+            'Content-Type' => 'application/pdf',
+        ]);
     }
 
     public function viewReport($requestedTestId)
@@ -189,8 +191,11 @@ class patientController extends Controller
             abort(404, 'Report file not found on server.');
         }
 
-        // Return file for inline viewing (opens in browser)
-        return response()->file($filePath);
+        // Return file for inline viewing with explicit headers
+        return response()->file($filePath, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="report.pdf"'
+        ]);
     }
 
 
@@ -211,6 +216,7 @@ class patientController extends Controller
                 'users.name as patient_name',
                 'patients.gender',
                 'patients.dob',
+                'users.nic',
                 'requested_tests.test_date',
                 'availableTests.id as test_id',
                 'availableTests.name as test_name',
@@ -250,17 +256,31 @@ class patientController extends Controller
         // Prepare data for the PDF (same as preview)
         $formattedResults = $this->getFormattedTestResults($testResult->test_id, $testResult->requested_test_id);
 
-        // Prepare data for the view
-        $sampleData = [
-            'patientName' => $testResult->patient_name,
-            'age' => $age,
-            'gender' => ucfirst(strtolower($testResult->gender)),
-            'reportDate' => date('Y-m-d', strtotime($testResult->test_date)),
-            'reportId' => $reportId,
-            'testName' => $testResult->test_name,
-            'specimenType' => $testResult->specimen,
-            'testResults' => $formattedResults
-        ];
+    // Generate QR code URL using online service
+    $qrCodeUrl = null;
+    if (!empty($testResult->nic)) {
+        // Using Google Charts API (simple and reliable)
+        $qrCodeUrl = 'https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=' . urlencode($testResult->nic);
+
+        // Or use QR Server API
+        // $qrCodeUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' . urlencode($testResult->nic);
+    }
+
+
+
+    // Prepare data for the view
+    $sampleData = [
+        'patientName' => $testResult->patient_name,
+        'nic' => $testResult->nic,
+        'nicQrCode' => $qrCodeUrl,
+        'age' => $age,
+        'gender' => ucfirst(strtolower($testResult->gender)),
+        'reportDate' => date('Y-m-d', strtotime($testResult->test_date)),
+        'reportId' => $reportId,
+        'testName' => $testResult->test_name,
+        'specimenType' => $testResult->specimen,
+        'testResults' => $formattedResults
+    ];
 
         // Create PDF filename
         $filename = $reportId . '.pdf';
