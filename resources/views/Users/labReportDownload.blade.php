@@ -194,6 +194,43 @@
             padding: 2px 4px;
             text-align: center;
         }
+
+        /* Styling for HTML content in titles and paragraphs */
+        .html-content h1 {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 8px 0 4px 0;
+            color: #000000;
+        }
+        .html-content h2 {
+            font-size: 22px;
+            font-weight: bold;
+            margin: 6px 0 3px 0;
+            color: #2d5b84;
+        }
+        .html-content h3 {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 5px 0 2px 0;
+            color: #2d5b84;
+        }
+        .html-content p {
+            margin: 4px 0;
+            line-height: 1.3;
+        }
+        .html-content br {
+            line-height: 1.5;
+        }
+        .html-content strong, .html-content b {
+            font-weight: bold;
+        }
+        .html-content em, .html-content i {
+            font-style: italic;
+        }
+        .html-content u {
+            text-decoration: underline;
+        }
+
 /* Signature positioning and overall container */
         .technologist-signature {
             text-align: right; /* Aligns content (image and text) to the right */
@@ -375,11 +412,11 @@
                                 </tr>
                             @elseif($test['isTitle'])
                                 <tr class="title-row">
-                                    <td colspan="3">{{ $test['name'] }}</td>
+                                    <td colspan="3" class="html-content">{!! $test['name'] !!}</td>
                                 </tr>
                             @elseif($test['isParagraph'])
                                 <tr class="paragraph-row">
-                                    <td colspan="3">{{ $test['result'] }}</td>
+                                    <td colspan="3" class="html-content">{!! $test['result'] !!}</td>
                                 </tr>
                             @else
                                 <tr>
