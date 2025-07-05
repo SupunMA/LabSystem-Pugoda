@@ -140,6 +140,25 @@
             padding-left: 8px;
         }
 
+        /* QR Code styling */
+        .qr-code-container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .qr-code {
+            width: 80px;
+            height: 80px;
+            border: none;
+            display: inline-block;
+        }
+
+        .no-qr {
+            font-size: 24px;
+            color: #666;
+        }
+
         /* Test Results Table */
         .test-results table {
             margin-top: 20PX;
@@ -233,6 +252,7 @@
         margin-right: 5px;
         }
     </style>
+    <!-- QR Code Library - Not needed for server-side generation -->
 </head>
 <body>
     <div class="page">
@@ -291,6 +311,7 @@
                     <td class="value">{{ $sampleData['age'] }}</td>
                     <td class="right-label">REPORT ID:</td>
                     <td class="value">{{ $sampleData['reportId'] }}</td>
+
                 </tr>
                 <tr>
                     <td class="label">GENDER:</td>
@@ -305,14 +326,30 @@
                             {{ $sampleData['gender'] }}
                         @endif
                     </td>
-                    <td class="right-label">DOWNLOADED DATE:</td>
-                    <td class="value">{{ date('M d, Y') }}</td>
+
+                    <td class="right-label">NIC:</td>
+                    <td class="value">
+                        @if (!empty($sampleData['nicQrCode']))
+                            <div class="qr-code-container">
+                                <img src="{{ $sampleData['nicQrCode'] }}" alt="NIC QR Code" class="qr-code">
+                            </div>
+                        @elseif (!empty($sampleData['nic']))
+                            <div class="qr-code-container">
+                                <span class="no-qr">QR Code Generation Failed</span>
+                            </div>
+                        @else
+                            -
+                        @endif
+                    </td>
+
                 </tr>
                 <tr>
                     <td class="label">SPECIMEN:</td>
                     <td class="value">{{ $sampleData['specimenType'] }}</td>
-                    <td class="right-label"></td>
-                    <td class="value"></td>
+
+
+                    <td class="right-label">DOWNLOADED DATE:</td>
+                    <td class="value">{{ date('M d, Y') }}</td>
                 </tr>
                 <tr>
                     <td class="label">TEST NAME:</td>
@@ -399,5 +436,7 @@
             </div>
         </div>
     </div>
+
+    <!-- Server-side QR code generation - no JavaScript needed -->
 </body>
 </html>
