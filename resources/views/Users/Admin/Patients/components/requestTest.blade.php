@@ -40,10 +40,13 @@
 </div>
 
 @push('specificCSS')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+<!-- Select2 CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap4-theme@1.0.0/dist/select2-bootstrap4.min.css">
 @endpush
 
 @push('specificJs')
+<!-- Select2 JS -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     $(document).on('click', '.requestTestBtn', function () {
@@ -62,8 +65,8 @@
                 const testSelect = $('#testName');
                 testSelect.empty(); // Clear existing options
 
-                // Add a placeholder option (Select2 will use this as the initial selection)
-                testSelect.append('<option value="">Select On-Site or Send-Out Tests</option>');
+                // Add a placeholder option
+                testSelect.append('<option value="" disabled selected>Select On-Site or Send-Out Tests</option>');
 
                 // Populate the dropdown with test options
                 response.forEach(test => {
@@ -71,17 +74,29 @@
                     testSelect.append(`<option value="${test.id}" data-color="${fontColor}" style="color: ${fontColor};">${test.name} (${test.specimen}) - Rs/රු.${test.price}</option>`);
                 });
 
-                // Initialize Select2 after options are populated
+                // Initialize Select2 after populating options
                 testSelect.select2({
-                    placeholder: "Select On-Site or Send-Out Tests", // This will be visible when nothing is selected
-                    allowClear: true // Option to clear the selection
+                    placeholder: 'Search and select a test...',
+                    allowClear: true,
+                    width: '100%',
+                    dropdownParent: $('#requestTestModal'), // Important: ensures dropdown appears above modal
+                    templateResult: function(option) {
+                        if (!option.id) {
+                            return option.text;
+                        }
+                        const $option = $(option.element);
+                        const color = $option.data('color');
+                        return $('<span style="color: ' + color + '">' + option.text + '</span>');
+                    },
+                    templateSelection: function(option) {
+                        if (!option.id) {
+                            return option.text;
+                        }
+                        const $option = $(option.element);
+                        const color = $option.data('color');
+                        return $('<span style="color: ' + color + '">' + option.text + '</span>');
+                    }
                 });
-
-                // Set the initial color of the Select2 container based on the default selected option (if any)
-                // This might be tricky as the placeholder isn't an option. You might need to re-evaluate
-                // the color change logic with Select2, as Select2 creates its own DOM structure.
-                // For now, the option text itself will have the color. If you need the Select2 *input* to change color,
-                // you'll need a different approach (e.g., custom Select2 template or CSS based on selected value).
 
                 // Show the modal
                 $('#requestTestModal').modal('show');
@@ -92,30 +107,17 @@
         });
     });
 
-    // To apply the color to the *selected* item within the Select2 input,
-    // you'll likely need a custom `templateSelection` function for Select2.
-    // The current `.on('change')` listener on the original select element won't directly
-    // style the Select2 generated elements.
-    // For a quick fix, let's just make sure the option itself still has the color,
-    // and if you want the Select2 display box to change color, it's more complex.
-    // For now, remove the direct `.css('color', color)` on the select element itself,
-    // as Select2 will manage its own styling.
-    // The options within the dropdown will still display their respective colors.
-    // If you specifically want the selected value in the Select2 input box to also have the color,
-    // you'll need to use Select2's `templateSelection` option.
-    // Example for templateSelection (add this inside testSelect.select2({...})):
-    /*
-    templateSelection: function(state) {
-        if (!state.id) {
-            return state.text;
-        }
-        const color = $(state.element).data('color');
-        if (color) {
-            return $('<span>' + state.text + '</span>').css('color', color);
-        }
-        return state.text;
-    }
-    */
+    // Handle modal close event to destroy Select2 instance
+    $('#requestTestModal').on('hidden.bs.modal', function () {
+        $('#testName').select2('destroy');
+    });
+
+    // Change the color of the select element based on the selected option
+    $('#testName').on('select2:select', function (e) {
+        const selectedOption = $(e.target).find('option:selected');
+        const color = selectedOption.data('color');
+        $(this).next('.select2-container').find('.select2-selection__rendered').css('color', color);
+    });
 </script>
 
 <script>
@@ -137,7 +139,6 @@
         document.getElementById('testDate').value = today;
     });
 </script>
-
 
 <script>
     $(document).ready(function () {
