@@ -1,0 +1,51 @@
+==================================================
+✅ MINDRAY PARSED RESULTS
+==================================================
+Patient ID: REPET^^^^MR
+Patient Name: Patient
+Date & Time: 2025-06-26 15:04:49
+==================================================
+
+WBC: 6.4
+WBC_unit: 10*3/uL
+LYM#: 2.8
+LYM#_unit: 10*3/uL
+LYM%: 43.8
+LYM%_unit: %
+RBC: 4.02
+RBC_unit: 10*6/uL
+HGB: 5.9
+HGB_unit: g/dL
+MCV: 51.1
+MCV_unit: fL
+MCH: 14.7
+MCH_unit: pg
+MCHC: 28.7
+MCHC_unit: g/dL
+RDW-CV: 18.9
+RDW-CV_unit: %
+RDW-SD: 31.8
+RDW-SD_unit: fL
+HCT: 20.6
+HCT_unit: %
+PLT: 321
+PLT_unit: 10*3/uL
+MPV: 7.4
+MPV_unit: fL
+PDW: 14.6
+PCT: 2.37
+PCT_unit: mL/L
+MID#: 0.4
+MID#_unit: 10*3/uL
+MID%: 5.6
+MID%_unit: %
+GRAN#: 3.2
+GRAN#_unit: 10*3/uL
+GRAN%: 50.6
+GRAN%_unit: %
+PLCR: 12.1
+PLCR_unit: %
+
+==================================================
+End of Results
+==================================================
