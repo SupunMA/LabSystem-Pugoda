@@ -99,7 +99,7 @@
 .report-title {
     color: #2d5b84; /* Blue color for the title */
     text-align: center; /* Center the title */
-    font-size: 22px; /* Adjust font size */
+    font-size: 25px; /* Adjust font size */
     margin: 5px 0; /* Add spacing above and below */
     font-weight: bold;
 }
@@ -393,7 +393,7 @@
                     <td class="value" colspan="3"><b>{{ $sampleData['testName'] }}</b></td>
                 </tr>
             </table>
-
+<div class="divider"></div>
             <!-- Test Results -->
             <div class="test-results">
                 <table>
