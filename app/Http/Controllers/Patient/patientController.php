@@ -260,10 +260,10 @@ class patientController extends Controller
     $qrCodeUrl = null;
     if (!empty($testResult->nic)) {
         // Using Google Charts API (simple and reliable)
-        $qrCodeUrl = 'https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=' . urlencode($testResult->nic);
+        // $qrCodeUrl = 'https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=' . urlencode($testResult->nic);
 
         // Or use QR Server API
-        // $qrCodeUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' . urlencode($testResult->nic);
+        $qrCodeUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' . urlencode($testResult->nic);
     }
 
 
