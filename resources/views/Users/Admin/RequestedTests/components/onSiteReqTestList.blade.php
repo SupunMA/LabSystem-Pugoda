@@ -147,7 +147,7 @@ $('#testsTable').DataTable({
     responsive: {
         details: {
             type: 'column',
-            target: 0  // Makes the first column (ID) the control column
+            target: 0
         }
     },
     scrollX: true,
@@ -163,8 +163,10 @@ $('#testsTable').DataTable({
         dataSrc: function (json) {
             if (json.data && json.data.length > 0) {
                 return json.data;
+            } else {
+                // Return empty array if no data
+                return [];
             }
-
         }
     },
     columnDefs: [
@@ -249,9 +251,10 @@ $('#testsTable').DataTable({
         },
     ],
     language: {
-        emptyTable: "No data available in the table",
-        processing: "Loading data, please wait...",
-    }
+        emptyTable: "No test records found.", // Custom message for empty table
+        processing: '<i class="fas fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span>', // Better loading indicator
+        zeroRecords: "No matching records found" // For filtered empty results
+    },
 });
 
     // Variable to store test categories for Mindray processing
