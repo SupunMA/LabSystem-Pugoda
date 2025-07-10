@@ -85,6 +85,28 @@
     </div>
 </div>
 
+{{-- Delete Modal --}}
+<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this requested test? This action cannot be undone.
+                <input type="hidden" id="delete_requested_test_id" name="delete_requested_test_id">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap4.min.js"></script>
@@ -214,12 +236,17 @@ $('#testsTable').DataTable({
             searchable: false,
             render: function(data, type, row) {
                 return `<button class="btn btn-sm btn-info addResultBtn"
-                          data-id="${row.id}"
-                          data-test-id="${row.test_id || row.availableTests_id}"
-                          data-patient-name="${row.patient_name}"
-                          data-test-name="${row.test_name}">
-                          <i class="fas fa-plus-circle"></i> Add Result
-                        </button>`;
+                            data-id="${row.id}"
+                            data-test-id="${row.test_id || row.availableTests_id}"
+                            data-patient-name="${row.patient_name}"
+                            data-test-name="${row.test_name}">
+                            <i class="fas fa-plus-circle"></i> Add Result
+                        </button>
+                            <button class="btn btn-sm btn-danger deleteTestBtn mb-1"
+                            data-id="${row.id}">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                        `;
             }
         }
     ],
@@ -648,103 +675,265 @@ $('#testsTable').on('click', '.addResultBtn', function() {
     // --- End Mindray Manual Entry Toggle Logic ---
 
     // Handle Save Results button click
-    $('#saveResultsBtn').click(function() {
-        // Check if all required fields are filled
-        let valid = true;
-        $('#resultForm [required]').each(function() {
-            if ($(this).val() === '' || ($(this).attr('type') === 'radio' && $(`input[name="${$(this).attr('name')}"]:checked`).length === 0)) {
-                valid = false;
-                $(this).addClass('is-invalid');
-            } else {
-                $(this).removeClass('is-invalid');
-            }
-        });
+$('#saveResultsBtn').click(function() {
+    // Check if we're in confirmation mode
+    if ($(this).hasClass('confirm-mode')) {
+        // User confirmed, proceed with saving
+        proceedWithSaving();
+        return;
+    }
 
-        if (!valid) {
-            toastr.error('Please fill in all required fields.');
-            return;
+    // Check if all required fields are filled
+    let valid = true;
+    $('#resultForm [required]').each(function() {
+        if ($(this).val() === '' || ($(this).attr('type') === 'radio' && $(`input[name="${$(this).attr('name')}"]:checked`).length === 0)) {
+            valid = false;
+            $(this).addClass('is-invalid');
+        } else {
+            $(this).removeClass('is-invalid');
+        }
+    });
+
+    if (!valid) {
+        toastr.error('Please fill in all required fields.');
+        return;
+    }
+
+    // Show confirmation summary
+    showConfirmationSummary();
+});
+
+// Function to show confirmation summary
+function showConfirmationSummary() {
+    // Collect all form data for summary
+    const patientName = $('#modalPatientName').text();
+    const testName = $('#modalTestName').text();
+    let summaryHtml = '';
+
+    // Build summary of all results
+    $('.category-card').each(function() {
+        const categoryName = $(this).data('category-name');
+        const valueType = $(this).find('input[name^="results"][name$="[value_type]"]').val();
+        let value = '';
+        let additionalValue = '';
+
+        // Get value based on input type
+        if (valueType === 'getFromMindray' || valueType === 'formula' || valueType === 'number' || valueType === 'range') {
+            value = $(this).find('input[name^="results"][name$="[value]"]').val();
+        } else if ($(this).find('textarea[name^="results"][name$="[value]"]').length) {
+            value = $(this).find('textarea[name^="results"][name$="[value]"]').val();
+        } else if ($(this).find('input[type="radio"][name^="results"][name$="[value]"]:checked').length) {
+            value = $(this).find('input[type="radio"][name^="results"][name$="[value]"]:checked').val();
+            if (valueType === 'negpos_with_Value') {
+                additionalValue = $(this).find('input[name^="results"][name$="[additional_value]"]').val();
+            }
+        } else {
+            value = $(this).find('input[name^="results"][name$="[value]"], select[name^="results"][name$="[value]"]').val();
         }
 
-        // Collect all form data
-        const formData = {
-            requested_test_id: $('#requested_test_id').val(),
-            results: []
-        };
+        // Format the summary entry
+        summaryHtml += `
+            <div class="row mb-2">
+                <div class="col-md-4">
+                    <strong>${categoryName}:</strong>
+                </div>
+                <div class="col-md-8">
+                    <span class="text-primary">${value}</span>
+                    ${additionalValue ? `<br><small class="text-muted">Additional: ${additionalValue}</small>` : ''}
+                </div>
+            </div>
+        `;
+    });
 
-        // Collect results from each category
-        $('.category-card').each(function(index) {
-            const categoryId = $(this).find('input[name^="results"][name$="[category_id]"]').val();
-            const valueType = $(this).find('input[name^="results"][name$="[value_type]"]').val();
-            let value;
-            let additionalValue = null;
+    // Create confirmation content
+    const confirmationContent = `
+        <div class="confirmation-summary">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> Please review the results before saving.
+            </div>
 
-            // Handle different input types
-            if (valueType === 'getFromMindray' || valueType === 'formula') {
-                 // For Mindray and Formula, value is taken directly from the displayed input field
-                value = $(this).find('input[name^="results"][name$="[value]"]').val();
-            } else if ($(this).find('textarea[name^="results"][name$="[value]"]').length) {
-                value = $(this).find('textarea[name^="results"][name$="[value]"]').val();
-            } else if ($(this).find('input[type="radio"][name^="results"][name$="[value]"]:checked').length) {
-                value = $(this).find('input[type="radio"][name^="results"][name$="[value]"]:checked').val();
-                if (valueType === 'negpos_with_Value') {
-                    // Changed to 'text' type, so just get the value
-                    additionalValue = $(this).find('input[name^="results"][name$="[additional_value]"]').val();
-                }
-            } else { // Includes 'number', 'range', 'dropdown'
-                value = $(this).find('input[name^="results"][name$="[value]"], select[name^="results"][name$="[value]"]').val();
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Patient:</label>
+                        <div class="font-weight-bold text-dark">${patientName}</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Test:</label>
+                        <div class="font-weight-bold text-dark">${testName}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Results Summary</h5>
+                </div>
+                <div class="card-body">
+                    ${summaryHtml}
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Hide the form and show confirmation
+    $('#categoriesContainer').hide();
+    $('#resultForm').append(confirmationContent);
+
+    // Update modal buttons
+    $('#saveResultsBtn')
+        .removeClass('btn-primary')
+        .addClass('btn-success confirm-mode')
+        .html('<i class="fas fa-check"></i> Confirm & Save');
+
+    // Add back button
+    const backButton = `
+        <button type="button" class="btn btn-warning" id="backToFormBtn">
+            <i class="fas fa-arrow-left"></i> Back to Form
+        </button>
+    `;
+    $('#saveResultsBtn').before(backButton);
+
+    // Update modal title
+    $('#resultModalLabel').text('Confirm Test Results');
+}
+
+// Function to go back to form
+$(document).on('click', '#backToFormBtn', function() {
+    // Remove confirmation summary
+    $('.confirmation-summary').remove();
+
+    // Show form again
+    $('#categoriesContainer').show();
+
+    // Reset save button
+    $('#saveResultsBtn')
+        .removeClass('btn-success confirm-mode')
+        .addClass('btn-primary')
+        .html('<i class="fas fa-save"></i> Save Results');
+
+    // Remove back button
+    $('#backToFormBtn').remove();
+
+    // Reset modal title
+    $('#resultModalLabel').text('Add Test Results');
+});
+
+// Function to proceed with actual saving
+function proceedWithSaving() {
+    // Collect all form data
+    const formData = {
+        requested_test_id: $('#requested_test_id').val(),
+        results: []
+    };
+
+    // Collect results from each category
+    $('.category-card').each(function(index) {
+        const categoryId = $(this).find('input[name^="results"][name$="[category_id]"]').val();
+        const valueType = $(this).find('input[name^="results"][name$="[value_type]"]').val();
+        let value;
+        let additionalValue = null;
+
+        // Handle different input types
+        if (valueType === 'getFromMindray' || valueType === 'formula') {
+            value = $(this).find('input[name^="results"][name$="[value]"]').val();
+        } else if ($(this).find('textarea[name^="results"][name$="[value]"]').length) {
+            value = $(this).find('textarea[name^="results"][name$="[value]"]').val();
+        } else if ($(this).find('input[type="radio"][name^="results"][name$="[value]"]:checked').length) {
+            value = $(this).find('input[type="radio"][name^="results"][name$="[value]"]:checked').val();
+            if (valueType === 'negpos_with_Value') {
+                additionalValue = $(this).find('input[name^="results"][name$="[additional_value]"]').val();
             }
+        } else {
+            value = $(this).find('input[name^="results"][name$="[value]"], select[name^="results"][name$="[value]"]').val();
+        }
 
-            formData.results.push({
-                category_id: categoryId,
-                value_type: valueType, // Include value type for server-side processing
-                value: value,
-                additional_value: additionalValue // For negpos_with_Value
-            });
-        });
-
-        // Send data to server
-        $.ajax({
-            url: '{{ route("storeTestResults") }}', // Replace with your actual Laravel route
-            method: 'POST',
-            data: formData,
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            beforeSend: function() {
-                // Disable button and show loading state
-                $('#saveResultsBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Saving...');
-            },
-            success: function(response) {
-                // Dummy success response for demonstration
-                const successResponse = {
-                    success: true,
-                    message: 'Results saved successfully!'
-                };
-
-                if (successResponse.success) {
-                    // Show success message
-                    toastr.success(successResponse.message);
-
-                    // Close modal and refresh table
-                    $('#resultModal').modal('hide');
-                    $('#testsTable').DataTable().ajax.reload();
-                } else {
-                    toastr.error(successResponse.message || 'Failed to save results.');
-                }
-            },
-            error: function(xhr) {
-                const errorMsg = xhr.responseJSON && xhr.responseJSON.message
-                    ? xhr.responseJSON.message
-                    : 'An error occurred while saving results.';
-
-                toastr.error(errorMsg);
-            },
-            complete: function() {
-                // Reset button state
-                $('#saveResultsBtn').prop('disabled', false).html('<i class="fas fa-save"></i> Save Results');
-            }
+        formData.results.push({
+            category_id: categoryId,
+            value_type: valueType,
+            value: value,
+            additional_value: additionalValue
         });
     });
+
+    // Send data to server
+    $.ajax({
+        url: '{{ route("storeTestResults") }}',
+        method: 'POST',
+        data: formData,
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        beforeSend: function() {
+            // Disable buttons and show loading state
+            $('#saveResultsBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Saving...');
+            $('#backToFormBtn').prop('disabled', true);
+        },
+        success: function(response) {
+            // Handle successful response
+            if (response.success) {
+                // Show success message
+                toastr.success(response.message || 'Results saved successfully!');
+
+                // Close modal and refresh table
+                $('#resultModal').modal('hide');
+                $('#testsTable').DataTable().ajax.reload();
+            } else {
+                toastr.error(response.message || 'Failed to save results.');
+                // Go back to form on error
+                $('#backToFormBtn').click();
+            }
+        },
+        error: function(xhr) {
+            const errorMsg = xhr.responseJSON && xhr.responseJSON.message
+                ? xhr.responseJSON.message
+                : 'An error occurred while saving results.';
+
+            toastr.error(errorMsg);
+
+            // Go back to form on error
+            $('#backToFormBtn').click();
+        },
+        complete: function() {
+            // Reset button states
+            $('#saveResultsBtn').prop('disabled', false);
+            $('#backToFormBtn').prop('disabled', false);
+
+            // If still in confirm mode, reset the button text
+            if ($('#saveResultsBtn').hasClass('confirm-mode')) {
+                $('#saveResultsBtn').html('<i class="fas fa-check"></i> Confirm & Save');
+            }
+        }
+    });
+}
+
+// Reset modal state when it's closed
+$('#resultModal').on('hidden.bs.modal', function () {
+    // Remove confirmation summary if it exists
+    $('.confirmation-summary').remove();
+
+    // Show form
+    $('#categoriesContainer').show();
+
+    // Reset save button
+    $('#saveResultsBtn')
+        .removeClass('btn-success confirm-mode')
+        .addClass('btn-primary')
+        .html('<i class="fas fa-save"></i> Save Results')
+        .prop('disabled', false);
+
+    // Remove back button
+    $('#backToFormBtn').remove();
+
+    // Reset modal title
+    $('#resultModalLabel').text('Add Test Results');
+
+    // Clear form
+    $('#resultForm')[0].reset();
+    $('#categoriesContainer').empty();
+});
 
     // Reset validation on input change
     $(document).on('input change', '#resultForm [required]', function() {
@@ -779,6 +968,44 @@ $('#testsTable').on('click', '.addResultBtn', function() {
         "positionClass": "toast-top-right",
         "timeOut": "8000"
     };
+
+    // Handle Delete button click
+$('#testsTable').on('click', '.deleteTestBtn', function() {
+    const requestedTestIdToDelete = $(this).data('id');
+    $('#delete_requested_test_id').val(requestedTestIdToDelete);
+    $('#deleteConfirmationModal').modal('show');
+});
+
+    // Handle Confirm Delete button click
+    $('#confirmDeleteBtn').click(function() {
+        const requestedTestId = $('#delete_requested_test_id').val();
+        $.ajax({
+            url: '{{ route("destroyRequestedTest", "") }}/' + requestedTestId,
+            type: 'POST', // Using POST with _method: 'DELETE' for Laravel
+            data: {
+                _method: 'DELETE', // Spoof DELETE request
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            beforeSend: function() {
+                $('#confirmDeleteBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Deleting...');
+            },
+            success: function(response) {
+                if (response.success) {
+                    toastr.success(response.message || 'Requested test deleted successfully!');
+                    $('#deleteConfirmationModal').modal('hide');
+                    $('#testsTable').DataTable().ajax.reload();
+                } else {
+                    toastr.error(response.message || 'Failed to delete requested test.');
+                }
+            },
+            error: function(xhr) {
+                // ... error handling
+            },
+            complete: function() {
+                $('#confirmDeleteBtn').prop('disabled', false).html('Delete');
+            }
+        });
+    });
 });
 </script>
 @endpush

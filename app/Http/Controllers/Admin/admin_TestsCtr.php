@@ -337,4 +337,24 @@ public function getTestCategories($testId)
         }
     }
 
+    //Delete Requested Test
+        public function destroyRequestedTest($id)
+    {
+        try {
+            $requestedTest = RequestedTests::findOrFail($id);
+            $requestedTest->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Requested test deleted successfully.'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error deleting requested test: ' . $e->getMessage(), ['id' => $id]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete requested test. ' . $e->getMessage()
+            ], 500); // 500 Internal Server Error
+        }
+    }
+
 }

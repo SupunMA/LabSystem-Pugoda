@@ -101,6 +101,7 @@ Route::group(['prefix'=>'Admin','middleware'=>['checkAdmin','auth','lockBack']],
     //request Test
     Route::get('/getAvailableTests', [admin_TestsCtr::class, 'getAvailableTests'])->name('admin.getAvailableTests'); //by all patient view
     Route::post('/request-test', [admin_TestsCtr::class, 'requestTest'])->name('requestTest'); // by all patient view
+    Route::delete('/requested-test/{id}', [admin_TestsCtr::class, 'destroyRequestedTest'])->name('destroyRequestedTest');// Delete test
 
     //Test
     Route::get('AddTest', [admin_TestsCtr::class, 'addTest'])->name('admin.addTest');
