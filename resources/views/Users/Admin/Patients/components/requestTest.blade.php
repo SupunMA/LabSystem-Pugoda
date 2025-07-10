@@ -32,7 +32,12 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Request Test</button>
+                    <button type="submit" class="btn btn-primary" id="requestTestBtn">
+                        <span id="requestBtnText">Request Test</span>
+                        <span id="requestBtnSpinner" class="spinner-border spinner-border-sm ms-2" role="status" style="display: none;">
+                            <span class="sr-only">Loading...</span>
+                        </span>
+                    </button>
                 </div>
             </form>
         </div>
@@ -43,6 +48,40 @@
 <!-- Select2 CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap4-theme@1.0.0/dist/select2-bootstrap4.min.css">
+
+<!-- Custom CSS for button animation -->
+<style>
+    .btn-loading {
+        position: relative;
+        pointer-events: none;
+    }
+
+    .btn-loading .spinner-border {
+        width: 16px;
+        height: 16px;
+        border-width: 2px;
+    }
+
+    /* Pulse animation for loading state */
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+            opacity: 1;
+        }
+        50% {
+            transform: scale(1.05);
+            opacity: 0.8;
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    .btn-loading {
+        animation: pulse 1.5s infinite;
+    }
+</style>
 @endpush
 
 @push('specificJs')
@@ -110,6 +149,8 @@
     // Handle modal close event to destroy Select2 instance
     $('#requestTestModal').on('hidden.bs.modal', function () {
         $('#testName').select2('destroy');
+        // Reset button state when modal is closed
+        resetSubmitButton();
     });
 
     // Change the color of the select element based on the selected option
@@ -118,6 +159,34 @@
         const color = selectedOption.data('color');
         $(this).next('.select2-container').find('.select2-selection__rendered').css('color', color);
     });
+
+    // Function to show loading state
+    function showLoadingState() {
+        const $submitBtn = $('#requestTestBtn');
+        const $btnText = $('#requestBtnText');
+        const $spinner = $('#requestBtnSpinner');
+
+        $submitBtn.addClass('btn-loading').prop('disabled', true);
+        $btnText.text('Processing...');
+        $spinner.show();
+
+        // Also disable the close button to prevent accidental closure
+        $('.modal-header .close, .modal-footer .btn-secondary').prop('disabled', true);
+    }
+
+    // Function to reset button state
+    function resetSubmitButton() {
+        const $submitBtn = $('#requestTestBtn');
+        const $btnText = $('#requestBtnText');
+        const $spinner = $('#requestBtnSpinner');
+
+        $submitBtn.removeClass('btn-loading').prop('disabled', false);
+        $btnText.text('Request Test');
+        $spinner.hide();
+
+        // Re-enable the close button
+        $('.modal-header .close, .modal-footer .btn-secondary').prop('disabled', false);
+    }
 </script>
 
 <script>
@@ -152,6 +221,9 @@
         $('#requestTestForm').on('submit', function (e) {
             e.preventDefault(); // Prevent default form submission
 
+            // Show loading state immediately
+            showLoadingState();
+
             const formData = $(this).serialize(); // Serialize form data
 
             $.ajax({
@@ -178,6 +250,10 @@
                     } else {
                         toastr.error('Something went wrong. Please try again.');
                     }
+                },
+                complete: function () {
+                    // Reset button state regardless of success or error
+                    resetSubmitButton();
                 }
             });
         });
