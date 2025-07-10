@@ -634,6 +634,9 @@ $('#testsTable').on('click', '.addResultBtn', function() {
             calculatedValue = eval(executableFormula);
             if (isNaN(calculatedValue)) {
                 calculatedValue = 'Invalid Calculation';
+            } else {
+                // Format the calculated value to 2 decimal places
+                calculatedValue = parseFloat(calculatedValue).toFixed(2);
             }
         } catch (e) {
             console.error('Error evaluating formula:', formula, e);
