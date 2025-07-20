@@ -13,7 +13,7 @@ use App\Http\Controllers\Admin\admin_AvailableTestCtr;
 use App\Http\Controllers\Admin\admin_TestsCtr;
 use App\Http\Controllers\Admin\admin_ReportsCtr;
 use App\Http\Controllers\Admin\admin_ProfileCtr;
-
+use App\Http\Controllers\Admin\admin_RemarkCtr; // Make sure to import your controller
 
 use App\Http\Controllers\UpdateProfile;
 
@@ -131,6 +131,18 @@ Route::group(['prefix'=>'Admin','middleware'=>['checkAdmin','auth','lockBack']],
     Route::get('/reports/onSiteData', [admin_ReportsCtr::class, 'getOnSiteReports'])->name('reports.donSiteDta');
     Route::get('/reports/onSite/preview/{id}', [admin_ReportsCtr::class, 'previewReport'])->name('reportsOnSite.preview');
     Route::get('/reports/onsite/download/{id}', [admin_ReportsCtr::class, 'downloadReport'])->name('reportsOnSite.download');//generate pdf report onsite
+
+    //Remarks
+    Route::get('AddRemarks', [admin_RemarkCtr::class, 'addRemarks'])->name('admin.addRemarks'); // This might not be needed if you're using a modal
+    Route::post('addingRemarks', [admin_RemarkCtr::class, 'addingRemarks'])->name('admin.addingRemarks');
+    Route::get('AllRemarks', [admin_RemarkCtr::class, 'allRemarks'])->name('admin.allRemarks');
+    Route::get('remarks/data', [admin_RemarkCtr::class, 'allRemarks'])->name('remarks.data'); // New route for DataTables AJAX
+    Route::get('remarks/delete/{ID}', [admin_RemarkCtr::class, 'deleteRemarks'])->name('admin.deleteRemarks');
+    Route::post('remarks/update', [admin_RemarkCtr::class, 'updateRemarks'])->name('admin.updateRemarks');
+
+    // New AJAX delete route (using POST and method spoofing for DELETE)
+    Route::post('remarks/delete-ajax', [admin_RemarkCtr::class, 'deleteRemarksAjax'])->name('admin.deleteRemarksAjax');
+
 
     //Profile
     Route::get('/myProfile', [admin_ProfileCtr::class, 'AdminViewUpdateProfile'])->name('AdminViewUpdateProfile');

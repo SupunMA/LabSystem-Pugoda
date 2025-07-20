@@ -194,6 +194,14 @@
                     </ul>
                 </li>
 
+                <li class="nav-item">
+                    <a href="{{ route('admin.allRemarks') }}" class="nav-link {{ Route::currentRouteNamed('admin.allRemarks') ? 'active' : ' ' }}">
+                    <i class="fa fa-check" aria-hidden="true"></i>
+                        <p>Remarks
+
+                        </p>
+                    </a>
+                </li>
 
                 <li class="nav-item">
                     <a href="{{ route('AdminViewUpdateProfile') }}" class="nav-link {{ Route::currentRouteNamed('AdminViewUpdateProfile') ? 'active' : ' ' }}">
