@@ -132,16 +132,19 @@ Route::group(['prefix'=>'Admin','middleware'=>['checkAdmin','auth','lockBack']],
     Route::get('/reports/onSite/preview/{id}', [admin_ReportsCtr::class, 'previewReport'])->name('reportsOnSite.preview');
     Route::get('/reports/onsite/download/{id}', [admin_ReportsCtr::class, 'downloadReport'])->name('reportsOnSite.download');//generate pdf report onsite
 
-    //Remarks
-    Route::get('AddRemarks', [admin_RemarkCtr::class, 'addRemarks'])->name('admin.addRemarks'); // This might not be needed if you're using a modal
+    // Remarks
+    Route::get('AddRemarks', [admin_RemarkCtr::class, 'addRemarks'])->name('admin.addRemarks');
     Route::post('addingRemarks', [admin_RemarkCtr::class, 'addingRemarks'])->name('admin.addingRemarks');
     Route::get('AllRemarks', [admin_RemarkCtr::class, 'allRemarks'])->name('admin.allRemarks');
-    Route::get('remarks/data', [admin_RemarkCtr::class, 'allRemarks'])->name('remarks.data'); // New route for DataTables AJAX
+    Route::get('remarks/data', [admin_RemarkCtr::class, 'allRemarks'])->name('remarks.data');
     Route::get('remarks/delete/{ID}', [admin_RemarkCtr::class, 'deleteRemarks'])->name('admin.deleteRemarks');
     Route::post('remarks/update', [admin_RemarkCtr::class, 'updateRemarks'])->name('admin.updateRemarks');
 
     // New AJAX delete route (using POST and method spoofing for DELETE)
     Route::post('remarks/delete-ajax', [admin_RemarkCtr::class, 'deleteRemarksAjax'])->name('admin.deleteRemarksAjax');
+
+    // === ADD THIS NEW ROUTE FOR UNIQUENESS CHECK ===
+    Route::get('remarks/check-unique', [admin_RemarkCtr::class, 'checkRemarkUniqueness'])->name('remarks.checkUnique');
 
 
     //Profile

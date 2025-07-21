@@ -26,7 +26,7 @@
 
     </div>
     </div>
-{{-- Add Remark Modal --}}
+    {{-- remark --}}
 <div class="modal fade" id="addRemarkModal" tabindex="-1" role="dialog" aria-labelledby="addRemarkModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -41,8 +41,9 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="remark_description">Remark Description</label>
-                        <input type="text" class="form-control" id="remark_description" name="remark_description" required placeholder="e.g., Repeated and Confirmed, Get reviewed by a doctor">
-                        {{-- Feedback element for uniqueness and length --}}
+                        {{-- This is the input for adding new remarks --}}
+                        <input type="text" class="form-control" id="remark_description" name="remark_description" required placeholder="e.g., Late submission, Incomplete data">
+                        {{-- This is the feedback area for adding new remarks --}}
                         <div id="remarkDescriptionFeedback" class="mt-2">
                             <small class="form-text text-muted">Description should be short and unique.</small>
                         </div>
@@ -74,11 +75,15 @@
                     <div class="form-group">
                         <label for="edit_remark_description">Remark Description</label>
                         <input type="text" class="form-control" id="edit_remark_description" name="remark_description" required>
+                        {{-- Feedback element for uniqueness/length in edit modal (optional, but good) --}}
+                        <div id="editRemarkDescriptionFeedback" class="mt-2">
+                            <small class="form-text text-muted">Description should be short and unique.</small>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Update Remark</button>
+                    <button type="submit" class="btn btn-primary" id="updateRemarkButton">Update Remark</button>
                 </div>
             </form>
         </div>
@@ -329,6 +334,210 @@ $(document).ready(function() {
                 }
             }
         });
+    });
+
+
+    // Variable for edit modal uniqueness check (similar to add modal)
+    var editUniquenessCheckXhr = null;
+
+    // Handle Edit button click - Populate modal
+    $('#remarkTable tbody').on('click', '.edit-remark', function () {
+        var remarkId = $(this).data('id');
+        var remarkDescription = $(this).data('description');
+
+        $('#edit_remark_id').val(remarkId);
+        $('#edit_remark_description').val(remarkDescription);
+
+        // Reset feedback for edit modal
+        $('#editRemarkDescriptionFeedback').html('<small class="form-text text-muted">Description should be short and unique.</small>').removeClass('text-danger text-success');
+        $('#updateRemarkButton').prop('disabled', false);
+    });
+
+    // Live uniqueness and length check for Edit Remark Modal
+    $('#edit_remark_description').on('keyup input', function() {
+        var remarkDescription = $(this).val().trim();
+        var remarkId = $('#edit_remark_id').val(); // Get the ID of the remark being edited
+        var feedbackElement = $('#editRemarkDescriptionFeedback');
+        var updateButton = $('#updateRemarkButton');
+
+        // Clear previous feedback and reset button
+        feedbackElement.html('<small class="form-text text-muted">Description should be short and unique.</small>').removeClass('text-danger text-success');
+        updateButton.prop('disabled', false);
+
+        if (remarkDescription.length === 0) {
+            return; // Do nothing if input is empty
+        }
+
+        // Check for length (adjust max length as desired)
+        if (remarkDescription.length > 50) {
+            feedbackElement.html('<small class="form-text text-danger">Description is too long (max 50 characters).</small>');
+            updateButton.prop('disabled', true);
+            return;
+        }
+
+        // Abort previous request if still in progress
+        if (editUniquenessCheckXhr && editUniquenessCheckXhr.readyState !== 4) {
+            editUniquenessCheckXhr.abort();
+        }
+
+        // Show a temporary loading indicator
+        feedbackElement.html('<small class="form-text text-info"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Checking uniqueness...</small>');
+
+        // Perform AJAX call to check uniqueness
+        editUniquenessCheckXhr = $.ajax({
+            url: '{{ route("remarks.checkUnique") }}',
+            type: 'GET',
+            data: {
+                description: remarkDescription,
+                remark_id: remarkId // Pass the ID to exclude current remark from uniqueness check
+            },
+            success: function(response) {
+                if (response.isUnique) {
+                    feedbackElement.html('<small class="form-text text-success">Description is unique and good!</small>');
+                    updateButton.prop('disabled', false);
+                } else {
+                    feedbackElement.html('<small class="form-text text-danger">This remark description already exists.</small>');
+                    updateButton.prop('disabled', true);
+                }
+            },
+            error: function(xhr) {
+                if (xhr.status !== 0) {
+                    feedbackElement.html('<small class="form-text text-danger">Error checking uniqueness. Please try again.</small>');
+                    updateButton.prop('disabled', true);
+                }
+            }
+        });
+    });
+
+    // Intercept Edit Remark Form Submission
+    $('#editRemarkForm').on('submit', function(e) {
+        e.preventDefault(); // Prevent default form submission
+
+        var form = $(this);
+        var url = form.attr('action');
+        var method = form.attr('method');
+        var formData = form.serialize(); // Get form data including CSRF token and _method
+
+        var updateButton = $('#updateRemarkButton');
+        updateButton.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Updating...');
+        updateButton.prop('disabled', true);
+
+        $.ajax({
+            url: url,
+            type: method, // Will be POST
+            data: formData, // Contains _method: 'PUT' due to Laravel's form method spoofing
+            success: function(response) {
+                $('#editRemarkModal').modal('hide'); // Hide the modal
+                toastr.success(response.message); // Show success toast
+                remarkTable.ajax.reload(null, false); // Reload DataTables
+                // No need to reset form here, it will be populated next time
+                $('#editRemarkDescriptionFeedback').html('<small class="form-text text-muted">Description should be short and unique.</small>').removeClass('text-danger text-success');
+                updateButton.html('Update Remark').prop('disabled', false);
+            },
+            error: function(xhr) {
+                updateButton.html('Update Remark').prop('disabled', false); // Re-enable button
+
+                var errorMessage = 'An unexpected error occurred.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                }
+
+                if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    // Display specific validation errors
+                    var errors = xhr.responseJSON.errors;
+                    var firstError = '';
+                    for (var key in errors) {
+                        if (errors.hasOwnProperty(key)) {
+                            firstError = errors[key][0]; // Get the first error message for the field
+                            break;
+                        }
+                    }
+                    toastr.error(firstError || errorMessage);
+                } else {
+                    toastr.error(errorMessage);
+                }
+            }
+        });
+    });
+
+    // Reset form and feedback when edit modal is hidden
+    $('#editRemarkModal').on('hidden.bs.modal', function () {
+        // Abort any pending uniqueness check for edit modal
+        if (editUniquenessCheckXhr && editUniquenessCheckXhr.readyState !== 4) {
+            editUniquenessCheckXhr.abort();
+        }
+        // Optionally reset form if you don't want old data to persist on next open
+        // $('#editRemarkForm')[0].reset();
+        $('#editRemarkDescriptionFeedback').html('<small class="form-text text-muted">Description should be short and unique.</small>').removeClass('text-danger text-success');
+        $('#updateRemarkButton').prop('disabled', false);
+    });
+
+    // Variable to store the AJAX request for uniqueness check in Add Remark Modal
+    var uniquenessCheckXhr = null; // This variable is specific to the add modal's check
+
+    // Listener for the 'remark_description' input (in the Add Remark Modal)
+    $('#remark_description').on('keyup input', function() {
+        var remarkDescription = $(this).val().trim();
+        var feedbackElement = $('#remarkDescriptionFeedback'); // Targets the add modal's feedback div
+        var saveButton = $('#saveRemarkButton'); // Targets the add modal's save button
+
+        // Clear previous feedback and reset button
+        feedbackElement.html('<small class="form-text text-muted">Description should be short and unique.</small>').removeClass('text-danger text-success text-info');
+        saveButton.prop('disabled', false);
+
+        if (remarkDescription.length === 0) {
+            return; // Do nothing if input is empty
+        }
+
+        // Check for length
+        if (remarkDescription.length > 50) { // Adjust max length as desired
+            feedbackElement.html('<small class="form-text text-danger">Description is too long (max 50 characters).</small>');
+            saveButton.prop('disabled', true);
+            return;
+        }
+
+        // Abort previous request if still in progress
+        if (uniquenessCheckXhr && uniquenessCheckXhr.readyState !== 4) {
+            uniquenessCheckXhr.abort();
+        }
+
+        // Show a temporary loading indicator
+        feedbackElement.html('<small class="form-text text-info"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Checking uniqueness...</small>');
+
+        // Perform AJAX call to check uniqueness
+        uniquenessCheckXhr = $.ajax({
+            url: '{{ route("remarks.checkUnique") }}', // The common route for uniqueness check
+            type: 'GET',
+            // --- IMPORTANT FOR ADD REMARK: We do NOT send remark_id here ---
+            data: { description: remarkDescription },
+            success: function(response) {
+                if (response.isUnique) {
+                    feedbackElement.html('<small class="form-text text-success">Description is unique and good!</small>');
+                    saveButton.prop('disabled', false);
+                } else {
+                    feedbackElement.html('<small class="form-text text-danger">This remark description already exists.</small>');
+                    saveButton.prop('disabled', true);
+                }
+            },
+            error: function(xhr) {
+                if (xhr.status !== 0) { // status 0 is usually an abort, so only show error for others
+                    feedbackElement.html('<small class="form-text text-danger">Error checking uniqueness. Please try again.</small>');
+                    saveButton.prop('disabled', true);
+                }
+            }
+        });
+    });
+
+    // Reset form and feedback when Add Remark modal is hidden
+    $('#addRemarkModal').on('hidden.bs.modal', function () {
+        $('#addRemarkForm')[0].reset(); // Resets the form fields
+        $('#remarkDescriptionFeedback').html('<small class="form-text text-muted">Description should be short and unique.</small>').removeClass('text-danger text-success text-info');
+        $('#saveRemarkButton').prop('disabled', false);
+
+        // Abort any pending uniqueness check for the add modal
+        if (uniquenessCheckXhr && uniquenessCheckXhr.readyState !== 4) {
+            uniquenessCheckXhr.abort();
+        }
     });
 });
 
