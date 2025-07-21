@@ -42,7 +42,7 @@
                     <div class="form-group">
                         <label for="remark_description">Remark Description</label>
                         {{-- This is the input for adding new remarks --}}
-                        <input type="text" class="form-control" id="remark_description" name="remark_description" required placeholder="e.g., Late submission, Incomplete data">
+                        <input type="text" class="form-control" id="remark_description" name="remark_description" required placeholder="e.g., Repeated and Confirmed">
                         {{-- This is the feedback area for adding new remarks --}}
                         <div id="remarkDescriptionFeedback" class="mt-2">
                             <small class="form-text text-muted">Description should be short and unique.</small>
