@@ -77,7 +77,7 @@
 
                     {{-- Remark Section --}}
                     <div class="card mt-4">
-                        <div class="card-header bg-secondary text-white">
+                        <div class="card-header bg-danger text-white">
                             <h5 class="mb-0"><i class="fas fa-comment-alt"></i> Remarks</h5>
                         </div>
                         <div class="card-body">
