@@ -165,7 +165,7 @@
 
     .remark-and-signature-container {
         display: flex;
-        justify-content: space-between;
+        justify-content: space-between; /* Default: space-between */
         align-items: flex-end; /* Align items to the bottom */
         width: 100%;
         position: absolute;
@@ -174,6 +174,11 @@
         right: 20px; /* Align with container padding */
         box-sizing: border-box;
         padding-right: 40px; /* Space for signature image */
+    }
+
+    /* New rule: When remark is not present, align signature to the end */
+    .remark-and-signature-container.no-remark {
+        justify-content: flex-end;
     }
 
     .remark-section {
@@ -187,16 +192,15 @@
 
     .scientist-signature {
         text-align: right;
-        /* padding-top: 10px; */
-        margin-right: 20px;
         width: 200px; /* Fixed width for signature area */
         color: #2d5b84;
         font-weight: bold;
         font-size: 11px;
         display: flex;
+        margin-right: 20PX;
         flex-direction: column;
         align-items: center; /* Center signature elements */
-        margin-left: auto; /* This will push the signature to the right */
+        /* margin-left: auto; This was causing the issue when remark was absent and space-between was active */
     }
 
 
@@ -552,6 +556,11 @@
         if (pageNumber === totalPages) {
             const remarkAndSignatureContainer = document.createElement('div');
             remarkAndSignatureContainer.className = 'remark-and-signature-container';
+
+            // Conditionally add 'no-remark' class if remark is empty
+            if (!sampleData.remark) {
+                remarkAndSignatureContainer.classList.add('no-remark');
+            }
 
             // Add remark section if remark exists
             if (sampleData.remark) {
