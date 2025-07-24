@@ -163,22 +163,42 @@
         background-color: transparent;
     }
 
+    .remark-and-signature-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end; /* Align items to the bottom */
+        width: 100%;
+        position: absolute;
+        bottom: 90px; /* Adjust based on footer height */
+        left: 20px; /* Align with container padding */
+        right: 20px; /* Align with container padding */
+        box-sizing: border-box;
+        padding-right: 40px; /* Space for signature image */
+    }
+
+    .remark-section {
+        flex-grow: 1;
+        text-align: left;
+        font-size: 15px;
+        color: #2d5b84;
+        font-weight: bold;
+        padding-right: 20px; /* Space between remark and signature */
+    }
+
     .scientist-signature {
         text-align: right;
-        padding-top: 10px;
-        /* border-top: 1px dotted #000; */
-        width: 200px;
+        /* padding-top: 10px; */
+        margin-right: 20px;
+        width: 200px; /* Fixed width for signature area */
         color: #2d5b84;
         font-weight: bold;
         font-size: 11px;
-        position: absolute;
-        right: 20px;
-        bottom: 90px;
-
         display: flex;
         flex-direction: column;
-        align-items: center;
+        align-items: center; /* Center signature elements */
+        margin-left: auto; /* This will push the signature to the right */
     }
+
 
     .footer {
         display: flex;
@@ -337,11 +357,19 @@
         height: 60px; /* Ensure the footer height is preserved */
     }
 
-    .scientist-signature.hidden {
+    /* .scientist-signature.hidden {
         visibility: hidden;
         opacity: 0;
-        height: auto; /* Preserve the height */
+        height: auto;
+    } */
+
+    /* New class for remark and signature container when hidden */
+    .remark-and-signature-container.hidden {
+        visibility: hidden;
+        opacity: 0;
+        height: auto; /* Preserve height */
     }
+
 
     /* QR code */
     .qr-code-inline {
@@ -406,138 +434,165 @@
     }
 
     // Function to create a single page of the report
-// Function to create a single page of the report
-function createReportPage(isFirstPage, pageNumber, totalPages) {
-    const page = document.createElement('div');
-    page.className = 'page';
+    function createReportPage(isFirstPage, pageNumber, totalPages) {
+        const page = document.createElement('div');
+        page.className = 'page';
 
-    const container = document.createElement('div');
-    container.className = 'container';
-    page.appendChild(container);
+        const container = document.createElement('div');
+        container.className = 'container';
+        page.appendChild(container);
 
-    let nicRowHtml = '';
-    if (sampleData.nic) {
-        nicRowHtml = `
+        let nicRowHtml = '';
+        if (sampleData.nic) {
+            nicRowHtml = `
+                <div class="info-row">
+                    <div class="info-label">NIC </div>
+                    <div class="info-value">: <span id="qr-code-container" class="qr-code-inline"></span></div>
+                </div>
+            `;
+        }
+
+        if (isFirstPage) {
+            // First page has the full header
+            container.innerHTML = `
+                <div class="header">
+                    <div class="logo-container">
+                        <div class="logo">
+                            <img src="{{ asset('img/report-logo.png') }}" width="100%">
+                        </div>
+                        <div class="logo-text">
+                            <h1><b>HORIZON</b></h1>
+                            <h2>LABORATORY</h2>
+                        </div>
+                    </div>
+                    <div class="contact-info"  style="font-weight: bold; font-size: 15px">
+                        <div >No. 148/A4, Infront of Hospital, Bangalawaththa, Pugoda.</div>
+                        <div style="font-weight: bold; color: red; font-size: 20px;">0776 267 627</div>
+                        <div style="font-weight: bold; color: red; font-size: 13px;">HorizonLab.lk</div>
+                        <div>horizonpugoda@gmail.com</div>
+                        <div>SLMC No. 2102</div>
+                    </div>
+                </div>
+
+                <div class="report-title">Confidential Laboratory Report</div>
+                <div class="divider"></div>
+
+                <div class="patient-info">
+                    <div class="patient-details">
             <div class="info-row">
-                <div class="info-label">NIC </div>
-                <div class="info-value">: <span id="qr-code-container" class="qr-code-inline"></span></div>
-            </div>
-        `;
-    }
-
-    if (isFirstPage) {
-        // First page has the full header
-        container.innerHTML = `
-            <div class="header">
-                <div class="logo-container">
-                    <div class="logo">
-                        <img src="{{ asset('img/report-logo.png') }}" width="100%">
-                    </div>
-                    <div class="logo-text">
-                        <h1><b>HORIZON</b></h1>
-                        <h2>LABORATORY</h2>
-                    </div>
-                </div>
-                <div class="contact-info"  style="font-weight: bold; font-size: 15px">
-                    <div >No. 148/A4, Infront of Hospital, Bangalawaththa, Pugoda.</div>
-                    <div style="font-weight: bold; color: red; font-size: 20px;">0776 267 627</div>
-                    <div style="font-weight: bold; color: red; font-size: 13px;">HorizonLab.lk</div>
-                    <div>horizonpugoda@gmail.com</div>
-                    <div>SLMC No. 2102</div>
-                </div>
-            </div>
-
-            <div class="report-title">Confidential Laboratory Report</div>
-            <div class="divider"></div>
-
-            <div class="patient-info">
-                <div class="patient-details">
-        <div class="info-row">
-        <div class="info-label">PATIENT NAME </div>
-        <div class="info-value">
-            ${
-                sampleData.gender === 'M' ? ': Mr. ' + sampleData.patientName :
-                sampleData.gender === 'F' ? ': Ms. ' + sampleData.patientName :
-                sampleData.patientName
-            }
-        </div>
-        </div>
-        <div class="info-row">
-            <div class="info-label">AGE </div>
-            <div class="info-value"> : ${sampleData.age}</div>
-        </div>
-        <div class="info-row">
-            <div class="info-label">GENDER </div>
+            <div class="info-label">PATIENT NAME </div>
             <div class="info-value">
                 ${
-                    sampleData.gender === 'M' ? ': Male' :
-                    sampleData.gender === 'F' ? ': Female' :
-                    sampleData.gender === 'O' ? ': Other' :
-                    sampleData.gender
+                    sampleData.gender === 'M' ? ': Mr. ' + sampleData.patientName :
+                    sampleData.gender === 'F' ? ': Ms. ' + sampleData.patientName :
+                    sampleData.patientName
                 }
             </div>
-        </div>
-        <div class="info-row">
-            <div class="info-label">SPECIMEN </div>
-            <div class="info-value">: ${sampleData.specimenType || 'Not specified'}</div>
-        </div>
-        <div class="info-row">
-            <div class="info-label">TEST NAME</div>
-            <div class="info-value">: ${sampleData.testName || 'Not specified'}</div>
-        </div>
-    </div>
-                <div class="report-details">
-                    <div class="info-row">
-                        <div class="info-label">DATE </div>
-                        <div class="info-value">: ${sampleData.reportDate}</div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">REPORT ID </div>
-                        <div class="info-value">: ${sampleData.reportId}</div>
-                    </div>
-                    ${nicRowHtml}
-                    <div class="info-row">
-                        <div class="info-label">PRINTED DATE </div>
-                        <div class="info-value">: ${formatDate(new Date())}</div>
-                    </div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">AGE </div>
+                <div class="info-value"> : ${sampleData.age}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">GENDER </div>
+                <div class="info-value">
+                    ${
+                        sampleData.gender === 'M' ? ': Male' :
+                        sampleData.gender === 'F' ? ': Female' :
+                        sampleData.gender === 'O' ? ': Other' :
+                        sampleData.gender
+                    }
                 </div>
             </div>
+            <div class="info-row">
+                <div class="info-label">SPECIMEN </div>
+                <div class="info-value">: ${sampleData.specimenType || 'Not specified'}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">TEST NAME</div>
+                <div class="info-value">: ${sampleData.testName || 'Not specified'}</div>
+            </div>
+        </div>
+                    <div class="report-details">
+                        <div class="info-row">
+                            <div class="info-label">DATE </div>
+                            <div class="info-value">: ${sampleData.reportDate}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">REPORT ID </div>
+                            <div class="info-value">: ${sampleData.reportId}</div>
+                        </div>
+                        ${nicRowHtml}
+                        <div class="info-row">
+                            <div class="info-label">PRINTED DATE </div>
+                            <div class="info-value">: ${formatDate(new Date())}</div>
+                        </div>
+                    </div>
+                </div>
 
 
-            <div class="section-divider"></div>
-        `;
-    } else {
-        // Continuation pages have a simplified header
-        container.innerHTML = `
-            <div class="continuation-header">
-                <div class="patient-name">Patient : ${sampleData.patientName}</div>
-                <div class="report-id">Report ID : ${sampleData.reportId}</div>
+                <div class="section-divider"></div>
+            `;
+        } else {
+            // Continuation pages have a simplified header
+            container.innerHTML = `
+                <div class="continuation-header">
+                    <div class="patient-name">Patient : ${sampleData.patientName}</div>
+                    <div class="report-id">Report ID : ${sampleData.reportId}</div>
+                </div>
+            `;
+        }
+
+        // Add the test results table container
+        const testResultsDiv = document.createElement('div');
+        testResultsDiv.className = 'test-results';
+        container.appendChild(testResultsDiv);
+
+        // Add the remark and signature container to the last page only
+        if (pageNumber === totalPages) {
+            const remarkAndSignatureContainer = document.createElement('div');
+            remarkAndSignatureContainer.className = 'remark-and-signature-container';
+
+            // Add remark section if remark exists
+            if (sampleData.remark) {
+                const remarkSection = document.createElement('div');
+                remarkSection.className = 'remark-section';
+                remarkSection.innerHTML = `
+                    <p><strong>Remark:</strong> ${sampleData.remark}</p>
+                `;
+                remarkAndSignatureContainer.appendChild(remarkSection);
+            }
+
+            // Add scientist signature
+            const techSignature = document.createElement('div');
+            techSignature.className = 'scientist-signature';
+            techSignature.innerHTML = `
+                <img src="{{ asset('img/sign.png') }}" alt="Signature" style="width: 270px; height: auto;">
+                <div>Medical Laboratory Scientist</div>
+            `;
+            remarkAndSignatureContainer.appendChild(techSignature);
+
+            page.querySelector('.container').appendChild(remarkAndSignatureContainer);
+        }
+
+
+        // Add the footer
+        const footer = document.createElement('div');
+        footer.className = 'footer';
+        footer.innerHTML = `
+            <div class="footer-item">
+                <img src="https://bootflare.com/wp-content/uploads/2024/01/Mindray-Logo-1536x864.png" class="footer-logo">
+                <span class="footer-text">BC - 10 Fully Automated Hematology Analyzer <br> BA - 88A Biochemistry Analyzer</span>
+            </div>
+            <div class="footer-item">
+                <img src="https://th.bing.com/th/id/R.528ea67c70a8b88e4f07b6567175c74b?rik=RDLPE98IbpDh0Q&riu=http%3a%2f%2fasfgestion.com%2fimages%2flabomed%2fLabomed_Logo_min.png&ehk=sxPj6Y0OXXeHpX7lqL%2fNLOANJg%2fbvRvL6asrK5Qy4y4%3d&risl=&pid=ImgRaw&r=0" class="footer-logo">
+                <span class="footer-text">Quality Control by:<br> Biolabo Extrol - P / Biolabo Extrol - N</span>
             </div>
         `;
+        page.appendChild(footer);
+
+        return { page, testResultsContainer: testResultsDiv };
     }
-
-    // Add the test results table container
-    const testResultsDiv = document.createElement('div');
-    testResultsDiv.className = 'test-results';
-    container.appendChild(testResultsDiv);
-
-    // Add the footer
-    const footer = document.createElement('div');
-    footer.className = 'footer';
-    footer.innerHTML = `
-        <div class="footer-item">
-            <img src="https://bootflare.com/wp-content/uploads/2024/01/Mindray-Logo-1536x864.png" class="footer-logo">
-            <span class="footer-text">BC - 10 Fully Automated Hematology Analyzer <br> BA - 88A Biochemistry Analyzer</span>
-        </div>
-        <div class="footer-item">
-            <img src="https://th.bing.com/th/id/R.528ea67c70a8b88e4f07b6567175c74b?rik=RDLPE98IbpDh0Q&riu=http%3a%2f%2fasfgestion.com%2fimages%2flabomed%2fLabomed_Logo_min.png&ehk=sxPj6Y0OXXeHpX7lqL%2fNLOANJg%2fbvRvL6asrK5Qy4y4%3d&risl=&pid=ImgRaw&r=0" class="footer-logo">
-            <span class="footer-text">Quality Control by:<br> Biolabo Extrol - P / Biolabo Extrol - N</span>
-        </div>
-    `;
-    page.appendChild(footer);
-
-    return { page, testResultsContainer: testResultsDiv };
-}
 
     // Function to distribute test results across pages
     function distributeTestResults(testResults) {
@@ -594,15 +649,6 @@ function createReportPage(isFirstPage, pageNumber, totalPages) {
         if (currentTestResults.length > 0) {
             const { page, testResultsContainer } = createReportPage(isFirstPage, currentPage, totalPages);
             testResultsContainer.appendChild(createTestResultsTable(currentTestResults));
-
-            // Add scientist signature to the last page
-            const techSignature = document.createElement('div');
-            techSignature.className = 'scientist-signature';
-            techSignature.innerHTML = `
-                <img src="{{ asset('img/sign.png') }}" alt="Signature" style="width: 270px; height: auto; margin-right: 40px;">
-                <div>Medical Laboratory Scientist</div>
-            `;
-            page.querySelector('.container').appendChild(techSignature);
 
             pages.push(page);
         }
@@ -727,8 +773,8 @@ function createReportPage(isFirstPage, pageNumber, totalPages) {
             el.classList.toggle('hidden', !showFooter);
         });
 
-        // Update signatures
-        document.querySelectorAll('.scientist-signature').forEach(el => {
+        // Update remark and signature container
+        document.querySelectorAll('.remark-and-signature-container').forEach(el => {
             el.classList.toggle('hidden', !showSignature);
         });
     }
