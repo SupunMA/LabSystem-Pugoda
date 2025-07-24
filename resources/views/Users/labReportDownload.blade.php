@@ -62,7 +62,7 @@
 
 /* Logo Styling */
 .logo {
-    width: 80px; /* Adjust logo size */
+    width: 400px; /* Adjust logo size */
     height: auto; /* Maintain aspect ratio */
 }
 
@@ -301,11 +301,12 @@
             <!-- Logo and Text -->
             <td class="logo-cell">
                 <div class="logo-container">
-                    <img src="{{ asset('img/report-logo.png') }}" alt="Logo" class="logo">
-                    <div class="logo-text">
+                    <img src="{{ asset('img/report-logowith-text.png') }}" alt="Logo" class="logo">
+                    {{-- <img src="{{ asset('img/report-logo.png') }}" alt="Logo" class="logo"> --}}
+                    {{-- <div class="logo-text">
                         <h1>HORIZON</h1>
                         <h2>LABORATORY</h2>
-                    </div>
+                    </div> --}}
                 </div>
             </td>
             <!-- Contact Information -->
@@ -315,7 +316,7 @@
                     <div>No. 148/A4, Infront of Hospital, Bangalawaththa, Pugoda.</div>
                     <div style="font-weight: bold; color: red; font-size: 28px;">0776 267 627</div>
                     <div>horizonpugoda@gmail.com</div>
-                    <div style="font-weight: bold; color: rgb(255, 0, 0); font-size: 28px;">horizonlab.lk</div>
+                    <div style="font-weight: bold; color: rgb(255, 0, 0); font-size: 23px;">HorizonLab.lk</div>
                     <div>SLMC No. 2102</div>
                     </b>
                 </div>
