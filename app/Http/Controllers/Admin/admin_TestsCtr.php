@@ -14,6 +14,8 @@ use App\Models\Test;
 use App\Models\ReportPath;
 use App\Models\TestResult;
 use App\Models\TestCategory_New;
+use App\Models\Remark;
+use Illuminate\Support\Facades\Log; // For logging errors
 
 use DB;
 use Yajra\DataTables\Facades\DataTables;
@@ -278,7 +280,7 @@ public function getTestCategories($testId)
 }
 
 // Add this method to store test results
-  public function storeTestResults(Request $request)
+ public function storeTestResults(Request $request)
     {
         try {
             $validatedData = $request->validate([
@@ -286,20 +288,38 @@ public function getTestCategories($testId)
                 'results' => 'required|array',
                 'results.*.category_id' => 'required|exists:test_categories,id',
                 'results.*.value' => 'required',
-                // 'additional_value' is optional, so it doesn't need to be required
-                'results.*.additional_value' => 'nullable|string', // Still validate if present
-                // Removed 'results.*.value_type' validation as it's no longer needed
+                'results.*.additional_value' => 'nullable|string',
+                'remark_id_or_customRemark' => 'nullable|string', // New: Validate the remark field
             ]);
 
-            // Check if results already exist for this test
-            $existingResults = TestResult::where('requested_test_id', $validatedData['requested_test_id'])->exists();
+            DB::beginTransaction(); // Start a database transaction
 
-            if ($existingResults) {
-                // Delete existing results if they exist (to update)
-                TestResult::where('requested_test_id', $validatedData['requested_test_id'])->delete();
+            $requested_test = RequestedTests::find($validatedData['requested_test_id']);
+
+            // Handle remark: Update the 'remark_id_or_customRemark' column in the 'requested_tests' table
+            $remarkValue = $request->input('remark_id_or_customRemark');
+            if (!empty($remarkValue)) {
+                // Check if the provided remarkValue is an ID of an existing remark
+                // We assume remark_id in 'remarks' table is an auto-incrementing integer.
+                // If it's a number and exists in remarks table, store the ID.
+                // Otherwise, it's a custom string, store the string directly.
+                if (is_numeric($remarkValue) && Remark::where('remark_id', $remarkValue)->exists()) {
+                    $requested_test->remark_id_or_customRemark = $remarkValue; // Store the ID
+                } else {
+                    // It's a custom remark, store the string directly
+                    $requested_test->remark_id_or_customRemark = $remarkValue;
+                }
+            } else {
+                $requested_test->remark_id_or_customRemark = null; // No remark provided
             }
+            $requested_test->save(); // Save the updated remark to the requested_tests table
 
-            // Store each result
+            // Check if results already exist for this test and delete them (to update)
+            // This ensures that when results are re-saved, old entries are removed first.
+            // Assuming TestResult is the model for the table storing individual test category results.
+            TestResult::where('requested_test_id', $validatedData['requested_test_id'])->delete();
+
+            // Store each new result
             foreach ($validatedData['results'] as $result) {
                 // Initialize combinedResultValue with the primary 'value'
                 $combinedResultValue = $result['value'];
@@ -313,15 +333,18 @@ public function getTestCategories($testId)
                     'requested_test_id' => $validatedData['requested_test_id'],
                     'category_id' => $result['category_id'],
                     'result_value' => $combinedResultValue, // Use the combined value here
-                    'added_by' => auth()->id() // Assuming you have authentication
+                    'added_by' => auth()->id() // Assuming you have authentication and a 'TestResult' model
                 ]);
             }
 
+            DB::commit(); // Commit the transaction if all operations are successful
+
             return response()->json([
                 'success' => true,
-                'message' => 'Test results saved successfully'
+                'message' => 'Test results and remark saved successfully'
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
+            DB::rollBack(); // Rollback transaction on validation error
             Log::error('Validation Error saving test results: ' . $e->getMessage(), ['errors' => $e->errors()]);
             return response()->json([
                 'success' => false,
@@ -329,6 +352,7 @@ public function getTestCategories($testId)
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
+            DB::rollBack(); // Rollback transaction on any other error
             Log::error('Error saving test results: ' . $e->getMessage());
             return response()->json([
                 'success' => false,

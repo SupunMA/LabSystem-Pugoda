@@ -165,4 +165,15 @@ class admin_RemarkCtr extends Controller
 
         return response()->json(['isUnique' => $isUnique]);
     }
+
+    public function getRemarks()
+    {
+        try {
+            $remarks = Remark::all(['remark_id', 'remark_description']);
+            return response()->json(['success' => true, 'remarks' => $remarks]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Failed to fetch remarks.', 'error' => $e->getMessage()], 500);
+        }
+    }
+
 }

@@ -139,12 +139,13 @@ Route::group(['prefix'=>'Admin','middleware'=>['checkAdmin','auth','lockBack']],
     Route::get('remarks/data', [admin_RemarkCtr::class, 'allRemarks'])->name('remarks.data');
     Route::get('remarks/delete/{ID}', [admin_RemarkCtr::class, 'deleteRemarks'])->name('admin.deleteRemarks');
     Route::post('remarks/update', [admin_RemarkCtr::class, 'updateRemarks'])->name('admin.updateRemarks');
-
     // New AJAX delete route (using POST and method spoofing for DELETE)
     Route::post('remarks/delete-ajax', [admin_RemarkCtr::class, 'deleteRemarksAjax'])->name('admin.deleteRemarksAjax');
-
-    // === ADD THIS NEW ROUTE FOR UNIQUENESS CHECK ===
+    // === THIS NEW ROUTE FOR UNIQUENESS CHECK ===
     Route::get('remarks/check-unique', [admin_RemarkCtr::class, 'checkRemarkUniqueness'])->name('remarks.checkUnique');
+
+    // get remarks for adding results
+    Route::get('/remarks', [admin_RemarkCtr::class, 'getRemarks'])->name('getRemarks');
 
 
     //Profile

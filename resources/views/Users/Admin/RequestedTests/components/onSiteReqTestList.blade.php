@@ -72,7 +72,38 @@
                     </div>
 
                     <div id="categoriesContainer">
+                        <!-- Categories will be loaded here via AJAX -->
+                    </div>
+
+                    {{-- Remark Section --}}
+                    <div class="card mt-4">
+                        <div class="card-header bg-secondary text-white">
+                            <h5 class="mb-0"><i class="fas fa-comment-alt"></i> Remarks</h5>
                         </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <div class="custom-control custom-switch mb-3">
+                                    <input type="checkbox" class="custom-control-input" id="customRemarkToggle">
+                                    <label class="custom-control-label text-black" for="customRemarkToggle">Add Custom Remark</label>
+                                </div>
+
+                                <div id="existingRemarkSection">
+                                    <label for="remark_id">Select Existing Remark:</label>
+                                    <select class="form-control" id="remark_id" name="remark_id">
+                                        <option value="">-- Select Remark --</option>
+                                        <!-- Remarks will be loaded here via AJAX -->
+                                    </select>
+                                </div>
+
+                                <div id="customRemarkSection" style="display: none;">
+                                    <label for="custom_remark">Custom Remark:</label>
+                                    <textarea class="form-control" id="custom_remark" name="custom_remark" rows="3" placeholder="Enter custom remark"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {{-- End Remark Section --}}
+
                 </form>
             </div>
             <div class="modal-footer">
@@ -126,14 +157,6 @@
 @push('specificCSS')
 <style>
     /* Add some basic styling for better appearance */
-
-
-
-
-
-
-
-
     /* Add this to your CSS section */
 @media (max-width: 768px) {
     /* Ensure modal is properly sized on small screens */
@@ -150,11 +173,7 @@
     .modal-body .row .col-md-6 {
         margin-bottom: 10px;
     }
-
-
 }
-
-
 </style>
 @endpush
 
@@ -162,127 +181,126 @@
 <script>
 $(document).ready(function () {
     // Initialize DataTable (existing code)
-// Replace your DataTable initialization with this corrected version
-$('#testsTable').DataTable({
-    processing: true,
-    serverSide: true,
-    responsive: {
-        details: {
-            type: 'column',
-            target: 0
-        }
-    },
-    scrollX: true,
-    autoWidth: false,
-    lengthChange: true,
-    ajax: {
-        url: '{{ route("getAllInternalRequestedTests") }}',
-        type: 'GET',
-        error: function (xhr, error, code) {
-            console.error('Error fetching data:', error);
-            toastr.error('Error fetching data. Please check the console for details.');
-        },
-        dataSrc: function (json) {
-            if (json.data && json.data.length > 0) {
-                return json.data;
-            } else {
-                // Return empty array if no data
-                return [];
-            }
-        }
-    },
-    columnDefs: [
-        {
-            className: 'dtr-control',
-            orderable: false,
-            targets: 0  // First column becomes the control
-        },
-        {
-            targets: -1,  // Last column (Actions)
-            orderable: false,
-            searchable: false
-        }
-    ],
-    columns: [
-        {
-            data: 'id',
-            name: 'id',
-            title: 'ID',
-            className: 'dtr-control'  // This adds the responsive control
-        },
-        { data: 'patient_name', name: 'patient_name', title: 'Patient Name' },
-        { data: 'nic', name: 'nic', title: 'NIC', defaultContent: 'N/A' },
-        { data: 'dob', name: 'dob', title: 'DOB' },
-        { data: 'test_name', name: 'test_name', title: 'Test Name' },
-        {
-            data: 'test_date',
-            name: 'test_date',
-            title: 'Date',
-            render: function (data) {
-                return data ? moment(data).format('MMM D,YYYY') : 'N/A';
+    $('#testsTable').DataTable({
+        processing: true,
+        serverSide: true,
+        responsive: {
+            details: {
+                type: 'column',
+                target: 0
             }
         },
-        {
-            data: 'price',
-            name: 'price',
-            title: 'Price',
-            render: $.fn.dataTable.render.number(',', '.', 2, 'Rs. ')
-        },
-        {
-            data: null,  // Changed to null since we're using render function
-            name: 'actions',
-            title: 'Actions',
-            orderable: false,
-            searchable: false,
-            render: function(data, type, row) {
-                return `<button class="btn btn-sm btn-info addResultBtn"
-                            data-id="${row.id}"
-                            data-test-id="${row.test_id || row.availableTests_id}"
-                            data-patient-name="${row.patient_name}"
-                            data-test-name="${row.test_name}">
-                            <i class="fas fa-plus-circle"></i> Add Result
-                        </button>
-                            <button class="btn btn-sm btn-danger deleteTestBtn mb-1"
-                            data-id="${row.id}">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
-                        `;
+        scrollX: true,
+        autoWidth: false,
+        lengthChange: true,
+        ajax: {
+            url: '{{ route("getAllInternalRequestedTests") }}',
+            type: 'GET',
+            error: function (xhr, error, code) {
+                console.error('Error fetching data:', error);
+                toastr.error('Error fetching data. Please check the console for details.');
+            },
+            dataSrc: function (json) {
+                if (json.data && json.data.length > 0) {
+                    return json.data;
+                } else {
+                    // Return empty array if no data
+                    return [];
+                }
             }
-        }
-    ],
-    order: [[0, 'desc']],
-    dom: 'flBrtip',
-    buttons: [
-        {
-            extend: 'pdf',
-            text: 'PDF',
-            orientation: 'portrait',
-            pageSize: 'A4',
-            exportOptions: {
-                columns: ':not(:last-child)',
-            },
         },
-        {
-            extend: 'excel',
-            text: 'Excel',
-            exportOptions: {
-                columns: ':not(:last-child)',
+        columnDefs: [
+            {
+                className: 'dtr-control',
+                orderable: false,
+                targets: 0  // First column becomes the control
             },
-        },
-        {
-            extend: 'print',
-            text: 'Print',
-            exportOptions: {
-                columns: ':not(:last-child)',
+            {
+                targets: -1,  // Last column (Actions)
+                orderable: false,
+                searchable: false
+            }
+        ],
+        columns: [
+            {
+                data: 'id',
+                name: 'id',
+                title: 'ID',
+                className: 'dtr-control'  // This adds the responsive control
             },
+            { data: 'patient_name', name: 'patient_name', title: 'Patient Name' },
+            { data: 'nic', name: 'nic', title: 'NIC', defaultContent: 'N/A' },
+            { data: 'dob', name: 'dob', title: 'DOB' },
+            { data: 'test_name', name: 'test_name', title: 'Test Name' },
+            {
+                data: 'test_date',
+                name: 'test_date',
+                title: 'Date',
+                render: function (data) {
+                    return data ? moment(data).format('MMM D,YYYY') : 'N/A';
+                }
+            },
+            {
+                data: 'price',
+                name: 'price',
+                title: 'Price',
+                render: $.fn.dataTable.render.number(',', '.', 2, 'Rs. ')
+            },
+            {
+                data: null,  // Changed to null since we're using render function
+                name: 'actions',
+                title: 'Actions',
+                orderable: false,
+                searchable: false,
+                render: function(data, type, row) {
+                    return `<button class="btn btn-sm btn-info addResultBtn"
+                                data-id="${row.id}"
+                                data-test-id="${row.test_id || row.availableTests_id}"
+                                data-patient-name="${row.patient_name}"
+                                data-test-name="${row.test_name}">
+                                <i class="fas fa-plus-circle"></i> Add Result
+                            </button>
+                                <button class="btn btn-sm btn-danger deleteTestBtn mb-1"
+                                data-id="${row.id}">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                            `;
+                }
+            }
+        ],
+        order: [[0, 'desc']],
+        dom: 'flBrtip',
+        buttons: [
+            {
+                extend: 'pdf',
+                text: 'PDF',
+                orientation: 'portrait',
+                pageSize: 'A4',
+                exportOptions: {
+                    columns: ':not(:last-child)',
+                },
+            },
+            {
+                extend: 'excel',
+                text: 'Excel',
+                exportOptions: {
+                    columns: ':not(:last-child)',
+                },
+            },
+            {
+                extend: 'print',
+                text: 'Print',
+                exportOptions: {
+                    columns: ':not(:last-child)',
+                },
+            },
+        ],
+        language: {
+            emptyTable: "No test records found.", // Custom message for empty table
+            processing: '<i class="fas fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span>', // Better loading indicator
+            zeroRecords: "No matching records found" // For filtered empty results
         },
-    ],
-    language: {
-        emptyTable: "No test records found.", // Custom message for empty table
-        processing: '<i class="fas fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span>', // Better loading indicator
-        zeroRecords: "No matching records found" // For filtered empty results
-    },
-});
+    });
 
     // Variable to store test categories for Mindray processing
     let mindrayCategories = [];
@@ -291,123 +309,141 @@ $('#testsTable').DataTable({
     let allCategories = [];
 
     // Handle Add Result button click
-// Replace the existing click handler with this improved version
-$('#testsTable').on('click', '.addResultBtn', function() {
-    const requestedTestId = $(this).data('id');
-    const testId = $(this).data('test-id');
-    const button = $(this);
-    const dataTable = $('#testsTable').DataTable();
+    $('#testsTable').on('click', '.addResultBtn', function() {
+        const requestedTestId = $(this).data('id');
+        const testId = $(this).data('test-id');
+        const button = $(this);
+        const dataTable = $('#testsTable').DataTable();
 
-    // Get row data - handle both regular and responsive modes
-    let rowData;
-    const row = button.closest('tr');
+        // Get row data - handle both regular and responsive modes
+        let rowData;
+        const row = button.closest('tr');
 
-    if (row.hasClass('child')) {
-        // This is a child row in responsive mode, get parent row
-        const parentRow = row.prev('tr');
-        rowData = dataTable.row(parentRow).data();
-    } else {
-        // Regular row or parent row in responsive mode
-        rowData = dataTable.row(row).data();
-    }
-
-    // Fallback: if rowData is still undefined, try to get it by button's data attributes
-    if (!rowData) {
-        // You can store additional data attributes on the button for fallback
-        rowData = {
-            patient_name: button.data('patient-name') || 'Unknown Patient',
-            test_name: button.data('test-name') || 'Unknown Test'
-        };
-    }
-
-    // Validate that we have the necessary data
-    if (!rowData || !rowData.patient_name) {
-        toastr.error('Unable to retrieve patient data. Please refresh the page and try again.');
-        return;
-    }
-
-    // Set modal title and data
-    $('#requested_test_id').val(requestedTestId);
-    $('#modalPatientName').text(rowData.patient_name || 'Unknown Patient');
-    $('#modalTestName').text(rowData.test_name || 'Unknown Test');
-
-    // Clear previous categories and Mindray section
-    $('#categoriesContainer').empty();
-
-    // Show loading
-    $('#categoriesContainer').html('<div class="text-center py-3"><i class="fas fa-spinner fa-spin fa-2x"></i><p class="mt-2">Loading test categories...</p></div>');
-
-    // Rest of your existing code for fetching test categories...
-    $.ajax({
-        url: '{{ route("getTestCategories", "") }}/' + testId,
-        method: 'GET',
-        success: function(response) {
-            // Your existing success handler code remains the same
-            if (response.success && response.categories.length > 0) {
-                $('#categoriesContainer').empty();
-                mindrayCategories = [];
-                allCategories = response.categories;
-
-                const hasMindrayCategories = response.categories.some(category => category.value_type === 'getFromMindray');
-
-                if (hasMindrayCategories) {
-                    const mindrayUploadHtml = `
-                        <div class="card mb-3" id="mindrayFileUploadSection">
-                            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0"><i class="fas fa-upload"></i> Mindray File Upload</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="form-group">
-                                    <label>Upload Mindray .txt file:</label>
-                                    <div class="input-group">
-                                        <div class="custom-file">
-                                            <input type="file" class="custom-file-input" id="master_mindray_file_input" accept=".txt">
-                                            <label class="custom-file-label" for="master_mindray_file_input">Choose .txt file</label>
-                                        </div>
-                                        <div class="input-group-append">
-                                            <button class="btn btn-outline-secondary" type="button" id="readMindrayFileBtn">Read File</button>
-                                        </div>
-                                    </div>
-                                    <small class="form-text text-muted mt-2">Upload a single .txt file from the Mindray machine. Data for relevant categories will be extracted.</small>
-                                </div>
-                                <div class="custom-control custom-switch">
-                                    <input type="checkbox" class="custom-control-input" id="mindrayManualEntryToggle">
-                                    <label class="custom-control-label text-black" for="mindrayManualEntryToggle">Manual Entry</label>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    $('#categoriesContainer').prepend(mindrayUploadHtml);
-                }
-
-                response.categories.forEach(function(category, index) {
-                    const categoryHtml = createCategoryInputs(category, index);
-                    $('#categoriesContainer').append(categoryHtml);
-                    if (category.value_type === 'getFromMindray') {
-                        mindrayCategories.push({
-                            id: category.id,
-                            name: category.name,
-                            param: category.value_type_Value,
-                            index: index
-                        });
-                    }
-                });
-
-                $('.mindray-result-input').prop('readonly', !$('#mindrayManualEntryToggle').is(':checked'));
-                calculateAllFormulaFields();
-
-            } else {
-                $('#categoriesContainer').html('<div class="alert alert-warning">No test categories found for this test.</div>');
-            }
-        },
-        error: function() {
-            $('#categoriesContainer').html('<div class="alert alert-danger">Failed to load test categories. Please try again.</div>');
+        if (row.hasClass('child')) {
+            // This is a child row in responsive mode, get parent row
+            const parentRow = row.prev('tr');
+            rowData = dataTable.row(parentRow).data();
+        } else {
+            // Regular row or parent row in responsive mode
+            rowData = dataTable.row(row).data();
         }
-    });
 
-    // Show modal
-    $('#resultModal').modal('show');
-});
+        // Fallback: if rowData is still undefined, try to get it by button's data attributes
+        if (!rowData) {
+            // You can store additional data attributes on the button for fallback
+            rowData = {
+                patient_name: button.data('patient-name') || 'Unknown Patient',
+                test_name: button.data('test-name') || 'Unknown Test'
+            };
+        }
+
+        // Validate that we have the necessary data
+        if (!rowData || !rowData.patient_name) {
+            toastr.error('Unable to retrieve patient data. Please refresh the page and try again.');
+            return;
+        }
+
+        // Set modal title and data
+        $('#requested_test_id').val(requestedTestId);
+        $('#modalPatientName').text(rowData.patient_name || 'Unknown Patient');
+        $('#modalTestName').text(rowData.test_name || 'Unknown Test');
+
+        // Clear previous categories and Mindray section
+        $('#categoriesContainer').empty();
+        $('#remark_id').empty().append('<option value="">-- Select Remark --</option>'); // Clear remarks dropdown
+        $('#custom_remark').val(''); // Clear custom remark
+
+        // Show loading for categories
+        $('#categoriesContainer').html('<div class="text-center py-3"><i class="fas fa-spinner fa-spin fa-2x"></i><p class="mt-2">Loading test categories...</p></div>');
+
+        // Fetch test categories
+        $.ajax({
+            url: '{{ route("getTestCategories", "") }}/' + testId,
+            method: 'GET',
+            success: function(response) {
+                if (response.success && response.categories.length > 0) {
+                    $('#categoriesContainer').empty();
+                    mindrayCategories = [];
+                    allCategories = response.categories;
+
+                    const hasMindrayCategories = response.categories.some(category => category.value_type === 'getFromMindray');
+
+                    if (hasMindrayCategories) {
+                        const mindrayUploadHtml = `
+                            <div class="card mb-3" id="mindrayFileUploadSection">
+                                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0"><i class="fas fa-upload"></i> Mindray File Upload</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label>Upload Mindray .txt file:</label>
+                                        <div class="input-group">
+                                            <div class="custom-file">
+                                                <input type="file" class="custom-file-input" id="master_mindray_file_input" accept=".txt">
+                                                <label class="custom-file-label" for="master_mindray_file_input">Choose .txt file</label>
+                                            </div>
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-secondary" type="button" id="readMindrayFileBtn">Read File</button>
+                                            </div>
+                                        </div>
+                                        <small class="form-text text-muted mt-2">Upload a single .txt file from the Mindray machine. Data for relevant categories will be extracted.</small>
+                                    </div>
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="mindrayManualEntryToggle">
+                                        <label class="custom-control-label text-black" for="mindrayManualEntryToggle">Manual Entry</label>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        $('#categoriesContainer').prepend(mindrayUploadHtml);
+                    }
+
+                    response.categories.forEach(function(category, index) {
+                        const categoryHtml = createCategoryInputs(category, index);
+                        $('#categoriesContainer').append(categoryHtml);
+                        if (category.value_type === 'getFromMindray') {
+                            mindrayCategories.push({
+                                id: category.id,
+                                name: category.name,
+                                param: category.value_type_Value,
+                                index: index
+                            });
+                        }
+                    });
+
+                    $('.mindray-result-input').prop('readonly', !$('#mindrayManualEntryToggle').is(':checked'));
+                    calculateAllFormulaFields();
+
+                } else {
+                    $('#categoriesContainer').html('<div class="alert alert-warning">No test categories found for this test.</div>');
+                }
+            },
+            error: function() {
+                $('#categoriesContainer').html('<div class="alert alert-danger">Failed to load test categories. Please try again.</div>');
+            }
+        });
+
+        // Fetch existing remarks
+        $.ajax({
+            url: '{{ route("getRemarks") }}', // Assuming you have a route named 'getRemarks'
+            method: 'GET',
+            success: function(response) {
+                if (response.success && response.remarks.length > 0) {
+                    response.remarks.forEach(function(remark) {
+                        $('#remark_id').append(new Option(remark.remark_description, remark.remark_id));
+                    });
+                } else {
+                    toastr.info('No existing remarks found.');
+                }
+            },
+            error: function() {
+                toastr.error('Failed to load remarks.');
+            }
+        });
+
+        // Show modal
+        $('#resultModal').modal('show');
+    });
 
     // Function to create appropriate inputs based on category type
     function createCategoryInputs(category, index) {
@@ -677,266 +713,343 @@ $('#testsTable').on('click', '.addResultBtn', function() {
     });
     // --- End Mindray Manual Entry Toggle Logic ---
 
-    // Handle Save Results button click
-$('#saveResultsBtn').click(function() {
-    // Check if we're in confirmation mode
-    if ($(this).hasClass('confirm-mode')) {
-        // User confirmed, proceed with saving
-        proceedWithSaving();
-        return;
-    }
-
-    // Check if all required fields are filled
-    let valid = true;
-    $('#resultForm [required]').each(function() {
-        if ($(this).val() === '' || ($(this).attr('type') === 'radio' && $(`input[name="${$(this).attr('name')}"]:checked`).length === 0)) {
-            valid = false;
-            $(this).addClass('is-invalid');
+    // --- Remark Section Logic ---
+    $(document).on('change', '#customRemarkToggle', function() {
+        const isChecked = $(this).is(':checked');
+        if (isChecked) {
+            $('#existingRemarkSection').hide();
+            $('#customRemarkSection').show();
+            $('#remark_id').val(''); // Clear selected existing remark
+            $('#custom_remark').prop('required', true); // Make custom remark required
+            $('#remark_id').prop('required', false); // Make existing remark not required
         } else {
-            $(this).removeClass('is-invalid');
+            $('#existingRemarkSection').show();
+            $('#customRemarkSection').hide();
+            $('#custom_remark').val(''); // Clear custom remark
+            $('#custom_remark').prop('required', false); // Make custom remark not required
+            $('#remark_id').prop('required', true); // Make existing remark required
         }
     });
+    // --- End Remark Section Logic ---
 
-    if (!valid) {
-        toastr.error('Please fill in all required fields.');
-        return;
-    }
-
-    // Show confirmation summary
-    showConfirmationSummary();
-});
-
-// Function to show confirmation summary
-function showConfirmationSummary() {
-    // Collect all form data for summary
-    const patientName = $('#modalPatientName').text();
-    const testName = $('#modalTestName').text();
-    let summaryHtml = '';
-
-    // Build summary of all results
-    $('.category-card').each(function() {
-        const categoryName = $(this).data('category-name');
-        const valueType = $(this).find('input[name^="results"][name$="[value_type]"]').val();
-        let value = '';
-        let additionalValue = '';
-
-        // Get value based on input type
-        if (valueType === 'getFromMindray' || valueType === 'formula' || valueType === 'number' || valueType === 'range') {
-            value = $(this).find('input[name^="results"][name$="[value]"]').val();
-        } else if ($(this).find('textarea[name^="results"][name$="[value]"]').length) {
-            value = $(this).find('textarea[name^="results"][name$="[value]"]').val();
-        } else if ($(this).find('input[type="radio"][name^="results"][name$="[value]"]:checked').length) {
-            value = $(this).find('input[type="radio"][name^="results"][name$="[value]"]:checked').val();
-            if (valueType === 'negpos_with_Value') {
-                additionalValue = $(this).find('input[name^="results"][name$="[additional_value]"]').val();
-            }
-        } else {
-            value = $(this).find('input[name^="results"][name$="[value]"], select[name^="results"][name$="[value]"]').val();
+    // Handle Save Results button click
+    $('#saveResultsBtn').click(function() {
+        // Check if we're in confirmation mode
+        if ($(this).hasClass('confirm-mode')) {
+            // User confirmed, proceed with saving
+            proceedWithSaving();
+            return;
         }
 
-        // Format the summary entry
+        // Check if all required fields are filled
+        let valid = true;
+        $('#resultForm [required]').each(function() {
+            if ($(this).val() === '' || ($(this).attr('type') === 'radio' && $(`input[name="${$(this).attr('name')}"]:checked`).length === 0)) {
+                valid = false;
+                $(this).addClass('is-invalid');
+            } else {
+                $(this).removeClass('is-invalid');
+            }
+        });
+
+        // Check remark field validity based on toggle
+        if ($('#customRemarkToggle').is(':checked')) {
+            if ($('#custom_remark').val().trim() === '') {
+                valid = false;
+                $('#custom_remark').addClass('is-invalid');
+            } else {
+                $('#custom_remark').removeClass('is-invalid');
+            }
+        } else {
+            if ($('#remark_id').val() === '') {
+                valid = false;
+                $('#remark_id').addClass('is-invalid');
+            } else {
+                $('#remark_id').removeClass('is-invalid');
+            }
+        }
+
+
+        if (!valid) {
+            toastr.error('Please fill in all required fields.');
+            return;
+        }
+
+        // Show confirmation summary
+        showConfirmationSummary();
+    });
+
+    // Function to show confirmation summary
+    function showConfirmationSummary() {
+        // Collect all form data for summary
+        const patientName = $('#modalPatientName').text();
+        const testName = $('#modalTestName').text();
+        let summaryHtml = '';
+
+        // Build summary of all results
+        $('.category-card').each(function() {
+            const categoryName = $(this).data('category-name');
+            const valueType = $(this).find('input[name^="results"][name$="[value_type]"]').val();
+            let value = '';
+            let additionalValue = '';
+
+            // Get value based on input type
+            if (valueType === 'getFromMindray' || valueType === 'formula' || valueType === 'number' || valueType === 'range') {
+                value = $(this).find('input[name^="results"][name$="[value]"]').val();
+            } else if ($(this).find('textarea[name^="results"][name$="[value]"]').length) {
+                value = $(this).find('textarea[name^="results"][name$="[value]"]').val();
+            } else if ($(this).find('input[type="radio"][name^="results"][name$="[value]"]:checked').length) {
+                value = $(this).find('input[type="radio"][name^="results"][name$="[value]"]:checked').val();
+                if (valueType === 'negpos_with_Value') {
+                    additionalValue = $(this).find('input[name^="results"][name$="[additional_value]"]').val();
+                }
+            } else {
+                value = $(this).find('input[name^="results"][name$="[value]"], select[name^="results"][name$="[value]"]').val();
+            }
+
+            // Format the summary entry
+            summaryHtml += `
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        <strong>${categoryName}:</strong>
+                    </div>
+                    <div class="col-md-8">
+                        <span class="text-primary">${value}</span>
+                        ${additionalValue ? `<br><small class="text-muted">Additional: ${additionalValue}</small>` : ''}
+                    </div>
+                </div>
+            `;
+        });
+
+        // Add remark to summary
+        let remarkSummary = '';
+        if ($('#customRemarkToggle').is(':checked')) {
+            remarkSummary = $('#custom_remark').val().trim();
+            remarkSummary = remarkSummary ? `Custom: ${remarkSummary}` : 'No custom remark entered.';
+        } else {
+            const selectedRemarkText = $('#remark_id option:selected').text();
+            remarkSummary = selectedRemarkText && selectedRemarkText !== '-- Select Remark --' ? `Existing: ${selectedRemarkText}` : 'No existing remark selected.';
+        }
+
         summaryHtml += `
-            <div class="row mb-2">
+            <div class="row mb-2 mt-3">
                 <div class="col-md-4">
-                    <strong>${categoryName}:</strong>
+                    <strong>Remark:</strong>
                 </div>
                 <div class="col-md-8">
-                    <span class="text-primary">${value}</span>
-                    ${additionalValue ? `<br><small class="text-muted">Additional: ${additionalValue}</small>` : ''}
+                    <span class="text-info">${remarkSummary}</span>
                 </div>
             </div>
         `;
+
+        // Create confirmation content
+        const confirmationContent = `
+            <div class="confirmation-summary">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> Please review the results before saving.
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Patient:</label>
+                            <div class="font-weight-bold text-dark">${patientName}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Test:</label>
+                            <div class="font-weight-bold text-dark">${testName}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Results Summary</h5>
+                    </div>
+                    <div class="card-body">
+                        ${summaryHtml}
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Hide the form and show confirmation
+        $('#categoriesContainer').hide();
+        $('.card:has(#remark_id)').hide(); // Hide the remark card
+        $('#resultForm').append(confirmationContent);
+
+        // Update modal buttons
+        $('#saveResultsBtn')
+            .removeClass('btn-primary')
+            .addClass('btn-success confirm-mode')
+            .html('<i class="fas fa-check"></i> Confirm & Save');
+
+        // Add back button
+        const backButton = `
+            <button type="button" class="btn btn-warning" id="backToFormBtn">
+                <i class="fas fa-arrow-left"></i> Back to Form
+            </button>
+        `;
+        $('#saveResultsBtn').before(backButton);
+
+        // Update modal title
+        $('#resultModalLabel').text('Confirm Test Results');
+    }
+
+    // Function to go back to form
+    $(document).on('click', '#backToFormBtn', function() {
+        // Remove confirmation summary
+        $('.confirmation-summary').remove();
+
+        // Show form again
+        $('#categoriesContainer').show();
+        $('.card:has(#remark_id)').show(); // Show the remark card
+
+        // Reset save button
+        $('#saveResultsBtn')
+            .removeClass('btn-success confirm-mode')
+            .addClass('btn-primary')
+            .html('<i class="fas fa-save"></i> Save Results');
+
+        // Remove back button
+        $('#backToFormBtn').remove();
+
+        // Reset modal title
+        $('#resultModalLabel').text('Add Test Results');
     });
 
-    // Create confirmation content
-    const confirmationContent = `
-        <div class="confirmation-summary">
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle"></i> Please review the results before saving.
-            </div>
+    // Function to proceed with actual saving
+    function proceedWithSaving() {
+        // Collect all form data
+        const formData = {
+            requested_test_id: $('#requested_test_id').val(),
+            results: [],
+            remark_id_or_customRemark: null // Initialize remark field
+        };
 
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Patient:</label>
-                        <div class="font-weight-bold text-dark">${patientName}</div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Test:</label>
-                        <div class="font-weight-bold text-dark">${testName}</div>
-                    </div>
-                </div>
-            </div>
+        // Collect results from each category
+        $('.category-card').each(function(index) {
+            const categoryId = $(this).find('input[name^="results"][name$="[category_id]"]').val();
+            const valueType = $(this).find('input[name^="results"][name$="[value_type]"]').val();
+            let value;
+            let additionalValue = null;
 
-            <div class="card">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0">Results Summary</h5>
-                </div>
-                <div class="card-body">
-                    ${summaryHtml}
-                </div>
-            </div>
-        </div>
-    `;
-
-    // Hide the form and show confirmation
-    $('#categoriesContainer').hide();
-    $('#resultForm').append(confirmationContent);
-
-    // Update modal buttons
-    $('#saveResultsBtn')
-        .removeClass('btn-primary')
-        .addClass('btn-success confirm-mode')
-        .html('<i class="fas fa-check"></i> Confirm & Save');
-
-    // Add back button
-    const backButton = `
-        <button type="button" class="btn btn-warning" id="backToFormBtn">
-            <i class="fas fa-arrow-left"></i> Back to Form
-        </button>
-    `;
-    $('#saveResultsBtn').before(backButton);
-
-    // Update modal title
-    $('#resultModalLabel').text('Confirm Test Results');
-}
-
-// Function to go back to form
-$(document).on('click', '#backToFormBtn', function() {
-    // Remove confirmation summary
-    $('.confirmation-summary').remove();
-
-    // Show form again
-    $('#categoriesContainer').show();
-
-    // Reset save button
-    $('#saveResultsBtn')
-        .removeClass('btn-success confirm-mode')
-        .addClass('btn-primary')
-        .html('<i class="fas fa-save"></i> Save Results');
-
-    // Remove back button
-    $('#backToFormBtn').remove();
-
-    // Reset modal title
-    $('#resultModalLabel').text('Add Test Results');
-});
-
-// Function to proceed with actual saving
-function proceedWithSaving() {
-    // Collect all form data
-    const formData = {
-        requested_test_id: $('#requested_test_id').val(),
-        results: []
-    };
-
-    // Collect results from each category
-    $('.category-card').each(function(index) {
-        const categoryId = $(this).find('input[name^="results"][name$="[category_id]"]').val();
-        const valueType = $(this).find('input[name^="results"][name$="[value_type]"]').val();
-        let value;
-        let additionalValue = null;
-
-        // Handle different input types
-        if (valueType === 'getFromMindray' || valueType === 'formula') {
-            value = $(this).find('input[name^="results"][name$="[value]"]').val();
-        } else if ($(this).find('textarea[name^="results"][name$="[value]"]').length) {
-            value = $(this).find('textarea[name^="results"][name$="[value]"]').val();
-        } else if ($(this).find('input[type="radio"][name^="results"][name$="[value]"]:checked').length) {
-            value = $(this).find('input[type="radio"][name^="results"][name$="[value]"]:checked').val();
-            if (valueType === 'negpos_with_Value') {
-                additionalValue = $(this).find('input[name^="results"][name$="[additional_value]"]').val();
+            // Handle different input types
+            if (valueType === 'getFromMindray' || valueType === 'formula') {
+                value = $(this).find('input[name^="results"][name$="[value]"]').val();
+            } else if ($(this).find('textarea[name^="results"][name$="[value]"]').length) {
+                value = $(this).find('textarea[name^="results"][name$="[value]"]').val();
+            } else if ($(this).find('input[type="radio"][name^="results"][name$="[value]"]:checked').length) {
+                value = $(this).find('input[type="radio"][name^="results"][name$="[value]"]:checked').val();
+                if (valueType === 'negpos_with_Value') {
+                    additionalValue = $(this).find('input[name^="results"][name$="[additional_value]"]').val();
+                }
+            } else {
+                value = $(this).find('input[name^="results"][name$="[value]"], select[name^="results"][name$="[value]"]').val();
             }
+
+            formData.results.push({
+                category_id: categoryId,
+                value_type: valueType,
+                value: value,
+                additional_value: additionalValue
+            });
+        });
+
+        // Add remark data
+        if ($('#customRemarkToggle').is(':checked')) {
+            formData.remark_id_or_customRemark = $('#custom_remark').val().trim();
         } else {
-            value = $(this).find('input[name^="results"][name$="[value]"], select[name^="results"][name$="[value]"]').val();
+            formData.remark_id_or_customRemark = $('#remark_id').val(); // This will be the remark_id
         }
 
-        formData.results.push({
-            category_id: categoryId,
-            value_type: valueType,
-            value: value,
-            additional_value: additionalValue
-        });
-    });
 
-    // Send data to server
-    $.ajax({
-        url: '{{ route("storeTestResults") }}',
-        method: 'POST',
-        data: formData,
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        beforeSend: function() {
-            // Disable buttons and show loading state
-            $('#saveResultsBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Saving...');
-            $('#backToFormBtn').prop('disabled', true);
-        },
-        success: function(response) {
-            // Handle successful response
-            if (response.success) {
-                // Show success message
-                toastr.success(response.message || 'Results saved successfully!');
+        // Send data to server
+        $.ajax({
+            url: '{{ route("storeTestResults") }}',
+            method: 'POST',
+            data: formData,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            beforeSend: function() {
+                // Disable buttons and show loading state
+                $('#saveResultsBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Saving...');
+                $('#backToFormBtn').prop('disabled', true);
+            },
+            success: function(response) {
+                // Handle successful response
+                if (response.success) {
+                    // Show success message
+                    toastr.success(response.message || 'Results saved successfully!');
 
-                // Close modal and refresh table
-                $('#resultModal').modal('hide');
-                $('#testsTable').DataTable().ajax.reload();
-            } else {
-                toastr.error(response.message || 'Failed to save results.');
+                    // Close modal and refresh table
+                    $('#resultModal').modal('hide');
+                    $('#testsTable').DataTable().ajax.reload();
+                } else {
+                    toastr.error(response.message || 'Failed to save results.');
+                    // Go back to form on error
+                    $('#backToFormBtn').click();
+                }
+            },
+            error: function(xhr) {
+                const errorMsg = xhr.responseJSON && xhr.responseJSON.message
+                    ? xhr.responseJSON.message
+                    : 'An error occurred while saving results.';
+
+                toastr.error(errorMsg);
+
                 // Go back to form on error
                 $('#backToFormBtn').click();
+            },
+            complete: function() {
+                // Reset button states
+                $('#saveResultsBtn').prop('disabled', false);
+                $('#backToFormBtn').prop('disabled', false);
+
+                // If still in confirm mode, reset the button text
+                if ($('#saveResultsBtn').hasClass('confirm-mode')) {
+                    $('#saveResultsBtn').html('<i class="fas fa-check"></i> Confirm & Save');
+                }
             }
-        },
-        error: function(xhr) {
-            const errorMsg = xhr.responseJSON && xhr.responseJSON.message
-                ? xhr.responseJSON.message
-                : 'An error occurred while saving results.';
+        });
+    }
 
-            toastr.error(errorMsg);
+    // Reset modal state when it's closed
+    $('#resultModal').on('hidden.bs.modal', function () {
+        // Remove confirmation summary if it exists
+        $('.confirmation-summary').remove();
 
-            // Go back to form on error
-            $('#backToFormBtn').click();
-        },
-        complete: function() {
-            // Reset button states
-            $('#saveResultsBtn').prop('disabled', false);
-            $('#backToFormBtn').prop('disabled', false);
+        // Show form
+        $('#categoriesContainer').show();
+        $('.card:has(#remark_id)').show(); // Show the remark card
 
-            // If still in confirm mode, reset the button text
-            if ($('#saveResultsBtn').hasClass('confirm-mode')) {
-                $('#saveResultsBtn').html('<i class="fas fa-check"></i> Confirm & Save');
-            }
-        }
+        // Reset save button
+        $('#saveResultsBtn')
+            .removeClass('btn-success confirm-mode')
+            .addClass('btn-primary')
+            .html('<i class="fas fa-save"></i> Save Results')
+            .prop('disabled', false);
+
+        // Remove back button
+        $('#backToFormBtn').remove();
+
+        // Reset modal title
+        $('#resultModalLabel').text('Add Test Results');
+
+        // Clear form
+        $('#resultForm')[0].reset();
+        $('#categoriesContainer').empty();
+
+        // Reset remark section
+        $('#customRemarkToggle').prop('checked', false).trigger('change'); // Reset toggle
+        $('#remark_id').empty().append('<option value="">-- Select Remark --</option>'); // Clear and reset dropdown
+        $('#custom_remark').val(''); // Clear custom remark
+        $('#remark_id').removeClass('is-invalid'); // Clear validation
+        $('#custom_remark').removeClass('is-invalid'); // Clear validation
     });
-}
-
-// Reset modal state when it's closed
-$('#resultModal').on('hidden.bs.modal', function () {
-    // Remove confirmation summary if it exists
-    $('.confirmation-summary').remove();
-
-    // Show form
-    $('#categoriesContainer').show();
-
-    // Reset save button
-    $('#saveResultsBtn')
-        .removeClass('btn-success confirm-mode')
-        .addClass('btn-primary')
-        .html('<i class="fas fa-save"></i> Save Results')
-        .prop('disabled', false);
-
-    // Remove back button
-    $('#backToFormBtn').remove();
-
-    // Reset modal title
-    $('#resultModalLabel').text('Add Test Results');
-
-    // Clear form
-    $('#resultForm')[0].reset();
-    $('#categoriesContainer').empty();
-});
 
     // Reset validation on input change
     $(document).on('input change', '#resultForm [required]', function() {
@@ -973,11 +1086,11 @@ $('#resultModal').on('hidden.bs.modal', function () {
     };
 
     // Handle Delete button click
-$('#testsTable').on('click', '.deleteTestBtn', function() {
-    const requestedTestIdToDelete = $(this).data('id');
-    $('#delete_requested_test_id').val(requestedTestIdToDelete);
-    $('#deleteConfirmationModal').modal('show');
-});
+    $('#testsTable').on('click', '.deleteTestBtn', function() {
+        const requestedTestIdToDelete = $(this).data('id');
+        $('#delete_requested_test_id').val(requestedTestIdToDelete);
+        $('#deleteConfirmationModal').modal('show');
+    });
 
     // Handle Confirm Delete button click
     $('#confirmDeleteBtn').click(function() {
