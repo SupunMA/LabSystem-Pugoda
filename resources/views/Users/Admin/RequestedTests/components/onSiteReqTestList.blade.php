@@ -753,21 +753,21 @@ $(document).ready(function () {
         });
 
         // Check remark field validity based on toggle
-        if ($('#customRemarkToggle').is(':checked')) {
-            if ($('#custom_remark').val().trim() === '') {
-                valid = false;
-                $('#custom_remark').addClass('is-invalid');
-            } else {
-                $('#custom_remark').removeClass('is-invalid');
-            }
-        } else {
-            if ($('#remark_id').val() === '') {
-                valid = false;
-                $('#remark_id').addClass('is-invalid');
-            } else {
-                $('#remark_id').removeClass('is-invalid');
-            }
-        }
+        // if ($('#customRemarkToggle').is(':checked')) {
+        //     if ($('#custom_remark').val().trim() === '') {
+        //         valid = false;
+        //         $('#custom_remark').addClass('is-invalid');
+        //     } else {
+        //         $('#custom_remark').removeClass('is-invalid');
+        //     }
+        // } else {
+        //     if ($('#remark_id').val() === '') {
+        //         valid = false;
+        //         $('#remark_id').addClass('is-invalid');
+        //     } else {
+        //         $('#remark_id').removeClass('is-invalid');
+        //     }
+        // }
 
 
         if (!valid) {
