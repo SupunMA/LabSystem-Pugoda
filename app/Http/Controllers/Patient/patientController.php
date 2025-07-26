@@ -9,8 +9,10 @@ use Auth;
 use App\Models\User;
 use App\Models\Test;
 use App\Models\Patient;
+use App\Models\Remark;
 use DB;
 use Carbon\Carbon;
+use PDF;
 
 
 
@@ -200,15 +202,17 @@ class patientController extends Controller
 
 
     //Download pdf by generating
-     public function generateDownloadReport($id)
+    public function generateDownloadReport($id)
     {
         // Get the basic report information by joining multiple tables
+        // The query starts from test_results and joins requested_tests as per your working function.
+        // This implies that $id should correspond to a requested_test that *has* test_results.
         $testResult = DB::table('test_results')
             ->join('requested_tests', 'test_results.requested_test_id', '=', 'requested_tests.id')
             ->join('patients', 'requested_tests.patient_id', '=', 'patients.pid')
             ->join('users', 'patients.userID', '=', 'users.id')
             ->join('availableTests', 'requested_tests.test_id', '=', 'availableTests.id')
-            ->where('requested_tests.id', $id)
+            ->where('requested_tests.id', $id) // Filtering by requested_tests.id
             ->select(
                 'test_results.id as report_id',
                 'test_results.requested_test_id',
@@ -220,12 +224,15 @@ class patientController extends Controller
                 'requested_tests.test_date',
                 'availableTests.id as test_id',
                 'availableTests.name as test_name',
-                'availableTests.specimen'
+                'availableTests.specimen',
+                'requested_tests.remark_id_or_customRemark' // ADDED: Fetch the remark here
             )
             ->first();
 
         if (!$testResult) {
-            return abort(404, 'Report not found');
+            // If no test result found for the requested_test_id, abort.
+            // This will happen if no results have been entered yet for this requested test.
+            return abort(404, 'Report not found or results not yet entered.');
         }
 
         // Calculate patient age in years, months, and days
@@ -254,39 +261,52 @@ class patientController extends Controller
         $reportId = date('Ymd', strtotime($testResult->test_date)) . '-' . $testResult->requestedTest_ID . '-OS';
 
         // Prepare data for the PDF (same as preview)
-        $formattedResults = $this->getFormattedTestResults($testResult->test_id, $testResult->requested_test_id);
+        // Pass requestedTest_ID to getFormattedTestResults
+        $formattedResults = $this->getFormattedTestResults($testResult->test_id, $testResult->requestedTest_ID);
 
-    // Generate QR code URL using online service
-    $qrCodeUrl = null;
-    if (!empty($testResult->nic)) {
-        // Using Google Charts API (simple and reliable)
-        // $qrCodeUrl = 'https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=' . urlencode($testResult->nic);
+        // ADDED: Determine the remark text to display
+        $remarkText = null;
+        if (!empty($testResult->remark_id_or_customRemark)) {
+            // Check if it's an ID of an existing remark
+            if (is_numeric($testResult->remark_id_or_customRemark)) {
+                $remark = Remark::find($testResult->remark_id_or_customRemark);
+                if ($remark) {
+                    $remarkText = $remark->remark_description;
+                }
+            } else {
+                // It's a custom remark string
+                $remarkText = $testResult->remark_id_or_customRemark;
+            }
+        }
 
-        // Or use QR Server API
-        $qrCodeUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' . urlencode($testResult->nic);
-    }
+        // Generate QR code URL using online service
+        $qrCodeUrl = null;
+        if (!empty($testResult->nic)) {
+            // Using QR Server API (a good alternative to Google Charts API)
+            $qrCodeUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=' . urlencode($testResult->nic);
+            // Note: Adjusted size to 100x100 for better PDF embedding, you can change it.
+        }
 
-
-
-    // Prepare data for the view
-    $sampleData = [
-        'patientName' => $testResult->patient_name,
-        'nic' => $testResult->nic,
-        'nicQrCode' => $qrCodeUrl,
-        'age' => $age,
-        'gender' => ucfirst(strtolower($testResult->gender)),
-        'reportDate' => date('Y-m-d', strtotime($testResult->test_date)),
-        'reportId' => $reportId,
-        'testName' => $testResult->test_name,
-        'specimenType' => $testResult->specimen,
-        'testResults' => $formattedResults
-    ];
+        // Prepare data for the view
+        $sampleData = [
+            'patientName' => $testResult->patient_name,
+            'nic' => $testResult->nic,
+            'nicQrCode' => $qrCodeUrl,
+            'age' => $age,
+            'gender' => ucfirst(strtolower($testResult->gender)),
+            'reportDate' => date('Y-m-d', strtotime($testResult->test_date)),
+            'reportId' => $reportId,
+            'testName' => $testResult->test_name,
+            'specimenType' => $testResult->specimen,
+            'testResults' => $formattedResults,
+            'remark' => $remarkText // ADDED: Pass the remark to the download view
+        ];
 
         // Create PDF filename
         $filename = $reportId . '.pdf';
 
         // Create the PDF using a dedicated download view
-        $pdf = \PDF::loadView('Users.labReportDownload', [
+        $pdf = PDF::loadView('Users.labReportDownload', [
             'sampleData' => $sampleData,
             'isPdfDownload' => true
         ]);
@@ -296,7 +316,7 @@ class patientController extends Controller
         $pdf->setOptions([
             'isPhpEnabled' => true,
             'isHtml5ParserEnabled' => true,
-            'isRemoteEnabled' => true,
+            'isRemoteEnabled' => true, // Crucial for fetching external QR code image
             'defaultFont' => 'sans-serif',
             'dpi' => 150,
             'debugCss' => false
@@ -409,6 +429,12 @@ class patientController extends Controller
         return $formattedResults;
     }
 
+    /**
+     * Helper method to get reference table data
+     *
+     * @param int $categoryId The category ID
+     * @return array Reference table data
+     */
     private function getReferenceTableData($categoryId)
     {
         $tableEntries = DB::table('reference_range_tables')

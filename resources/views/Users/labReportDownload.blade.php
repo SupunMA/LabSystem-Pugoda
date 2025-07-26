@@ -231,21 +231,40 @@
             text-decoration: underline;
         }
 
-/* Signature positioning and overall container */
+        /* Container for remark and signature */
+        .remark-signature-wrapper {
+            position: absolute;
+            bottom: 90px; /* Adjust based on footer height */
+            left: 40px; /* Align with container padding */
+            right: 40px; /* Align with container padding */
+            display: flex;
+            justify-content: flex-end; /* Always push content to the right */
+            align-items: flex-end;
+            width: calc(100% - 80px); /* Account for left/right padding */
+        }
+
+        .remark-section {
+            flex-grow: 1; /* Allows remark to take up available space */
+            text-align: left;
+            font-size: 20px; /* Adjust font size for PDF */
+            color: #2d5b84;
+            font-weight: bold;
+            padding-right: 20px; /* Space between remark and signature */
+        }
+
+        /* Signature positioning and overall container */
         .technologist-signature {
             text-align: right; /* Aligns content (image and text) to the right */
             padding-top: 10px;
-            /* border-top: 1px dotted #000; Remove this if you want the border above the image, or adjust its position */
             width: 300px; /* Adjust width as needed for your signature and text */
             color: #2d5b84;
             font-weight: bold;
-            font-size: 18px;
-            position: absolute;
-            right: 40px; /* Adjusted slightly to give more space from the right edge */
-            bottom: 160px; /* Adjust this value to move the signature up or down */
+            font-size: 18px; /* Adjust font size for PDF */
             display: flex; /* Use flexbox to align image and text vertically */
             flex-direction: column; /* Stack them vertically */
             align-items: flex-end; /* Align items to the right within the flex container */
+            margin-left: 850px;
+            margin-bottom: 50px; /* Space between signature and footer */
         }
 
         /* Styling for the signature image */
@@ -253,12 +272,10 @@
             max-width: 400px; /* Adjust as needed, makes the image responsive to the container */
             height: auto; /* Maintain aspect ratio */
             margin-bottom: -10px; /* Pull the text closer to the signature image if needed */
-            /* You might need to adjust this margin to position the signature exactly where you want it relative to the text */
         }
 
         /* Styling for the signature text */
         .signature-text {
-            /* You can add specific styles here if you want to differentiate the text from the main .technologist-signature styles */
             padding-top: 5px; /* Add a little padding above the text if the image is close */
             border-top: 1px dotted #000; /* Move the dotted line here to be above just the text */
             width: 100%; /* Ensure the border spans the width of the signature block */
@@ -445,10 +462,18 @@
                 </table>
             </div>
 
-            <!-- Signature -->
-            <div class="technologist-signature">
-                <img src="{{ asset('img/sign.png') }}" alt="Medical Laboratory Scientist Signature" class="signature-image">
-                <div class="signature-text">Medical Laboratory Scientist</div>
+            <!-- Remark and Signature Container -->
+            <div class="remark-signature-wrapper">
+                @if (!empty($sampleData['remark']))
+                    <div class="remark-section">
+                        <strong><u>Remark:</u></strong> {{ $sampleData['remark'] }}
+                    </div>
+                @endif
+                <!-- Signature -->
+                <div class="technologist-signature">
+                    <img src="{{ asset('img/sign.png') }}" alt="Medical Laboratory Scientist Signature" class="signature-image">
+                    <div class="signature-text">Medical Laboratory Scientist</div>
+                </div>
             </div>
 
             <!-- Footer as a table row -->
