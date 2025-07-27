@@ -65,7 +65,7 @@ class admin_RemarkCtr extends Controller
                 ->rawColumns(['actions'])
                 ->make(true);
         }
-        return view('Users.Admin.Remarks.allRemarks');
+        return view('Users.Admin.Remarks.AllRemarks');
     }
 
     public function deleteRemarks($ID)
