@@ -312,7 +312,7 @@
     }
 
     .space-row td {
-        height: 20px;
+        height: 7px;
         border-bottom: none !important;
         background-color: transparent;
     }

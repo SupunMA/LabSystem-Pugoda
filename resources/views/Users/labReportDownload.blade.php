@@ -426,7 +426,7 @@
                         @foreach($sampleData['testResults'] as $test)
                             @if($test['isSpace'])
                                 <tr class="space-row">
-                                    <td colspan="3" height="20"></td>
+                                    <td colspan="3" height="8"></td>
                                 </tr>
                             @elseif($test['isTitle'])
                                 <tr class="title-row">
