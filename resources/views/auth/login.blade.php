@@ -139,12 +139,12 @@
                         </div>
 
                         {{-- Remember Me Checkbox Row --}}
-                        <div class="form-row">
+                        {{-- <div class="form-row">
                             <div class="checkbox-container">
                                 <input type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
                                 <label for="remember">Remember Me</label>
                             </div>
-                        </div>
+                        </div> --}}
 
                         {{-- Sign In Button Row --}}
                         <div class="form-row">
