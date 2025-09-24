@@ -714,70 +714,52 @@ $(document).ready(function () {
     // --- End Mindray Manual Entry Toggle Logic ---
 
     // --- Remark Section Logic ---
-    $(document).on('change', '#customRemarkToggle', function() {
-        const isChecked = $(this).is(':checked');
-        if (isChecked) {
-            $('#existingRemarkSection').hide();
-            $('#customRemarkSection').show();
-            $('#remark_id').val(''); // Clear selected existing remark
-            $('#custom_remark').prop('required', true); // Make custom remark required
-            $('#remark_id').prop('required', false); // Make existing remark not required
-        } else {
-            $('#existingRemarkSection').show();
-            $('#customRemarkSection').hide();
-            $('#custom_remark').val(''); // Clear custom remark
-            $('#custom_remark').prop('required', false); // Make custom remark not required
-            $('#remark_id').prop('required', true); // Make existing remark required
-        }
-    });
+$(document).on('change', '#customRemarkToggle', function() {
+    const isChecked = $(this).is(':checked');
+    if (isChecked) {
+        $('#existingRemarkSection').hide();
+        $('#customRemarkSection').show();
+        $('#remark_id').val('').prop('required', false).removeClass('is-invalid'); // Clear and NOT required
+        $('#custom_remark').prop('required', false).removeClass('is-invalid'); // Also NOT required
+    } else {
+        $('#existingRemarkSection').show();
+        $('#customRemarkSection').hide();
+        $('#custom_remark').val('').prop('required', false).removeClass('is-invalid'); // Clear and NOT required
+        $('#remark_id').prop('required', false).removeClass('is-invalid'); // Also NOT required
+    }
+});
     // --- End Remark Section Logic ---
 
     // Handle Save Results button click
-    $('#saveResultsBtn').click(function() {
-        // Check if we're in confirmation mode
-        if ($(this).hasClass('confirm-mode')) {
-            // User confirmed, proceed with saving
-            proceedWithSaving();
-            return;
+$('#saveResultsBtn').click(function() {
+    // Check if we're in confirmation mode
+    if ($(this).hasClass('confirm-mode')) {
+        // User confirmed, proceed with saving
+        proceedWithSaving();
+        return;
+    }
+
+    // Check if all required fields are filled (EXCLUDING remark fields completely)
+    let valid = true;
+    $('#resultForm [required]').not('#remark_id, #custom_remark').each(function() {
+        if ($(this).val() === '' || ($(this).attr('type') === 'radio' && $(`input[name="${$(this).attr('name')}"]:checked`).length === 0)) {
+            valid = false;
+            $(this).addClass('is-invalid');
+        } else {
+            $(this).removeClass('is-invalid');
         }
-
-        // Check if all required fields are filled
-        let valid = true;
-        $('#resultForm [required]').each(function() {
-            if ($(this).val() === '' || ($(this).attr('type') === 'radio' && $(`input[name="${$(this).attr('name')}"]:checked`).length === 0)) {
-                valid = false;
-                $(this).addClass('is-invalid');
-            } else {
-                $(this).removeClass('is-invalid');
-            }
-        });
-
-        // Check remark field validity based on toggle
-        // if ($('#customRemarkToggle').is(':checked')) {
-        //     if ($('#custom_remark').val().trim() === '') {
-        //         valid = false;
-        //         $('#custom_remark').addClass('is-invalid');
-        //     } else {
-        //         $('#custom_remark').removeClass('is-invalid');
-        //     }
-        // } else {
-        //     if ($('#remark_id').val() === '') {
-        //         valid = false;
-        //         $('#remark_id').addClass('is-invalid');
-        //     } else {
-        //         $('#remark_id').removeClass('is-invalid');
-        //     }
-        // }
-
-
-        if (!valid) {
-            toastr.error('Please fill in all required fields.');
-            return;
-        }
-
-        // Show confirmation summary
-        showConfirmationSummary();
     });
+
+    // NO remark validation at all - remarks are completely optional
+
+    if (!valid) {
+        toastr.error('Please fill in all required fields.');
+        return;
+    }
+
+    // Show confirmation summary
+    showConfirmationSummary();
+});
 
     // Function to show confirmation summary
     function showConfirmationSummary() {
@@ -1018,38 +1000,38 @@ $(document).ready(function () {
     }
 
     // Reset modal state when it's closed
-    $('#resultModal').on('hidden.bs.modal', function () {
-        // Remove confirmation summary if it exists
-        $('.confirmation-summary').remove();
+$('#resultModal').on('hidden.bs.modal', function () {
+    // Remove confirmation summary if it exists
+    $('.confirmation-summary').remove();
 
-        // Show form
-        $('#categoriesContainer').show();
-        $('.card:has(#remark_id)').show(); // Show the remark card
+    // Show form
+    $('#categoriesContainer').show();
+    $('.card:has(#remark_id)').show();
 
-        // Reset save button
-        $('#saveResultsBtn')
-            .removeClass('btn-success confirm-mode')
-            .addClass('btn-primary')
-            .html('<i class="fas fa-save"></i> Save Results')
-            .prop('disabled', false);
+    // Reset save button
+    $('#saveResultsBtn')
+        .removeClass('btn-success confirm-mode')
+        .addClass('btn-primary')
+        .html('<i class="fas fa-save"></i> Save Results')
+        .prop('disabled', false);
 
-        // Remove back button
-        $('#backToFormBtn').remove();
+    // Remove back button
+    $('#backToFormBtn').remove();
 
-        // Reset modal title
-        $('#resultModalLabel').text('Add Test Results');
+    // Reset modal title
+    $('#resultModalLabel').text('Add Test Results');
 
-        // Clear form
-        $('#resultForm')[0].reset();
-        $('#categoriesContainer').empty();
+    // Clear form
+    $('#resultForm')[0].reset();
+    $('#categoriesContainer').empty();
 
-        // Reset remark section
-        $('#customRemarkToggle').prop('checked', false).trigger('change'); // Reset toggle
-        $('#remark_id').empty().append('<option value="">-- Select Remark --</option>'); // Clear and reset dropdown
-        $('#custom_remark').val(''); // Clear custom remark
-        $('#remark_id').removeClass('is-invalid'); // Clear validation
-        $('#custom_remark').removeClass('is-invalid'); // Clear validation
-    });
+    // Reset remark section (make sure no required attributes)
+    $('#customRemarkToggle').prop('checked', false);
+    $('#existingRemarkSection').show();
+    $('#customRemarkSection').hide();
+    $('#remark_id').empty().append('<option value="">-- Select Remark --</option>').prop('required', false).removeClass('is-invalid');
+    $('#custom_remark').val('').prop('required', false).removeClass('is-invalid');
+});
 
     // Reset validation on input change
     $(document).on('input change', '#resultForm [required]', function() {
