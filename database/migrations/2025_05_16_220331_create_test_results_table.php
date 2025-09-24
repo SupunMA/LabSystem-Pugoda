@@ -20,6 +20,9 @@ class CreateTestResultsTable extends Migration
             $table->foreign('requested_test_id')->references('id')->on('requested_tests')->onDelete('cascade');
             $table->foreign('category_id')->references('id')->on('test_categories')->onDelete('cascade');
             $table->foreign('added_by')->references('id')->on('users')->onDelete('cascade');
+
+            // Performance index for faster lookups
+            $table->index('requested_test_id');
         });
     }
 
