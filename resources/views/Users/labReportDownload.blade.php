@@ -480,7 +480,7 @@
             <div class="footer">
                 <table class="footer-table">
                     <tr><td width="20%" align="center">
-                            <img src="https://bootflare.com/wp-content/uploads/2024/01/Mindray-Logo-1536x864.png" class="footer-logo">
+                            <img src="{{ asset('img/mindray.png') }}" class="footer-logo">
                         </td>
                         <td width="30%">
                             <strong>Equipment Used:</strong><br>

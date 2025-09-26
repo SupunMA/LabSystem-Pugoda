@@ -590,7 +590,7 @@
         footer.className = 'footer';
         footer.innerHTML = `
             <div class="footer-item">
-                <img src="https://bootflare.com/wp-content/uploads/2024/01/Mindray-Logo-1536x864.png" class="footer-logo">
+                <img src="{{ asset('img/mindray.png') }}" class="footer-logo">
                 <span class="footer-text">BC - 10 Fully Automated Hematology Analyzer <br> BA - 88A Biochemistry Analyzer</span>
             </div>
             <div class="footer-item">
