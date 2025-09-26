@@ -11,8 +11,23 @@
         <!-- Sidebar user panel (optional) -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
             <div class="image">
-                <img src="https://icon-library.com/images/admin-user-icon/admin-user-icon-4.jpg"
-                    class="img-circle elevation-2" alt="User Image">
+                @php
+                    $defaultIcon = "http://icon-library.com/images/anonymous-icon/anonymous-icon-0.jpg";
+                    $maleIcon = "http://icon-library.com/images/admin-user-icon/admin-user-icon-4.jpg";
+                    $femaleIcon = "http://icon-library.com/images/60-512_67980.png";
+
+                    $iconSrc = $defaultIcon; // Default fallback
+
+                    if (Auth::check() && Auth::user()->patient) {
+                        if (Auth::user()->patient->gender === 'M') {
+                            $iconSrc = $maleIcon;
+                        } elseif (Auth::user()->patient->gender === 'F') {
+                            $iconSrc = $femaleIcon;
+                        }
+                    }
+                @endphp
+
+                <img src="{{ $iconSrc }}" class="img-circle elevation-2" alt="User Image">
             </div>
             <div class="info">
                 <a href="#" class="d-block">{{ Auth::user()->name }}</a>
