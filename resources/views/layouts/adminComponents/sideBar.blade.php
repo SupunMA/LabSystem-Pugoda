@@ -11,7 +11,7 @@
         <!-- Sidebar user panel (optional) -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
             <div class="image">
-                <img src="http://icon-library.com/images/admin-user-icon/admin-user-icon-4.jpg"
+                <img src="http://icon-library.com/images/icon-administrator/icon-administrator-19.jpg"
                     class="img-circle elevation-2" alt="User Image">
             </div>
             <div class="info">
