@@ -3,8 +3,8 @@
 @section('content')
 <div class="container-fluid ">
     <a class="btn btn-danger mb-1" href="{{route('admin.addReport')}}">
-        <i class="fa fa-plus" aria-hidden="true"></i>
-        <b>Add Report</b>
+        <i class="fa fa-th-list" aria-hidden="true"></i>
+        <b>View OnSite Report</b>
     </a>
     @if(session('message'))
     <div class="alert alert-success">
