@@ -48,13 +48,51 @@
                 </li>
 
                 <li class="nav-item">
-                    <a href="{{ route('admin.addPatient') }}" class="nav-link {{ Route::currentRouteNamed('admin.addPatient') ? 'active' : ' ' }}">
-                    <i class="fa fa-plus" aria-hidden="true"></i>
-                        <p>Add Patient
-                            <span class="right badge badge-success">New</span>
+                    <a href="{{ route('admin.addPatient') }}" class="nav-link {{ Route::currentRouteNamed('admin.addPatient') ? 'active' : ' ' }}" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; margin: 8px 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 2px solid rgba(255,255,255,0.2); transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 12px rgba(0,0,0,0.2)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.1)';">
+                    <i class="fa fa-user-plus" aria-hidden="true" style="font-size: 1.3em;"></i>
+                        <p style="font-weight: bold; font-size: 1.05em;">
+                            Add Patient
+                            <span class="right badge badge-warning" style="animation: pulse 2s infinite;">+ New</span>
                         </p>
                     </a>
                 </li>
+
+                <style>
+                    @keyframes pulse {
+                        0%, 100% { opacity: 1; }
+                        50% { opacity: 0.7; }
+                    }
+                    
+                    /* Make Add Patient button position relative for shine effect */
+                    .nav-item:nth-child(2) a {
+                        position: relative;
+                        overflow: hidden;
+                    }
+                    
+                    /* Shine effect animation */
+                    .nav-item:nth-child(2) a::before {
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: -100%;
+                        width: 100%;
+                        height: 100%;
+                        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+                        transition: left 0.6s;
+                        pointer-events: none;
+                    }
+                    
+                    .nav-item:nth-child(2) a:hover::before {
+                        left: 100%;
+                    }
+                    
+                    /* Ensure text stays white on hover */
+                    .nav-item:nth-child(2) a:hover,
+                    .nav-item:nth-child(2) a:hover p,
+                    .nav-item:nth-child(2) a:hover i {
+                        color: white !important;
+                    }
+                </style>
 
                 <li class="nav-item">
                     <a href="{{ route('admin.allPatient') }}" class="nav-link {{ Route::currentRouteNamed('admin.allPatient') ? 'active' : ' ' }}">
