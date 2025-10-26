@@ -56,29 +56,11 @@
                     </a>
                 </li>
 
-
-                <li class="nav-item {{ Route::currentRouteNamed('admin.addPatient') || Route::currentRouteNamed('admin.allPatient') ? 'menu-open' : 'menu-close' }}">
-                    <a href="#" class="nav-link {{ Route::currentRouteNamed('admin.addPatient') || Route::currentRouteNamed('admin.allPatient') ? 'active' : '' }} ">
-                        <i class="fas fa-users"></i>
-                        <p>
-                            Patients
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
+                <li class="nav-item">
+                    <a href="{{ route('admin.allPatient') }}" class="nav-link {{ Route::currentRouteNamed('admin.allPatient') ? 'active' : ' ' }}">
+                    <i class="fa fa-list-ol" aria-hidden="true"></i>
+                        <p>All Patients</p>
                     </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{ route('admin.addPatient') }}" class="nav-link {{ Route::currentRouteNamed('admin.addPatient') ? 'active' : '' }} ">
-                                <i class="fa fa-plus" aria-hidden="true"></i>
-                                <p>Register Patient</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.allPatient') }}" class="nav-link {{ Route::currentRouteNamed('admin.allPatient') ? 'active' : '' }}">
-                                <i class="fa fa-list-ol" aria-hidden="true"></i>
-                                <p>All Patients</p>
-                            </a>
-                        </li>
-                    </ul>
                 </li>
 
                 {{-- <li class="nav-item {{ Route::currentRouteNamed('admin.addDoctor') || Route::currentRouteNamed('admin.allDoctor') ? 'menu-open' : 'menu-close' }}">
