@@ -45,10 +45,10 @@ class admin_PatientCtr extends Controller
             $orderColumn = $request->input('order.0.column');  // Column index
             $orderDirection = $request->input('order.0.dir');  // Direction (asc/desc)
 
-            $columns = ['pid', 'users.name', 'users.nic','dob', 'gender', 'mobile', 'users.email', 'address']; // Add columns for sorting
+            $columns = ['pid', 'users.name', 'users.nic','dob', 'gender', 'mobile', 'users.email', 'address', 'users.created_at']; // Add columns for sorting
 
             // Start the query and join the user table
-            $query = Patient::with('user')->join('users', 'patients.userID', '=', 'users.id');
+            $query = Patient::with('user')->join('users', 'patients.userID', '=', 'users.id')->select('patients.*', 'users.created_at as user_created_at');
 
             // Apply search filter
             if (!empty($searchValue)) {
@@ -73,15 +73,47 @@ class admin_PatientCtr extends Controller
             $patients = $query->offset($start)->limit($length)->get();
 
             $data = $patients->map(function ($patient) {
+                // Format the created date
+                $createdDate = $patient->user_created_at 
+                    ? \Carbon\Carbon::parse($patient->user_created_at)->format('Y-m-d H:i')
+                    : 'N/A';
+                
+                // Calculate age from DOB
+                $ageString = 'N/A';
+                if ($patient->dob) {
+                    try {
+                        $birthDate = \Carbon\Carbon::parse($patient->dob);
+                        $today = \Carbon\Carbon::now();
+                        $diff = $today->diff($birthDate);
+                        
+                        $ageParts = [];
+                        if ($diff->y > 0) {
+                            $ageParts[] = $diff->y . ' year' . ($diff->y != 1 ? 's' : '');
+                        }
+                        if ($diff->m > 0) {
+                            $ageParts[] = $diff->m . ' month' . ($diff->m != 1 ? 's' : '');
+                        }
+                        if ($diff->d > 0) {
+                            $ageParts[] = $diff->d . ' day' . ($diff->d != 1 ? 's' : '');
+                        }
+                        
+                        $ageString = implode(', ', $ageParts);
+                    } catch (\Exception $e) {
+                        $ageString = 'Invalid Date';
+                    }
+                }
+                
                 return [
                     'id' => $patient->pid,
                     'name' => optional($patient->user)->name ?? 'N/A',
                     'nic' => optional($patient->user)->nic ?? 'N/A',
                     'dob' => $patient->dob,
+                    'age' => $ageString,
                     'gender' => $patient->gender === 'M' ? 'Male' : ($patient->gender === 'F' ? 'Female' : 'Other'),
                     'mobile' => $patient->mobile,
                     'email' => optional($patient->user)->email ?? 'N/A',
                     'address' => $patient->address ?? 'N/A',
+                    'created_at' => $createdDate,
                     'actions' => '
                         <button
                             class="btn btn-warning editBtn"

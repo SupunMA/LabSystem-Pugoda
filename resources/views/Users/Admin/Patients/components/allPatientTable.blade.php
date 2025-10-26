@@ -14,6 +14,7 @@
                             <th>Mobile</th>
                             <th>Email</th>
                             <th>Address</th>
+                            <th>Created Date</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -30,6 +31,7 @@
                             <th>Mobile</th>
                             <th>Email</th>
                             <th>Address</th>
+                            <th>Created Date</th>
                             <th>Actions</th>
                         </tr>
                     </tfoot>
@@ -112,7 +114,16 @@
                         return data;
                     }
                 },
-                { data: 'dob' },
+                { 
+                    data: 'dob',
+                    render: function(data, type, row) {
+                        if (!data || data === '') {
+                            return 'N/A';
+                        }
+                        // Display DOB with age
+                        return data + ' (' + row.age + ')';
+                    }
+                },
                 { data: 'gender' },
                 {
                     data: 'mobile',
@@ -135,6 +146,7 @@
                 },
                 { data: 'email' },
                 { data: 'address' },
+                { data: 'created_at' },
                 { data: 'actions', orderable: false, searchable: false } // actions column
             ],
             order: [[0, 'desc']],  // Default sorting (by ID in descending order)
