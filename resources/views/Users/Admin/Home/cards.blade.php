@@ -111,36 +111,68 @@
 <div class="row">
     <div class="col-lg-12 col-xs-12">
         <div class="card">
-            <div class="card-header bg-white d-flex justify-content-between align-items-center" style="cursor: pointer;" data-toggle="collapse" data-target="#incomeCardBody">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center" style="cursor: pointer;">
                 <h3 class="card-title mb-0">Monthly Income</h3>
                 <div class="card-tools">
-                    <button type="button" class="btn btn-tool">
+                    <button type="button" class="btn btn-tool" id="lock-button">
+                        <i class="fas fa-lock"></i>
+                    </button>
+                    <button type="button" class="btn btn-tool" data-toggle="collapse" data-target="#incomeCardBody">
                         <i class="fas fa-minus"></i>
                     </button>
                 </div>
             </div>
             <div class="card-body collapse" id="incomeCardBody">
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label>Date range:</label>
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">
-                                        <i class="far fa-calendar-alt"></i>
-                                    </span>
+                <div id="income-chart-container" style="display: none;">
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Date range:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <i class="far fa-calendar-alt"></i>
+                                        </span>
+                                    </div>
+                                    <input type="text" class="form-control float-right" id="income-date-range">
                                 </div>
-                                <input type="text" class="form-control float-right" id="income-date-range">
                             </div>
                         </div>
+                        <div class="col-md-2">
+                            <button id="apply-filter" class="btn btn-primary mt-4">Apply</button>
+                        </div>
                     </div>
-                    <div class="col-md-2">
-                        <button id="apply-filter" class="btn btn-primary mt-4">Apply</button>
+                    <div class="chart-container" style="height: 450px; position: relative;">
+                        <canvas id="incomeChart"></canvas>
                     </div>
                 </div>
-                <div class="chart-container" style="height: 450px; position: relative;">
-                    <canvas id="incomeChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PIN Modal -->
+<div class="modal fade" id="pinModal" tabindex="-1" role="dialog" aria-labelledby="pinModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="pinModalLabel">Enter PIN to View Income</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="pin-input">PIN</label>
+                    <input type="password" class="form-control" id="pin-input" placeholder="Enter PIN">
+                    <div class="invalid-feedback">
+                        Invalid PIN.
+                    </div>
                 </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="submit-pin">Submit</button>
             </div>
         </div>
     </div>
@@ -427,6 +459,38 @@ $(document).ready(function() {
         } else {
             icon.removeClass('fa-plus').addClass('fa-minus');
         }
+    });
+});
+</script>
+<script>
+$(document).ready(function() {
+    $('#lock-button').on('click', function() {
+        $('#pinModal').modal('show');
+    });
+
+    $('#submit-pin').on('click', function() {
+        var pin = $('#pin-input').val();
+        $.ajax({
+            url: '{{ route("admin.verifyPin") }}',
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                pin: pin
+            },
+            success: function(response) {
+                if (response.success) {
+                    $('#pinModal').modal('hide');
+                    $('#income-chart-container').show();
+                    $('#lock-button').find('i').removeClass('fa-lock').addClass('fa-unlock');
+                    $('#lock-button').off('click');
+                } else {
+                    $('#pin-input').addClass('is-invalid');
+                }
+            },
+            error: function() {
+                alert('An error occurred.');
+            }
+        });
     });
 });
 </script>

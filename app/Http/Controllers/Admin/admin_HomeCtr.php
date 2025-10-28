@@ -152,4 +152,14 @@ public function getIncomeData(Request $request)
 
     return response()->json($data);
 }
+
+public function verifyPin(Request $request)
+{
+    $pin = $request->input('pin');
+    if ($pin == '2025') {
+        return response()->json(['success' => true]);
+    } else {
+        return response()->json(['success' => false]);
+    }
+}
 }

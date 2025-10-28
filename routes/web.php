@@ -59,6 +59,7 @@ Route::group(['prefix'=>'Admin','middleware'=>['auth','checkAdmin']], function (
 Route::group(['prefix'=>'Admin','middleware'=>['checkAdmin','auth','lockBack']],function(){
     Route::get('/', [admin_HomeCtr::class, 'checkAdmin'])->name('admin.home');
     Route::get('/admin/get-income-data', [admin_HomeCtr::class, 'getIncomeData'])->name('admin.getIncomeData');
+    Route::post('verify-pin', [admin_HomeCtr::class, 'verifyPin'])->name('admin.verifyPin');
 
     // Patients
     Route::get('AddPatient', [admin_PatientCtr::class, 'addPatient'])->name('admin.addPatient');
