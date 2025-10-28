@@ -111,18 +111,24 @@
 <div class="row">
     <div class="col-lg-12 col-xs-12">
         <div class="card">
-            <div class="card-header bg-white d-flex justify-content-between align-items-center" style="cursor: pointer;">
-                <h3 class="card-title mb-0">Monthly Income</h3>
-                <div class="card-tools">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <a href="#" data-toggle="collapse" data-target="#incomeCardBody" style="color: inherit; text-decoration: none; cursor: pointer;">
+                    <h3 class="card-title mb-0">Monthly Income</h3>
+                </a>
+                {{-- <div class="card-tools">
                     <button type="button" class="btn btn-tool" id="lock-button">
                         <i class="fas fa-lock"></i>
                     </button>
                     <button type="button" class="btn btn-tool" data-toggle="collapse" data-target="#incomeCardBody">
                         <i class="fas fa-minus"></i>
                     </button>
-                </div>
+                </div> --}}
             </div>
-            <div class="card-body collapse" id="incomeCardBody">
+            <div class="card-body" id="incomeCardBody">
+                <div id="income-card-placeholder" class="text-center">
+                    <p>Enter PIN to view income details.</p>
+                    <button class="btn btn-primary" id="unlock-button">Unlock</button>
+                </div>
                 <div id="income-chart-container" style="display: none;">
                     <div class="row mb-3">
                         <div class="col-md-4">
@@ -464,7 +470,7 @@ $(document).ready(function() {
 </script>
 <script>
 $(document).ready(function() {
-    $('#lock-button').on('click', function() {
+    $('#lock-button, #unlock-button').on('click', function() {
         $('#pinModal').modal('show');
     });
 
@@ -480,9 +486,10 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.success) {
                     $('#pinModal').modal('hide');
+                    $('#income-card-placeholder').hide();
                     $('#income-chart-container').show();
                     $('#lock-button').find('i').removeClass('fa-lock').addClass('fa-unlock');
-                    $('#lock-button').off('click');
+                    $('#lock-button, #unlock-button').off('click');
                 } else {
                     $('#pin-input').addClass('is-invalid');
                 }
