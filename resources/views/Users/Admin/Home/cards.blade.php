@@ -111,19 +111,19 @@
 <div class="row">
     <div class="col-lg-12 col-xs-12">
         <div class="card">
-            <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <a href="#" data-toggle="collapse" data-target="#incomeCardBody" style="color: inherit; text-decoration: none; cursor: pointer;">
+            <a href="#" data-toggle="collapse" data-target="#incomeCardBody" style="color: inherit; text-decoration: none; cursor: pointer;">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
                     <h3 class="card-title mb-0">Monthly Income</h3>
-                </a>
-                {{-- <div class="card-tools">
-                    <button type="button" class="btn btn-tool" id="lock-button">
-                        <i class="fas fa-lock"></i>
-                    </button>
-                    <button type="button" class="btn btn-tool" data-toggle="collapse" data-target="#incomeCardBody">
-                        <i class="fas fa-minus"></i>
-                    </button>
-                </div> --}}
-            </div>
+                    {{-- <div class="card-tools">
+                        <button type="button" class="btn btn-tool" id="lock-button">
+                            <i class="fas fa-lock"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" data-toggle="collapse" data-target="#incomeCardBody">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div> --}}
+                </div>
+            </a>
             <div class="card-body" id="incomeCardBody">
                 <div id="income-card-placeholder" class="text-center">
                     <p>Enter PIN to view income details.</p>
