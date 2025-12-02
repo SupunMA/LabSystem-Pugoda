@@ -58,8 +58,6 @@
   "openingHours": "Mo-Fr 08:00-18:00, Sa 08:00-14:00",
   "medicalSpecialty": ["Pathology", "Clinical Laboratory", "Diagnostic Testing"],
   "serviceType": ["Blood Testing", "Urine Analysis", "Diabetes Screening", "Health Diagnostics"],
-
-  // Add ItemList for categories
   "hasOfferCatalog": {
     "@type": "OfferCatalog",
     "itemListElement": [
@@ -96,8 +94,8 @@
 
   @media (max-width: 600px) {
     h1 {
-      font-size: 30px; /* Reduce font size for smaller screens */
-      line-height: 1.5; /* Increase line height for better readability */
+      font-size: 30px;
+      line-height: 1.5;
     }
   }
 
@@ -109,13 +107,10 @@
 
   @media (max-width: 600px) {
     h2 {
-      font-size: 30px; /* Reduce font size for smaller screens */
-      line-height: 1.5; /* Increase line height for better readability */
+      font-size: 30px;
+      line-height: 1.5;
     }
   }
-
-
-
 
 /* Hide scrollbar for Webkit browsers */
 .scrollable-container::-webkit-scrollbar {
@@ -164,10 +159,44 @@
 .card-item {
     animation: fadeIn 0.6s ease forwards;
 }
+
+/* Snow Effect Styles */
+#winterSnowCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+#snowAccumulationBar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 40px;
+    pointer-events: none;
+    z-index: 9998;
+    background: linear-gradient(to top, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0));
+}
+
+@keyframes snowflakeDrift {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    50% {
+        transform: translateX(20px);
+    }
+}
 </style>
 </head>
 <body>
 
+  <!-- Snow Canvas -->
+  <canvas id="winterSnowCanvas"></canvas>
+  <div id="snowAccumulationBar"></div>
 
   <!-- ======= Header ======= -->
   @include('Home.components.header')
@@ -188,6 +217,7 @@
 </html>
 
 <script>
+// Card scrolling functionality
 document.addEventListener('DOMContentLoaded', function() {
     const container = document.getElementById('cardsContainer');
     const dotsContainer = document.getElementById('dotsContainer');
@@ -195,13 +225,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (!container || !dotsContainer || cards.length === 0) return;
 
-    // Calculate how many cards are visible at once
     const containerWidth = container.clientWidth;
-    const cardWidth = 280 + 20; // card width + gap
+    const cardWidth = 280 + 20;
     const visibleCards = Math.floor(containerWidth / cardWidth);
     const totalDots = Math.max(1, cards.length - visibleCards + 1);
 
-    // Create dots
     for (let i = 0; i < totalDots; i++) {
         const dot = document.createElement('button');
         dot.className = 'dot';
@@ -220,7 +248,6 @@ document.addEventListener('DOMContentLoaded', function() {
         dotsContainer.appendChild(dot);
     }
 
-    // Update active dot on scroll
     container.addEventListener('scroll', function() {
         const scrollLeft = container.scrollLeft;
         const activeIndex = Math.round(scrollLeft / cardWidth);
@@ -234,7 +261,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Touch/swipe support for mobile
     let isDown = false;
     let startX;
     let scrollLeftStart;
@@ -264,4 +290,152 @@ document.addEventListener('DOMContentLoaded', function() {
         container.scrollLeft = scrollLeftStart - walk;
     });
 });
+
+// Realistic Snow Effect with Accumulation
+(function() {
+    const snowfallCanvas = document.getElementById('winterSnowCanvas');
+    const snowfallContext = snowfallCanvas.getContext('2d');
+
+    let canvasWidthSnow = window.innerWidth;
+    let canvasHeightSnow = window.innerHeight;
+
+    snowfallCanvas.width = canvasWidthSnow;
+    snowfallCanvas.height = canvasHeightSnow;
+
+    // Snowflake particles array
+    const snowflakeParticles = [];
+    const totalSnowflakes = 150;
+
+    // Accumulated snow particles at bottom
+    const accumulatedSnowPile = [];
+    const maxAccumulatedSnow = 100;
+    const accumulationZoneHeight = 40;
+
+    // Snowflake constructor
+    function SnowflakeEntity() {
+        this.xPositionSnow = Math.random() * canvasWidthSnow;
+        this.yPositionSnow = Math.random() * canvasHeightSnow;
+        this.radiusSizeSnow = Math.random() * 3 + 1;
+        this.velocityYSnow = Math.random() * 1 + 0.5;
+        this.velocityXSnow = Math.random() * 0.5 - 0.25;
+        this.opacitySnow = Math.random() * 0.6 + 0.4;
+        this.swingAmplitude = Math.random() * 0.5 + 0.2;
+        this.swingPhase = Math.random() * Math.PI * 2;
+    }
+
+    // Accumulated snow constructor
+    function AccumulatedSnowEntity(xPos, yPos, radius, opacity) {
+        this.xPosAccum = xPos;
+        this.yPosAccum = yPos;
+        this.radiusAccum = radius;
+        this.opacityAccum = opacity;
+        this.lifetimeAccum = 3000 + Math.random() * 2000; // 3-5 seconds
+        this.creationTimeAccum = Date.now();
+        this.fadeStartTimeAccum = this.creationTimeAccum + this.lifetimeAccum;
+    }
+
+    // Update snowflake position
+    SnowflakeEntity.prototype.updatePositionSnow = function() {
+        this.yPositionSnow += this.velocityYSnow;
+        this.swingPhase += 0.01;
+        this.xPositionSnow += Math.sin(this.swingPhase) * this.swingAmplitude;
+
+        // Check if snowflake reached bottom accumulation zone
+        if (this.yPositionSnow > canvasHeightSnow - accumulationZoneHeight) {
+            // Add to accumulated snow
+            if (accumulatedSnowPile.length < maxAccumulatedSnow) {
+                accumulatedSnowPile.push(new AccumulatedSnowEntity(
+                    this.xPositionSnow,
+                    canvasHeightSnow - Math.random() * accumulationZoneHeight,
+                    this.radiusSizeSnow,
+                    this.opacitySnow
+                ));
+            }
+
+            // Reset snowflake to top
+            this.yPositionSnow = -10;
+            this.xPositionSnow = Math.random() * canvasWidthSnow;
+        }
+
+        if (this.xPositionSnow > canvasWidthSnow) {
+            this.xPositionSnow = 0;
+        } else if (this.xPositionSnow < 0) {
+            this.xPositionSnow = canvasWidthSnow;
+        }
+    };
+
+    // Draw snowflake
+    SnowflakeEntity.prototype.renderSnowflake = function() {
+        snowfallContext.beginPath();
+        snowfallContext.arc(this.xPositionSnow, this.yPositionSnow, this.radiusSizeSnow, 0, Math.PI * 2);
+        snowfallContext.fillStyle = `rgba(255, 255, 255, ${this.opacitySnow})`;
+        snowfallContext.fill();
+        snowfallContext.closePath();
+    };
+
+    // Update and draw accumulated snow
+    function updateAccumulatedSnow() {
+        const currentTimeStamp = Date.now();
+
+        // Remove old snow and update
+        for (let i = accumulatedSnowPile.length - 1; i >= 0; i--) {
+            const snowPiece = accumulatedSnowPile[i];
+            const ageOfSnow = currentTimeStamp - snowPiece.creationTimeAccum;
+
+            // Start fading after lifetime
+            if (ageOfSnow > snowPiece.lifetimeAccum) {
+                const fadeProgress = (ageOfSnow - snowPiece.lifetimeAccum) / 1000; // 1 second fade
+                snowPiece.opacityAccum = Math.max(0, snowPiece.opacityAccum - fadeProgress * 0.1);
+
+                // Remove if fully faded
+                if (snowPiece.opacityAccum <= 0) {
+                    accumulatedSnowPile.splice(i, 1);
+                    continue;
+                }
+            }
+
+            // Draw accumulated snow
+            snowfallContext.beginPath();
+            snowfallContext.arc(snowPiece.xPosAccum, snowPiece.yPosAccum, snowPiece.radiusAccum, 0, Math.PI * 2);
+            snowfallContext.fillStyle = `rgba(255, 255, 255, ${snowPiece.opacityAccum})`;
+            snowfallContext.fill();
+            snowfallContext.closePath();
+        }
+    }
+
+    // Initialize snowflakes
+    function initializeSnowflakes() {
+        for (let idx = 0; idx < totalSnowflakes; idx++) {
+            snowflakeParticles.push(new SnowflakeEntity());
+        }
+    }
+
+    // Animation loop
+    function animateSnowfall() {
+        snowfallContext.clearRect(0, 0, canvasWidthSnow, canvasHeightSnow);
+
+        // Update and draw falling snow
+        for (let idx = 0; idx < snowflakeParticles.length; idx++) {
+            snowflakeParticles[idx].updatePositionSnow();
+            snowflakeParticles[idx].renderSnowflake();
+        }
+
+        // Update and draw accumulated snow
+        updateAccumulatedSnow();
+
+        requestAnimationFrame(animateSnowfall);
+    }
+
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        canvasWidthSnow = window.innerWidth;
+        canvasHeightSnow = window.innerHeight;
+        snowfallCanvas.width = canvasWidthSnow;
+        snowfallCanvas.height = canvasHeightSnow;
+    });
+
+    // Start the snow effect
+    initializeSnowflakes();
+    animateSnowfall();
+})();
 </script>
