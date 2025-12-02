@@ -1,4 +1,5 @@
 <header id="header" class="fixed-top">
+
     <div class="container d-flex align-items-center">
 
       <h1 class="logo me-auto"><a href="/">HORIZON LAB</a></h1>
@@ -18,7 +19,21 @@
       </nav><!-- .navbar -->
 
     </div>
+                <!-- ADD BANNER HERE -->
+ <!-- Top Announcement Banner -->
+  <div class="announcement-banner" id="announcementBanner">
+    <button class="close-banner" onclick="closeBanner()" aria-label="Close announcement">×</button>
+    <div class="announcement-content">
+      <span class="announcement-icon">🎉</span>
+      <div class="announcement-text">
+        <strong>Exciting News!</strong> Horizon Laboratory partners with Neuberg Diagnostics - Starting December 1st, 2025
+      </div>
+      <a onclick="closeBanner()" href="#partnership-details" class="learn-more-btn">Learn More</a>
+    </div>
+  </div>
   </header><!-- End Header -->
+
+
 
   <!-- ======= Hero Section ======= -->
   <section id="hero" class="d-flex align-items-center">
@@ -58,3 +73,4 @@
   <div>
 
 </div>
+

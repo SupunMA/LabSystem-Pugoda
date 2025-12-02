@@ -190,9 +190,280 @@
         transform: translateX(20px);
     }
 }
+
+
+
+
+
+
+    /* Announcement Banner */
+    .announcement-banner {
+      background: linear-gradient(135deg, #1977cc 0%, #0d5fa6 100%);
+      color: white;
+      padding: 15px 20px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: hidden;
+      animation: slideDown 0.5s ease-out;
+    }
+
+    .announcement-banner::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      animation: pulse 3s ease-in-out infinite;
+    }
+
+    .announcement-content {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .announcement-icon {
+      font-size: 24px;
+      animation: bounce 2s infinite;
+    }
+
+    .announcement-text {
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    .announcement-text strong {
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .learn-more-btn {
+      background: white;
+      color: #1977cc;
+      padding: 8px 20px;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: inline-block;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .learn-more-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      background: #f8f9fa;
+    }
+
+    .close-banner {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.3s;
+      z-index: 2;
+    }
+
+    .close-banner:hover {
+      opacity: 1;
+    }
+
+    /* Partnership Section */
+    .partnership-section {
+      max-width: 1200px;
+      margin: 40px auto;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .partnership-header {
+      background: linear-gradient(135deg, #1977cc 0%, #0d5fa6 100%);
+      color: white;
+      padding: 40px;
+      text-align: center;
+    }
+
+    .partnership-header h2 {
+      font-size: 36px;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    .partnership-date {
+      font-size: 18px;
+      opacity: 0.95;
+      font-weight: 500;
+    }
+
+    .partnership-content {
+      padding: 40px;
+    }
+
+    .partnership-intro {
+      text-align: center;
+      font-size: 18px;
+      color: #333;
+      line-height: 1.8;
+      margin-bottom: 40px;
+    }
+
+    .partners-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    .partner-card {
+      background: #f8f9fa;
+      padding: 30px;
+      border-radius: 12px;
+      border: 2px solid #e9ecef;
+      transition: all 0.3s ease;
+    }
+
+    .partner-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+      border-color: #1977cc;
+    }
+
+    .partner-card h3 {
+      color: #1977cc;
+      font-size: 24px;
+      margin-bottom: 15px;
+      font-weight: 700;
+    }
+
+    .partner-card p {
+      color: #555;
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .benefits-section {
+      background: linear-gradient(to right, #f8f9fa, #e9ecef);
+      padding: 30px;
+      border-radius: 12px;
+      margin-top: 30px;
+    }
+
+    .benefits-section h3 {
+      color: #1977cc;
+      font-size: 28px;
+      margin-bottom: 25px;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .benefits-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .benefit-item {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      border-left: 4px solid #1977cc;
+      transition: all 0.3s ease;
+    }
+
+    .benefit-item:hover {
+      transform: translateX(5px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .benefit-item h4 {
+      color: #333;
+      font-size: 18px;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .benefit-item p {
+      color: #666;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    @keyframes slideDown {
+      from {
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes bounce {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 0.3;
+      }
+      50% {
+        opacity: 0.5;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .announcement-banner {
+        padding: 12px 15px;
+      }
+
+      .announcement-text {
+        font-size: 14px;
+      }
+
+      .announcement-text strong {
+        font-size: 16px;
+      }
+
+      .partnership-header h2 {
+        font-size: 28px;
+      }
+
+      .partnership-content {
+        padding: 25px;
+      }
+
+      .partners-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
 </style>
 </head>
 <body>
+
 
   <!-- Snow Canvas -->
   <canvas id="winterSnowCanvas"></canvas>
@@ -203,6 +474,77 @@
 
   <main id="main">
     @include('Home.components.intro')
+    <!-- Detailed Partnership Section -->
+  <div class="partnership-section" id="partnership-details">
+    <br><br>
+    <div class="partnership-header">
+      <h2>🤝 A New Era in Diagnostic Excellence</h2>
+      <p class="partnership-date">Partnership Effective: December 1st, 2025</p>
+    </div>
+
+    <div class="partnership-content">
+      <p class="partnership-intro">
+        We're thrilled to announce a transformative collaboration between Horizon Laboratory and Neuberg Diagnostics,
+        bringing world-class diagnostic capabilities to Sri Lanka with global quality and local accessibility.
+      </p>
+
+      <div class="partners-grid">
+        <div class="partner-card">
+          <h3>🔬 Horizon Laboratory</h3>
+          <p>
+            Your trusted local partner committed to "Testing Today, Healthier Tomorrow."
+            With comprehensive pathology services including chemical pathology, hematology,
+            and flow cytometry, we've built our reputation on precision, compassion, and
+            advanced technology.
+          </p>
+        </div>
+
+        <div class="partner-card">
+          <h3>🌍 Neuberg Diagnostics</h3>
+          <p>
+            A global diagnostic consortium spanning India, Sri Lanka, South Africa, and the UAE.
+            With over two centuries of combined expertise, Neuberg leads the movement toward
+            early, accurate diagnosis through cutting-edge genomics, proteomics, and molecular testing.
+          </p>
+        </div>
+      </div>
+
+      <div class="benefits-section">
+        <h3>What This Means For You</h3>
+        <div class="benefits-list">
+          <div class="benefit-item">
+            <h4>🎯 Enhanced Diagnostic Capabilities</h4>
+            <p>Access to expanded test portfolios with improved turnaround times and accuracy through Neuberg's world-class reference lab network.</p>
+          </div>
+
+          <div class="benefit-item">
+            <h4>🌟 Global Quality, Local Access</h4>
+            <p>International standards of diagnostics right here in Sri Lanka - no need to travel abroad for advanced testing.</p>
+          </div>
+
+          <div class="benefit-item">
+            <h4>🔬 Advanced Testing Options</h4>
+            <p>New avenues for molecular biology, digital pathology, and genomics - bringing next-generation diagnostics to your doorstep.</p>
+          </div>
+
+          <div class="benefit-item">
+            <h4>💰 Affordable Excellence</h4>
+            <p>Committed to making advanced diagnostics accessible and affordable, consistent with Neuberg's founding vision.</p>
+          </div>
+
+          <div class="benefit-item">
+            <h4>👨‍⚕️ Better Healthcare Decisions</h4>
+            <p>Empowering doctors and clinicians with deeper diagnostic insights for more informed clinical decision-making.</p>
+          </div>
+
+          <div class="benefit-item">
+            <h4>🚀 Continuous Innovation</h4>
+            <p>A seamless continuum of care from routine health checks to the most specialized testing available.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   </main><!-- End #main -->
 
   <!-- ======= Footer ======= -->
@@ -304,7 +646,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Snowflake particles array
     const snowflakeParticles = [];
-    const totalSnowflakes = 150;
+    const totalSnowflakes = 30;
 
     // Accumulated snow particles at bottom
     const accumulatedSnowPile = [];
@@ -439,3 +781,22 @@ document.addEventListener('DOMContentLoaded', function() {
     animateSnowfall();
 })();
 </script>
+
+  <script>
+    function closeBanner() {
+      const banner = document.getElementById('announcementBanner');
+      banner.style.animation = 'slideDown 0.3s ease-out reverse';
+      setTimeout(() => {
+        banner.style.display = 'none';
+      }, 300);
+    }
+
+    // Smooth scroll to partnership details
+    document.querySelector('.learn-more-btn').addEventListener('click', function(e) {
+      e.preventDefault();
+      document.getElementById('partnership-details').scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    });
+  </script>
